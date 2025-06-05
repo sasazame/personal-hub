@@ -2,7 +2,7 @@
 
 ## 概要
 
-Issue #10の実装として、TODOアプリケーションに新しいモダンなレイアウトとナビゲーションシステムを導入しました。この実装では、グラスモーフィズムデザイン、レスポンシブナビゲーション、ページトランジションなどの最新のUIパターンを採用しています。
+Personal Hubアプリケーションにモダンなレイアウトとナビゲーションシステムを実装しました。この実装では、グラスモーフィズムデザイン、レスポンシブナビゲーション、ページトランジションなどの最新のUIパターンを採用しています。
 
 ## 実装内容
 
@@ -29,7 +29,7 @@ className="bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl border-b border-whit
 - アイコン付きナビゲーション項目
 
 #### コンポーネント: `src/components/layout/Sidebar.tsx`
-- Home、TODOs、Calendar、Tags、Starred、Archive、Settingsのナビゲーション項目
+- Home、TODOs、Calendar、Notes、Analytics、Profile、Settingsのナビゲーション項目
 - 折りたたみ時はアイコンのみ表示
 - ツールチップによるラベル表示
 
@@ -91,9 +91,9 @@ exit: { opacity: 0, y: -20 }
 - `nav.home` - ホーム
 - `nav.todos` - TODO
 - `nav.calendar` - カレンダー
-- `nav.tags` - タグ
-- `nav.starred` - スター付き
-- `nav.archive` - アーカイブ
+- `nav.notes` - メモ
+- `nav.analytics` - 分析
+- `nav.dashboard` - ダッシュボード
 - `nav.settings` - 設定
 - `nav.profile` - プロフィール
 - `header.loggingOut` - ログアウト中...

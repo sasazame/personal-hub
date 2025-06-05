@@ -1,7 +1,7 @@
 # CI/CD実装の学びとベストプラクティス
 
 ## 概要
-GitHub Actions CI/CDパイプライン実装時に遭遇した問題と解決策をまとめたドキュメント。
+Personal Hub（統合アプリケーション）のGitHub Actions CI/CDパイプライン実装時に遭遇した問題と解決策をまとめたドキュメント。
 
 ## 主要な学び
 
@@ -118,7 +118,7 @@ webServer: process.env.CI ? {
 2. **Performance Budget**: Lighthouseスコアの基準設定
 3. **Branch Protection**: mainブランチのプロテクションルール
 4. **Semantic Release**: 自動バージョニング
-5. **E2E完全復活**: ~~バックエンドAPI利用可能時の完全E2Eテスト~~ CI環境でのE2Eテスト再有効化（[Issue #24](https://github.com/sasazame/todo-app-frontend/issues/24)）
+5. **E2E完全復活**: ~~バックエンドAPI利用可能時の完全E2Eテスト~~ CI環境でのE2Eテスト再有効化（[Issue #24](https://github.com/sasazame/personal-hub/issues/24)）
 
 ## 結論
 CI/CDパイプラインの成功は、ローカル開発環境での品質担保が基盤。

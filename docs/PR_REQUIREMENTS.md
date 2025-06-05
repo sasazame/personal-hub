@@ -8,7 +8,7 @@ All PR must pass the following CI checks:
 
 1. **Type Check** - TypeScript compilation without errors
 2. **Lint** - ESLint without errors or warnings  
-3. **Unit Tests** - All Jest tests passing (233 tests)
+3. **Unit Tests** - All Jest tests passing
 4. **Build** - Next.js production build successful
 
 ### E2E Test Requirements
@@ -51,7 +51,7 @@ Please copy and use this checklist in your PR description:
 ### CI Checks (Automated)
 - [ ] TypeScript type check passing
 - [ ] ESLint no errors/warnings
-- [ ] Unit tests passing (233 tests)
+- [ ] Unit tests passing
 - [ ] Build successful
 
 ### Local E2E Tests (Manual)
@@ -72,7 +72,7 @@ Please copy and use this checklist in your PR description:
 
 ## Known Issues
 
-- **CI E2E Tests**: Currently disabled. See [Issue #TODO](https://github.com/sasazame/todo-app-frontend/issues/TODO)
+- **CI E2E Tests**: Currently disabled. See [Issue #24](https://github.com/sasazame/personal-hub/issues/24)
 - **Backend Dependency**: E2E tests require backend running on `http://localhost:8080`
 
 ## Future Improvements

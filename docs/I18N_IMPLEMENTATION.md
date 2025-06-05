@@ -2,9 +2,9 @@
 
 ## Implementation Summary / 実装概要
 
-This document provides technical details about the internationalization (i18n) implementation in the TODO application.
+This document provides technical details about the internationalization (i18n) implementation in the Personal Hub application.
 
-このドキュメントでは、TODOアプリケーションの国際化（i18n）実装の技術的詳細を説明します。
+このドキュメントでは、Personal Hubアプリケーションの国際化（i18n）実装の技術的詳細を説明します。
 
 ## Technical Stack / 技術スタック
 
@@ -86,8 +86,12 @@ Features / 機能:
   "common": "通用的なUI要素",
   "app": "アプリケーション全体",
   "header": "ヘッダーコンポーネント",
+  "nav": "ナビゲーション",
   "auth": "認証関連",
   "todo": "TODO機能",
+  "calendar": "カレンダー機能",
+  "notes": "メモ機能",
+  "dashboard": "ダッシュボード",
   "profile": "プロフィール機能",
   "errors": "エラーメッセージ",
   "validation": "バリデーションメッセージ"

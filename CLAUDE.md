@@ -29,8 +29,8 @@ gh pr create --title "機能タイトル" --body "詳細説明" --assignee sasaz
 ## CI/CD パイプライン ✅
 - **自動実行**: PR作成時・push時
 - **必須チェック**: type-check, lint, test, build
-- **テスト**: 19スイート・233テスト（全パス状態維持）
-- **E2Eテスト**: ⚠️ CI環境で一時無効化中（[Issue #24](https://github.com/sasazame/todo-app-frontend/issues/24)）
+- **テスト**: Jest + React Testing Library + Playwright
+- **E2Eテスト**: ⚠️ CI環境で一時無効化中（[Issue #24](https://github.com/sasazame/personal-hub/issues/24)）
 - **デプロイ**: mainブランチ → Vercel自動デプロイ
 
 ## コーディング規約
@@ -118,7 +118,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 - **品質**: AAA パターン、ユーザー視点、型安全性重視
 
 ## API連携
-- バックエンドURL: `http://localhost:8080/api/v1`
+- バックエンドURL: `http://localhost:8080/api/v1` (personal-hub-backend)
 - TanStack Query使用
 - エラーハンドリング: Error Boundary + トースト
 
@@ -153,7 +153,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 - [ ] エラーハンドリング
 - [ ] テスト作成（実際の動作に合わせる）
 - [ ] **CI同等チェック**: `type-check && lint && test && build`
-- [ ] 全233テスト成功確認
+- [ ] 全テスト成功確認
 - [ ] **ローカルE2Eテスト実行**（必須）: `npm run test:e2e`
 - [ ] PR作成（assignee: sasazame）、[PR要件](./docs/PR_REQUIREMENTS.md)確認
 
@@ -191,7 +191,7 @@ npm run type-check && npm run lint && npm test && npm run build
    - 非同期テスト: `waitFor`+適切なセレクタ
 
 4. **E2Eテスト問題** ⚠️
-   - CI環境で一時無効化中（[Issue #24](https://github.com/sasazame/todo-app-frontend/issues/24)）
+   - CI環境で一時無効化中（[Issue #24](https://github.com/sasazame/personal-hub/issues/24)）
    - ローカルでのE2Eテスト実行が必須
    - バックエンド起動確認: `http://localhost:8080`
 

@@ -1,7 +1,7 @@
 # コンポーネント設計書
 
 ## 概要
-Next.js 15 (App Router) + React 19を使用したTODOアプリケーションのコンポーネント設計
+Next.js 15 (App Router) + React 19を使用したPersonal Hub（統合アプリケーション）のコンポーネント設計
 
 ## 設計原則
 
@@ -14,8 +14,12 @@ Next.js 15 (App Router) + React 19を使用したTODOアプリケーションの
 ```
 components/
 ├── ui/                 # 基本UIコンポーネント（再利用性重視）
-├── features/           # 機能別コンポーネント（ビジネスロジック含む）
-└── layouts/            # レイアウトコンポーネント
+├── todos/              # TODO機能コンポーネント
+├── calendar/           # カレンダー機能コンポーネント
+├── notes/              # メモ機能コンポーネント
+├── dashboard/          # ダッシュボード機能コンポーネント
+├── auth/               # 認証関連コンポーネント
+└── layout/             # レイアウトコンポーネント
 ```
 
 ## コンポーネント階層
@@ -57,7 +61,7 @@ interface SelectProps<T> {
 }
 ```
 
-### 2. Feature Components（features/）
+### 2. Feature Components（機能別フォルダ）
 **特徴**: ビジネスロジック含む、特定機能に特化
 
 #### TodoList（Server Component）
@@ -168,7 +172,7 @@ UI Update ← Optimistic Update ← API Call
 ### 1. Server Component
 ```typescript
 // app/todos/page.tsx
-import { TodoList } from '@/components/features/TodoList';
+import { TodoList } from '@/components/todos/TodoList';
 import { todoApi } from '@/services/todo';
 
 export default async function TodoPage() {

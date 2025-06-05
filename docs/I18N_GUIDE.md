@@ -1,7 +1,7 @@
 # 国際化(i18n)実装ガイド
 
 ## 概要
-TODOアプリケーションは`next-intl`を使用して日本語と英語をサポートしています。
+Personal Hubアプリケーションは`next-intl`を使用して日本語と英語をサポートしています。
 
 ## 技術仕様
 - **ライブラリ**: next-intl v4.1.0
@@ -105,6 +105,28 @@ function LanguageButton() {
 }
 ```
 
+### カレンダー関連 (`calendar`)
+```json
+{
+  "calendar": {
+    "title": "カレンダー",
+    "addEvent": "イベントを追加",
+    "noEvents": "イベントがありません"
+  }
+}
+```
+
+### メモ関連 (`notes`)
+```json
+{
+  "notes": {
+    "title": "メモ",
+    "addNote": "メモを追加",
+    "noNotes": "メモがありません"
+  }
+}
+```
+
 ### エラーメッセージ (`errors`)
 ```json
 {
@@ -125,16 +147,18 @@ function LanguageButton() {
 
 ### 2. 使用例
 ```tsx
-// 新しいキーを追加
+// 新しいキーを追加（例：analytics機能）
 {
-  "newFeature": {
-    "title": "新機能",
-    "description": "説明文"
+  "analytics": {
+    "title": "分析",
+    "description": "統計情報とレポート",
+    "productivity": "生産性",
+    "trends": "トレンド"
   }
 }
 
 // コンポーネントで使用
-const t = useTranslations('newFeature');
+const t = useTranslations('analytics');
 <h1>{t('title')}</h1>
 ```
 
