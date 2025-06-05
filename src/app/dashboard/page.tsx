@@ -5,17 +5,37 @@ import { AuthGuard } from '@/components/auth';
 import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui';
 import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
+import { useTodaysEvents } from '@/hooks/useCalendar';
+import { useRecentNotes } from '@/hooks/useNotes';
+import { todoApi } from '@/lib/api';
+import { format } from 'date-fns';
 import { 
   CheckSquare, 
   Calendar, 
   FileText, 
   BarChart3,
   Plus,
-  ArrowRight
+  ArrowRight,
+  Clock,
+  TrendingUp
 } from 'lucide-react';
 
 function DashboardPage() {
   const t = useTranslations();
+
+  // Fetch real data
+  const { data: todosResponse } = useQuery({
+    queryKey: ['todos', 'ALL'],
+    queryFn: () => todoApi.getAll(),
+  });
+  const { data: todaysEvents = [] } = useTodaysEvents();
+  const { data: recentNotes = [] } = useRecentNotes(3);
+
+  const todos = todosResponse?.content || [];
+  const incompleteTodos = todos.filter(todo => todo.status !== 'DONE');
+  const completedTodos = todos.filter(todo => todo.status === 'DONE');
+  const completionRate = todos.length > 0 ? Math.round((completedTodos.length / todos.length) * 100) : 0;
 
   const features = [
     {
@@ -24,7 +44,9 @@ function DashboardPage() {
       icon: CheckSquare,
       href: '/todos',
       color: 'bg-blue-500',
-      stats: '5件の未完了タスク'
+      stats: `${incompleteTodos.length}件の未完了タスク`,
+      count: incompleteTodos.length,
+      total: todos.length
     },
     {
       title: 'Calendar',
@@ -32,7 +54,8 @@ function DashboardPage() {
       icon: Calendar,
       href: '/calendar',
       color: 'bg-green-500',
-      stats: '今日のイベント: 3件'
+      stats: `今日のイベント: ${todaysEvents.length}件`,
+      count: todaysEvents.length
     },
     {
       title: 'Notes',
@@ -40,7 +63,8 @@ function DashboardPage() {
       icon: FileText,
       href: '/notes',
       color: 'bg-purple-500',
-      stats: '12件のメモ'
+      stats: `${recentNotes.length}件の最近のメモ`,
+      count: recentNotes.length
     },
     {
       title: 'Analytics',
@@ -48,7 +72,8 @@ function DashboardPage() {
       icon: BarChart3,
       href: '/analytics',
       color: 'bg-orange-500',
-      stats: '今週の完了率: 75%'
+      stats: `完了率: ${completionRate}%`,
+      count: completionRate
     }
   ];
 
@@ -113,29 +138,94 @@ function DashboardPage() {
           })}
         </div>
 
-        {/* 最近のアクティビティ */}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold text-foreground mb-4">
-            最近のアクティビティ
-          </h2>
-          <div className="space-y-3 text-sm text-muted-foreground">
-            <div className="flex items-center gap-3">
-              <CheckSquare className="w-4 h-4 text-green-500" />
-              <span>「プロジェクト資料作成」を完了しました</span>
-              <span className="text-xs">2時間前</span>
+        {/* リアルタイムデータ */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* 今日のイベント */}
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-foreground">
+                今日のイベント
+              </h2>
+              <Link href="/calendar" className="text-green-600 hover:text-green-700 text-sm">
+                全て見る →
+              </Link>
             </div>
-            <div className="flex items-center gap-3">
-              <Calendar className="w-4 h-4 text-blue-500" />
-              <span>「チームミーティング」をスケジュールに追加しました</span>
-              <span className="text-xs">5時間前</span>
+            {todaysEvents.length === 0 ? (
+              <p className="text-muted-foreground text-sm">今日のイベントはありません</p>
+            ) : (
+              <div className="space-y-3">
+                {todaysEvents.slice(0, 3).map((event) => (
+                  <div key={event.id} className="flex items-center gap-3 p-2 rounded-lg bg-green-50 dark:bg-green-900/20">
+                    <Calendar className="w-4 h-4 text-green-500" />
+                    <div className="flex-1">
+                      <div className="font-medium text-sm">{event.title}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {event.allDay ? '終日' : format(new Date(event.startDate), 'HH:mm')}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+
+          {/* 最近のノート */}
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-foreground">
+                最近のノート
+              </h2>
+              <Link href="/notes" className="text-purple-600 hover:text-purple-700 text-sm">
+                全て見る →
+              </Link>
             </div>
-            <div className="flex items-center gap-3">
-              <FileText className="w-4 h-4 text-purple-500" />
-              <span>「アイデアメモ」を作成しました</span>
-              <span className="text-xs">1日前</span>
+            {recentNotes.length === 0 ? (
+              <p className="text-muted-foreground text-sm">ノートがありません</p>
+            ) : (
+              <div className="space-y-3">
+                {recentNotes.map((note) => (
+                  <div key={note.id} className="flex items-start gap-3 p-2 rounded-lg bg-purple-50 dark:bg-purple-900/20">
+                    <FileText className="w-4 h-4 text-purple-500 mt-0.5" />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm truncate">{note.title}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {format(new Date(note.updatedAt), 'M/d HH:mm')}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+
+        {/* TODO進捗サマリー */}
+        {todos.length > 0 && (
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-foreground">
+                TODO進捗サマリー
+              </h2>
+              <Link href="/todos" className="text-blue-600 hover:text-blue-700 text-sm">
+                全て見る →
+              </Link>
             </div>
-          </div>
-        </Card>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600">{todos.length}</div>
+                <div className="text-sm text-muted-foreground">総タスク数</div>
+              </div>
+              <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-orange-600">{incompleteTodos.length}</div>
+                <div className="text-sm text-muted-foreground">未完了</div>
+              </div>
+              <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div className="text-2xl font-bold text-green-600">{completionRate}%</div>
+                <div className="text-sm text-muted-foreground">完了率</div>
+              </div>
+            </div>
+          </Card>
+        )}
       </div>
     </AppLayout>
   );
