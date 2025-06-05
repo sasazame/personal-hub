@@ -5,7 +5,8 @@ Personal Hub - 個人生産性向上アプリケーション
 - **技術スタック**: Next.js 15+ (App Router), React 19, TypeScript, Tailwind CSS
 - **状態管理**: TanStack Query + React Hook Form
 - **テスト**: Jest, React Testing Library, Playwright
-- **機能**: TODO管理、カレンダー、メモ、統合ダッシュボード
+- **主要機能**: TODO管理（✅完成）、カレンダー（✅完成）、メモ（✅完成）、統合ダッシュボード（✅完成）
+- **開発予定**: 分析機能、PWA対応、外部連携
 - **目的**: 日常業務の一元管理と生産性向上
 
 ## 開発フロー（重要）
@@ -80,15 +81,24 @@ gh pr create --title "機能タイトル" --body "詳細説明" --assignee sasaz
 ## プロジェクト構造
 ```
 src/
-├── app/                 # App Router pages
+├── app/                    # App Router pages
+│   ├── dashboard/         # ダッシュボード（✅完成）
+│   ├── todos/             # TODO管理（✅完成）
+│   ├── calendar/          # カレンダー（✅完成）
+│   ├── notes/             # メモ機能（✅完成）
+│   └── analytics/         # 分析機能（開発予定）
 ├── components/
-│   ├── ui/             # 基本UIコンポーネント
-│   └── features/       # 機能別コンポーネント
-├── hooks/              # カスタムフック
-├── lib/                # 外部ライブラリ設定
-├── services/           # API通信
-├── types/              # 共通型定義
-└── utils/              # ユーティリティ
+│   ├── ui/                # 基本UIコンポーネント
+│   ├── todos/             # TODO関連コンポーネント（✅完成）
+│   ├── calendar/          # カレンダー関連（✅完成）
+│   ├── notes/             # メモ関連（✅完成）
+│   ├── auth/              # 認証関連
+│   └── layout/            # レイアウト
+├── hooks/                 # カスタムフック（✅包括的実装）
+├── lib/                   # 外部ライブラリ設定
+├── services/              # API通信・モックサービス（✅完成）
+├── types/                 # 型定義（✅完成）
+└── utils/                 # ユーティリティ
 ```
 
 ## コミット規約

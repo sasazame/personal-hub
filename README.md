@@ -14,12 +14,12 @@
 - **ツール**: ESLint, Prettier, Turbopack
 
 ### 主な機能
-- ✅ **TODO管理**: CRUD操作、ステータス管理、優先度設定
-- 🗓️ **カレンダー**: イベント管理、スケジュール表示
-- 📝 **メモ機能**: ノート作成・編集、カテゴリ分類
-- 📊 **ダッシュボード**: 統合ビュー、進捗状況、分析
-- 👤 **ユーザー管理**: プロフィール、認証、設定
-- 🎨 **UI/UX**: レスポンシブ、ダークモード、アクセシビリティ対応
+- ✅ **TODO管理**: CRUD操作、ステータス管理、優先度設定、親子タスク
+- ✅ **カレンダー**: イベント管理、月間表示、カラー分類、終日/時間指定
+- ✅ **メモ機能**: リッチエディタ、カテゴリ・タグ分類、ピン留め、検索
+- ✅ **ダッシュボード**: リアルタイム統合ビュー、進捗状況、分析
+- ✅ **ユーザー管理**: プロフィール、認証、設定
+- ✅ **UI/UX**: レスポンシブ、ダークモード、アクセシビリティ対応
 
 ## ⚡ クイックスタート
 
@@ -132,10 +132,11 @@ src/
 ```
 
 ### モジュール設計
-- **todos/**: TODO機能の完全実装
-- **calendar/**: イベント・スケジュール管理
-- **notes/**: メモ・ノート機能
-- **dashboard/**: 統合ビュー・分析
+- **todos/**: TODO機能（完全実装済み）
+- **calendar/**: カレンダー・イベント管理（完全実装済み）
+- **notes/**: メモ・ノート機能（完全実装済み）
+- **dashboard/**: リアルタイム統合ダッシュボード（完全実装済み）
+- **analytics/**: 分析・レポート機能（開発予定）
 - **shared/**: 共通コンポーネント・ユーティリティ
 
 ## 🧪 テスト
@@ -173,11 +174,21 @@ export function useTodos(status?: TodoStatus) {
   });
 }
 
-// hooks/useCalendarEvents.ts
-export function useCalendarEvents(date: Date) {
+// hooks/useCalendar.ts
+export function useAllCalendarEvents() {
   return useQuery({
-    queryKey: ['calendar', 'events', format(date, 'yyyy-MM')],
-    queryFn: () => calendarApi.getEvents({ date }),
+    queryKey: ['calendar', 'events', 'all'],
+    queryFn: () => calendarService.getAllEvents(),
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+// hooks/useNotes.ts
+export function useNotes(filters?: NoteFilters) {
+  return useQuery({
+    queryKey: ['notes', filters],
+    queryFn: () => notesService.getNotes(filters),
+    staleTime: 1000 * 60 * 5,
   });
 }
 ```
@@ -198,25 +209,30 @@ export function useCalendarEvents(date: Date) {
 ## 🚧 開発ロードマップ
 
 ### Phase 1: 基盤整備 ✅
-- [x] プロジェクト構成
-- [x] TODO機能移植
-- [x] 認証システム
-- [x] 基本UI コンポーネント
+- [x] プロジェクト構成・アーキテクチャ設計
+- [x] TODO機能の完全実装
+- [x] 認証システム・ユーザー管理
+- [x] 基本UI コンポーネントライブラリ
+- [x] TypeScript型安全性・テスト基盤
 
-### Phase 2: 新機能開発 🚧
-- [ ] カレンダー機能実装
-- [ ] メモ機能実装
-- [ ] ダッシュボード開発
+### Phase 2: 新機能開発 ✅
+- [x] カレンダー機能（月間ビュー、イベント管理）
+- [x] メモ機能（リッチエディタ、カテゴリ・タグ）
+- [x] ダッシュボード（リアルタイム統合表示）
+- [x] 機能間データ連携
+- [x] 包括的テストカバレッジ
 
-### Phase 3: 統合・最適化
-- [ ] 機能間連携
+### Phase 3: 最適化・拡張 🚧
+- [ ] 分析・レポート機能
+- [ ] 高度な検索・フィルタリング
 - [ ] パフォーマンス最適化
 - [ ] PWA対応
 
-### Phase 4: 拡張機能
-- [ ] データエクスポート
-- [ ] 高度な分析機能
-- [ ] 外部API連携
+### Phase 4: エンタープライズ機能
+- [ ] データエクスポート・インポート
+- [ ] 外部カレンダー連携（Google Calendar）
+- [ ] 通知・リマインダーシステム
+- [ ] チーム機能・共有
 
 ## 📝 開発ガイドライン
 
