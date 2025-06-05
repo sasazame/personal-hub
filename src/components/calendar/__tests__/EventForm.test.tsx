@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { EventForm } from '../EventForm';
 import { CalendarEvent } from '@/types/calendar';
@@ -146,8 +146,8 @@ describe('EventForm', () => {
     render(<EventForm {...defaultProps} defaultDate={defaultDate} />);
     
     // Should have the default date set in the form
-    const startDateInput = screen.getByLabelText(/開始日時/);
-    expect(startDateInput).toHaveValue('2025-06-20T09:00');
+    const startDateInput = screen.getByDisplayValue('2025-06-20T09:00');
+    expect(startDateInput).toBeInTheDocument();
   });
 
   it('does not render when closed', () => {

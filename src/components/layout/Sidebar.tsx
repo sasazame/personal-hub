@@ -30,27 +30,27 @@ export function Sidebar() {
   const navItems: NavItem[] = [
     {
       href: '/dashboard',
-      label: 'Dashboard',
+      label: t('nav.dashboard'),
       icon: <Home className="h-5 w-5" />
     },
     {
       href: '/todos',
-      label: 'TODO',
+      label: t('nav.todos'),
       icon: <CheckSquare className="h-5 w-5" />
     },
     {
       href: '/calendar',
-      label: 'Calendar',
+      label: t('nav.calendar'),
       icon: <Calendar className="h-5 w-5" />
     },
     {
       href: '/notes',
-      label: 'Notes',
+      label: t('nav.notes'),
       icon: <FileText className="h-5 w-5" />
     },
     {
       href: '/analytics',
-      label: 'Analytics',
+      label: t('nav.analytics'),
       icon: <BarChart3 className="h-5 w-5" />
     },
   ];

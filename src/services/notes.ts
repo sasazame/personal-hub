@@ -115,7 +115,7 @@ const mockNotes: Note[] = [
   },
 ];
 
-let notes = [...mockNotes];
+const notes = [...mockNotes];
 let nextId = 5;
 
 // Simulate API delays

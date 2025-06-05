@@ -9,7 +9,7 @@ import { useAllCalendarEvents, useCreateCalendarEvent, useUpdateCalendarEvent, u
 import { CalendarEvent, CreateCalendarEventDto, UpdateCalendarEventDto } from '@/types/calendar';
 import { showSuccess, showError } from '@/components/ui/toast';
 import { format, addMonths, subMonths } from 'date-fns';
-import { ChevronLeft, ChevronRight, Plus, Trash2, Edit } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 
 function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());

@@ -16,9 +16,7 @@ import {
   FileText, 
   BarChart3,
   Plus,
-  ArrowRight,
-  Clock,
-  TrendingUp
+  ArrowRight
 } from 'lucide-react';
 
 function DashboardPage() {
@@ -83,7 +81,7 @@ function DashboardPage() {
         {/* ヘッダー */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold text-foreground">
-            Welcome to Personal Hub
+            {t('dashboard.welcome')}
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             あなたの生産性を向上させる統合ワークスペースです。
@@ -144,14 +142,14 @@ function DashboardPage() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-foreground">
-                今日のイベント
+                {t('dashboard.todayEvents')}
               </h2>
               <Link href="/calendar" className="text-green-600 hover:text-green-700 text-sm">
-                全て見る →
+                {t('dashboard.viewAll')} →
               </Link>
             </div>
             {todaysEvents.length === 0 ? (
-              <p className="text-muted-foreground text-sm">今日のイベントはありません</p>
+              <p className="text-muted-foreground text-sm">{t('dashboard.noEvents')}</p>
             ) : (
               <div className="space-y-3">
                 {todaysEvents.slice(0, 3).map((event) => (

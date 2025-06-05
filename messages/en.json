@@ -27,8 +27,11 @@
   },
   "nav": {
     "home": "Home",
+    "dashboard": "Dashboard",
     "todos": "TODOs",
     "calendar": "Calendar",
+    "notes": "Notes",
+    "analytics": "Analytics",
     "tags": "Tags",
     "starred": "Starred",
     "archive": "Archive",
@@ -178,5 +181,47 @@
       "number": "One number",
       "special": "One special character"
     }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to Personal Hub",
+    "todayEvents": "Today's Events",
+    "recentNotes": "Recent Notes",
+    "todoProgress": "TODO Progress",
+    "viewAll": "View All",
+    "noEvents": "No events scheduled for today",
+    "noNotes": "No recent notes",
+    "features": {
+      "todos": "Manage TODOs",
+      "calendar": "Check Schedule",
+      "notes": "Record Notes",
+      "analytics": "Analyze Progress"
+    }
+  },
+  "calendar": {
+    "title": "Calendar",
+    "events": "Events",
+    "addEvent": "Add Event",
+    "editEvent": "Edit Event",
+    "deleteEvent": "Delete Event",
+    "eventTitle": "Title",
+    "eventDescription": "Description",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "allDay": "All Day",
+    "color": "Color",
+    "noEvents": "No events"
+  },
+  "notes": {
+    "title": "Notes",
+    "addNote": "Add Note",
+    "editNote": "Edit Note",
+    "deleteNote": "Delete Note",
+    "noteTitle": "Title",
+    "noteContent": "Content",
+    "category": "Category",
+    "tags": "Tags",
+    "pinned": "Pinned",
+    "noNotes": "No notes"
   }
 }

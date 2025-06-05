@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Dashboard from '../page';
 import * as AuthContextModule from '@/contexts/AuthContext';
-import { mockUser } from '@/lib/__mocks__/api';
+// import { mockUser } from '@/lib/__mocks__/api';
 
 // Mock the hooks
 jest.mock('@/hooks/useCalendar', () => ({
@@ -95,9 +95,19 @@ jest.mock('next-intl', () => ({
 }));
 
 const mockAuthContext = {
-  user: mockUser,
+  user: { 
+    id: 1, 
+    username: 'testuser', 
+    email: 'test@example.com',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
   login: jest.fn(),
+  register: jest.fn(),
   logout: jest.fn(),
+  clearError: jest.fn(),
+  checkAuth: jest.fn(),
+  isAuthenticated: true,
   isLoading: false,
   error: null,
 };

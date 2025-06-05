@@ -37,7 +37,7 @@ const mockEvents: CalendarEvent[] = [
   },
 ];
 
-let events = [...mockEvents];
+const events = [...mockEvents];
 let nextId = 4;
 
 // Simulate API delays

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Note, CreateNoteDto, UpdateNoteDto } from '@/types/note';
+import { Note, CreateNoteDto } from '@/types/note';
 import { Button, Input, TextArea, Modal } from '@/components/ui';
 import { X, Plus, Pin } from 'lucide-react';
 

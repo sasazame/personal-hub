@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { CalendarEvent, CreateCalendarEventDto, UpdateCalendarEventDto } from '@/types/calendar';
+import { CreateCalendarEventDto, UpdateCalendarEventDto } from '@/types/calendar';
 import { calendarService } from '@/services/calendar';
 
 export function useCalendarEvents(year: number, month: number) {

@@ -27,8 +27,11 @@
   },
   "nav": {
     "home": "ホーム",
+    "dashboard": "ダッシュボード",
     "todos": "TODO",
     "calendar": "カレンダー",
+    "notes": "メモ",
+    "analytics": "分析",
     "tags": "タグ",
     "starred": "スター付き",
     "archive": "アーカイブ",
@@ -178,5 +181,47 @@
       "number": "数字を1文字以上",
       "special": "特殊文字を1文字以上"
     }
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "welcome": "Personal Hubへようこそ",
+    "todayEvents": "今日のイベント",
+    "recentNotes": "最近のメモ",
+    "todoProgress": "TODOの進捗",
+    "viewAll": "全て見る",
+    "noEvents": "今日の予定はありません",
+    "noNotes": "最近のメモはありません",
+    "features": {
+      "todos": "TODOを管理",
+      "calendar": "予定を確認",
+      "notes": "メモを記録",
+      "analytics": "進捗を分析"
+    }
+  },
+  "calendar": {
+    "title": "カレンダー",
+    "events": "イベント",
+    "addEvent": "イベントを追加",
+    "editEvent": "イベントを編集",
+    "deleteEvent": "イベントを削除",
+    "eventTitle": "タイトル",
+    "eventDescription": "説明",
+    "startDate": "開始日時",
+    "endDate": "終了日時",
+    "allDay": "終日",
+    "color": "色",
+    "noEvents": "イベントがありません"
+  },
+  "notes": {
+    "title": "メモ",
+    "addNote": "メモを追加",
+    "editNote": "メモを編集",
+    "deleteNote": "メモを削除",
+    "noteTitle": "タイトル",
+    "noteContent": "内容",
+    "category": "カテゴリ",
+    "tags": "タグ",
+    "pinned": "ピン留め",
+    "noNotes": "メモがありません"
   }
 }

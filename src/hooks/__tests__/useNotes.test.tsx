@@ -31,11 +31,13 @@ const createWrapper = () => {
     },
   });
 
-  const Wrapper = ({ children }: { children: ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
-  );
+  const Wrapper = ({ children }: { children: ReactNode }) => {
+    return (
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    );
+  };
   
   return Wrapper;
 };

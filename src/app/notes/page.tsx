@@ -8,10 +8,10 @@ import { NoteList, NoteForm, NoteViewer } from '@/components/notes';
 import { useNotes, useCreateNote, useUpdateNote, useDeleteNote, useToggleNotePin, useNoteCategories } from '@/hooks/useNotes';
 import { Note, CreateNoteDto, UpdateNoteDto, NoteFilters } from '@/types/note';
 import { showSuccess, showError } from '@/components/ui/toast';
-import { Plus, Search, Filter, Pin, Grid, List } from 'lucide-react';
+import { Plus, Search, Pin } from 'lucide-react';
 
 function NotesPage() {
-  const [filters, setFilters] = useState<NoteFilters>({});
+  const [filters] = useState<NoteFilters>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
