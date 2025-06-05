@@ -8,13 +8,12 @@ import { cn } from '@/lib/cn';
 import { 
   Home, 
   CheckSquare, 
-  Archive, 
   Settings, 
   ChevronLeft,
   ChevronRight,
   Calendar,
-  Tag,
-  Star
+  FileText,
+  BarChart3
 } from 'lucide-react';
 
 interface NavItem {
@@ -30,47 +29,42 @@ export function Sidebar() {
 
   const navItems: NavItem[] = [
     {
-      href: '/',
-      label: t('nav.home'),
+      href: '/dashboard',
+      label: 'Dashboard',
       icon: <Home className="h-5 w-5" />
     },
     {
       href: '/todos',
-      label: t('nav.todos'),
+      label: 'TODO',
       icon: <CheckSquare className="h-5 w-5" />
     },
     {
       href: '/calendar',
-      label: t('nav.calendar'),
+      label: 'Calendar',
       icon: <Calendar className="h-5 w-5" />
     },
     {
-      href: '/tags',
-      label: t('nav.tags'),
-      icon: <Tag className="h-5 w-5" />
+      href: '/notes',
+      label: 'Notes',
+      icon: <FileText className="h-5 w-5" />
     },
     {
-      href: '/starred',
-      label: t('nav.starred'),
-      icon: <Star className="h-5 w-5" />
-    },
-    {
-      href: '/archive',
-      label: t('nav.archive'),
-      icon: <Archive className="h-5 w-5" />
+      href: '/analytics',
+      label: 'Analytics',
+      icon: <BarChart3 className="h-5 w-5" />
     },
   ];
 
   const bottomNavItems: NavItem[] = [
     {
-      href: '/settings',
-      label: t('nav.settings'),
+      href: '/profile',
+      label: 'Profile',
       icon: <Settings className="h-5 w-5" />
     },
   ];
 
   const isActive = (href: string) => {
-    if (href === '/') return pathname === href;
+    if (href === '/dashboard') return pathname === '/' || pathname === '/dashboard';
     return pathname.startsWith(href);
   };
 
