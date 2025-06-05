@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Dashboard from '../page';
 import * as AuthContextModule from '@/contexts/AuthContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 // import { mockUser } from '@/lib/__mocks__/api';
 
 // Mock the hooks
@@ -122,9 +123,11 @@ const renderWithProviders = (component: React.ReactElement) => {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <AuthContextModule.AuthContext.Provider value={mockAuthContext}>
-        {component}
-      </AuthContextModule.AuthContext.Provider>
+      <ThemeProvider>
+        <AuthContextModule.AuthContext.Provider value={mockAuthContext}>
+          {component}
+        </AuthContextModule.AuthContext.Provider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };

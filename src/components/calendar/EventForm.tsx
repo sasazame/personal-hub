@@ -68,10 +68,7 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
   const allDay = watch('allDay');
 
   const handleFormSubmit = (data: EventFormData) => {
-    onSubmit({
-      ...data,
-      color: selectedColor,
-    });
+    onSubmit(data);
     reset();
     onClose();
   };

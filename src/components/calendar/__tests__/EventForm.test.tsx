@@ -112,6 +112,21 @@ describe('EventForm', () => {
     
     await user.type(screen.getByPlaceholderText('イベントタイトル'), 'Test');
     
+    // Fill in required start and end dates using name attributes
+    const inputs = screen.getAllByRole('textbox');
+    const startDateInput = inputs.find(input => input.getAttribute('name') === 'startDate') as HTMLInputElement;
+    const endDateInput = inputs.find(input => input.getAttribute('name') === 'endDate') as HTMLInputElement;
+    
+    if (startDateInput) {
+      await user.clear(startDateInput);
+      await user.type(startDateInput, '2025-06-15T09:00');
+    }
+    
+    if (endDateInput) {
+      await user.clear(endDateInput);
+      await user.type(endDateInput, '2025-06-15T10:00');
+    }
+    
     const submitButton = screen.getByText('作成');
     await user.click(submitButton);
     
