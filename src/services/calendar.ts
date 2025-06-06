@@ -1,44 +1,7 @@
 import { CalendarEvent, CreateCalendarEventDto, UpdateCalendarEventDto } from '@/types/calendar';
 
-// Mock data for development
-const mockEvents: CalendarEvent[] = [
-  {
-    id: 1,
-    title: 'チームミーティング',
-    description: '週次の進捗確認会議',
-    startDate: new Date(2025, 5, 10, 9, 0).toISOString(),
-    endDate: new Date(2025, 5, 10, 10, 0).toISOString(),
-    allDay: false,
-    color: 'blue',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 2,
-    title: 'プロジェクト締切',
-    description: '新機能のリリース予定日',
-    startDate: new Date(2025, 5, 15).toISOString(),
-    endDate: new Date(2025, 5, 15).toISOString(),
-    allDay: true,
-    color: 'red',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 3,
-    title: 'プレゼンテーション',
-    description: '四半期レビュー発表',
-    startDate: new Date(2025, 5, 20, 14, 0).toISOString(),
-    endDate: new Date(2025, 5, 20, 15, 30).toISOString(),
-    allDay: false,
-    color: 'green',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
-
-const events = [...mockEvents];
-let nextId = 4;
+const events: CalendarEvent[] = [];
+let nextId = 1;
 
 // Simulate API delays
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
