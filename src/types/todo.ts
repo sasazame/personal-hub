@@ -6,6 +6,9 @@ export interface Todo {
   priority: 'LOW' | 'MEDIUM' | 'HIGH';
   dueDate?: string;
   parentId?: number | null;
+  isRepeatable?: boolean;
+  repeatConfig?: RepeatConfig | null;
+  originalTodoId?: number | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -17,6 +20,8 @@ export interface CreateTodoDto {
   priority?: 'LOW' | 'MEDIUM' | 'HIGH';
   dueDate?: string;
   parentId?: number | null;
+  isRepeatable?: boolean;
+  repeatConfig?: RepeatConfig | null;
 }
 
 export interface UpdateTodoDto {
@@ -26,10 +31,21 @@ export interface UpdateTodoDto {
   priority?: 'LOW' | 'MEDIUM' | 'HIGH';
   dueDate?: string;
   parentId?: number | null;
+  isRepeatable?: boolean;
+  repeatConfig?: RepeatConfig | null;
 }
 
 export type TodoStatus = 'TODO' | 'IN_PROGRESS' | 'DONE';
 export type TodoPriority = 'LOW' | 'MEDIUM' | 'HIGH';
+export type RepeatType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY' | 'ONCE';
+
+export interface RepeatConfig {
+  repeatType: RepeatType;
+  interval?: number;
+  daysOfWeek?: number[] | null;
+  dayOfMonth?: number | null;
+  endDate?: string | null;
+}
 
 export interface PaginationParams {
   page?: number;

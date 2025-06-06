@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Todo, UpdateTodoDto } from '@/types/todo';
 import { todoApi } from '@/lib/api';
 import { Button } from '@/components/ui';
-import { Check, ChevronDown, ChevronRight, Edit2 } from 'lucide-react';
+import { Check, ChevronDown, ChevronRight, Edit2, Repeat, Link } from 'lucide-react';
 import { showSuccess } from '@/components/ui/toast';
 
 interface TodoItemProps {
@@ -116,9 +116,17 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
                     )}
                   </button>
                 )}
-                <h3 className={`text-lg font-semibold ${todo.status === 'DONE' ? 'line-through text-muted-foreground' : 'text-card-foreground'}`}>
-                  {todo.title}
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className={`text-lg font-semibold ${todo.status === 'DONE' ? 'line-through text-muted-foreground' : 'text-card-foreground'}`}>
+                    {todo.title}
+                  </h3>
+                  {todo.isRepeatable && (
+                    <Repeat className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  )}
+                  {todo.originalTodoId && (
+                    <Link className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  )}
+                </div>
               </div>
               <div className="flex gap-2">
                 <span

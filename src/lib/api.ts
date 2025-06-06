@@ -77,6 +77,22 @@ export const todoApi = {
     const response = await api.get<Todo[]>(`/todos/${parentId}/children`);
     return response.data;
   },
+
+  // Recurring tasks API
+  getRepeatable: async (): Promise<Todo[]> => {
+    const response = await api.get<Todo[]>('/todos/repeatable');
+    return response.data;
+  },
+
+  getInstances: async (originalTodoId: number): Promise<Todo[]> => {
+    const response = await api.get<Todo[]>(`/todos/${originalTodoId}/instances`);
+    return response.data;
+  },
+
+  generateInstances: async (): Promise<Todo[]> => {
+    const response = await api.post<Todo[]>('/todos/repeat/generate');
+    return response.data;
+  },
 };
 
 export default api;
