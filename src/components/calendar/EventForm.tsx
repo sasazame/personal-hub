@@ -26,6 +26,7 @@ interface EventFormProps {
   event?: CalendarEvent;
   defaultDate?: Date;
   isSubmitting?: boolean;
+  onDelete?: () => void;
 }
 
 const colorOptions = [
@@ -36,7 +37,7 @@ const colorOptions = [
   { value: 'orange', label: 'オレンジ', class: 'bg-orange-500' },
 ];
 
-export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSubmitting }: EventFormProps) {
+export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSubmitting, onDelete }: EventFormProps) {
   const [selectedColor, setSelectedColor] = useState(event?.color || 'blue');
   
   const {
@@ -177,21 +178,33 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
           )}
         </div>
 
-        <div className="flex gap-3 justify-end pt-4 border-t border-border">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={handleClose}
-            disabled={isSubmitting}
-          >
-            キャンセル
-          </Button>
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? '保存中...' : event ? '更新' : '作成'}
-          </Button>
+        <div className="flex gap-3 justify-between pt-4 border-t border-border">
+          {event && onDelete && (
+            <Button
+              type="button"
+              variant="danger"
+              onClick={onDelete}
+              disabled={isSubmitting}
+            >
+              削除
+            </Button>
+          )}
+          <div className="flex gap-3 ml-auto">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleClose}
+              disabled={isSubmitting}
+            >
+              キャンセル
+            </Button>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? '保存中...' : event ? '更新' : '作成'}
+            </Button>
+          </div>
         </div>
       </form>
     </Modal>
