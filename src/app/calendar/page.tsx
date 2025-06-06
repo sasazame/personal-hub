@@ -175,6 +175,7 @@ function CalendarPage() {
           event={selectedEvent || undefined}
           defaultDate={selectedDate || undefined}
           isSubmitting={createMutation.isPending || updateMutation.isPending}
+          onDelete={selectedEvent ? () => setEventToDelete(selectedEvent) : undefined}
         />
 
         {/* Delete Confirmation Modal */}
