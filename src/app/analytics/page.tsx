@@ -2,8 +2,6 @@
 
 import { AuthGuard } from '@/components/auth';
 import { AppLayout } from '@/components/layout';
-import { Card } from '@/components/ui';
-import { BarChart3 } from 'lucide-react';
 
 function AnalyticsPage() {
   return (

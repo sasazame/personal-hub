@@ -139,9 +139,9 @@ describe('NoteList', () => {
     const deleteButton = noteCard.querySelector('button[title="削除"]') as HTMLElement;
     const pinButton = noteCard.querySelector('button[title="ピン留め"]') as HTMLElement;
     
-    expect(editButtons.length).toBeGreaterThan(0);
-    expect(deleteButtons.length).toBeGreaterThan(0);
-    expect(pinButtons.length).toBeGreaterThan(0);
+    expect(editButton).toBeInTheDocument();
+    expect(deleteButton).toBeInTheDocument();
+    expect(pinButton).toBeInTheDocument();
   });
 
   it('calls onTogglePin when pin button is clicked', async () => {
@@ -212,8 +212,8 @@ describe('NoteList', () => {
     const regularNoteCard = screen.getByText('Regular Note').closest('.cursor-pointer')!;
     const pinButton = regularNoteCard.querySelector('button[title="ピン留め"]') as HTMLElement;
     
-    expect(unpinButtons.length).toBeGreaterThan(0);
-    expect(pinButtons.length).toBeGreaterThan(0);
+    expect(unpinButton).toBeInTheDocument();
+    expect(pinButton).toBeInTheDocument();
   });
 
   it('displays creation and update dates', () => {
