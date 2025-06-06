@@ -31,14 +31,26 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
 
   // Mutation for quick status toggle
   const toggleStatusMutation = useMutation({
-    mutationFn: (newStatus: Todo['status']) => {
+    mutationFn: async (newStatus: Todo['status']) => {
       const updateData: UpdateTodoDto = {
         status: newStatus,
       };
-      return todoApi.update(todo.id, updateData);
+      const updatedTodo = await todoApi.update(todo.id, updateData);
+      
+      // If this is a recurring task instance being completed, generate new instances
+      if (newStatus === 'DONE' && todo.originalTodoId) {
+        try {
+          await todoApi.generateInstances();
+        } catch (error) {
+          console.warn('Failed to generate new recurring task instances:', error);
+        }
+      }
+      
+      return updatedTodo;
     },
     onSuccess: (updatedTodo) => {
       queryClient.invalidateQueries({ queryKey: ['todos'] });
+      queryClient.invalidateQueries({ queryKey: ['recurring-tasks'] });
       showSuccess(updatedTodo.status === 'DONE' ? t('todo.todoCompleted') : t('todo.todoUpdated'));
     },
   });

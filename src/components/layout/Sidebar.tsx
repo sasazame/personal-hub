@@ -13,8 +13,7 @@ import {
   ChevronRight,
   Calendar,
   FileText,
-  BarChart3,
-  Repeat
+  BarChart3
 } from 'lucide-react';
 
 interface NavItem {
@@ -38,11 +37,6 @@ export function Sidebar() {
       href: '/todos',
       label: t('nav.todos'),
       icon: <CheckSquare className="h-5 w-5" />
-    },
-    {
-      href: '/recurring-tasks',
-      label: '繰り返しタスク',
-      icon: <Repeat className="h-5 w-5" />
     },
     {
       href: '/calendar',

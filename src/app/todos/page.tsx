@@ -62,10 +62,23 @@ function TodoApp() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateTodoDto }) => 
-      todoApi.update(id, data),
+    mutationFn: async ({ id, data }: { id: number; data: UpdateTodoDto }) => {
+      const updatedTodo = await todoApi.update(id, data);
+      
+      // If this is a recurring task instance being completed, generate new instances
+      if (data.status === 'DONE' && editingTodo?.originalTodoId) {
+        try {
+          await todoApi.generateInstances();
+        } catch (error) {
+          console.warn('Failed to generate new recurring task instances:', error);
+        }
+      }
+      
+      return updatedTodo;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['todos'] });
+      queryClient.invalidateQueries({ queryKey: ['recurring-tasks'] });
       setEditingTodo(null);
       showSuccess(t('todo.todoUpdated'));
     },

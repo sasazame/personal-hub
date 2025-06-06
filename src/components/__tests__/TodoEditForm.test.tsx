@@ -129,6 +129,8 @@ describe('TodoEditForm', () => {
         status: 'DONE',
         priority: 'HIGH',
         dueDate: '2024-12-31',
+        isRepeatable: false,
+        repeatConfig: null,
       });
     });
   });
