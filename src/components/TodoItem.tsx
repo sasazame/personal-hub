@@ -35,6 +35,7 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
       const updateData: UpdateTodoDto = {
         status: newStatus,
       };
+      
       const updatedTodo = await todoApi.update(todo.id, updateData);
       
       // If this is a recurring task instance being completed, generate new instances
@@ -53,9 +54,14 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
       queryClient.invalidateQueries({ queryKey: ['recurring-tasks'] });
       showSuccess(updatedTodo.status === 'DONE' ? t('todo.todoCompleted') : t('todo.todoUpdated'));
     },
+    onError: (error) => {
+      console.error('Failed to update todo status:', error);
+    },
   });
 
-  const handleToggleComplete = () => {
+  const handleToggleComplete = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event bubbling
+    
     const newStatus = todo.status === 'DONE' ? 'TODO' : 'DONE';
     toggleStatusMutation.mutate(newStatus);
   };
@@ -97,14 +103,16 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
             onMouseLeave={() => setIsHoveringCheckbox(false)}
             disabled={toggleStatusMutation.isPending}
             className={`
-              mt-1 w-5 h-5 rounded border-2 transition-all duration-200 flex items-center justify-center
+              mt-1 w-5 h-5 rounded border-2 transition-all duration-200 flex items-center justify-center cursor-pointer
               ${todo.status === 'DONE' 
                 ? 'bg-primary border-primary text-primary-foreground' 
-                : 'border-muted-foreground/50 hover:border-primary'
+                : 'border-muted-foreground/50 hover:border-primary hover:bg-primary/10'
               }
-              ${toggleStatusMutation.isPending ? 'opacity-50' : ''}
+              ${toggleStatusMutation.isPending ? 'opacity-50 cursor-not-allowed' : ''}
+              ${toggleStatusMutation.isPending ? 'animate-pulse' : ''}
             `}
             aria-label={todo.status === 'DONE' ? t('todo.markIncomplete') : t('todo.markComplete')}
+            title={todo.status === 'DONE' ? t('todo.markIncomplete') : t('todo.markComplete')}
           >
             {(todo.status === 'DONE' || isHoveringCheckbox) && (
               <Check className="w-3 h-3" strokeWidth={3} />
