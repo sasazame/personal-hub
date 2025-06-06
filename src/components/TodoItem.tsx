@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Todo, UpdateTodoDto } from '@/types/todo';
 import { todoApi } from '@/lib/api';
 import { Button } from '@/components/ui';
-import { Check, ChevronDown, ChevronRight, Edit2 } from 'lucide-react';
+import { Check, ChevronDown, ChevronRight, Edit2, Repeat, Link } from 'lucide-react';
 import { showSuccess } from '@/components/ui/toast';
 
 interface TodoItemProps {
@@ -31,14 +31,26 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
 
   // Mutation for quick status toggle
   const toggleStatusMutation = useMutation({
-    mutationFn: (newStatus: Todo['status']) => {
+    mutationFn: async (newStatus: Todo['status']) => {
       const updateData: UpdateTodoDto = {
         status: newStatus,
       };
-      return todoApi.update(todo.id, updateData);
+      const updatedTodo = await todoApi.update(todo.id, updateData);
+      
+      // If this is a recurring task instance being completed, generate new instances
+      if (newStatus === 'DONE' && todo.originalTodoId) {
+        try {
+          await todoApi.generateInstances();
+        } catch (error) {
+          console.warn('Failed to generate new recurring task instances:', error);
+        }
+      }
+      
+      return updatedTodo;
     },
     onSuccess: (updatedTodo) => {
       queryClient.invalidateQueries({ queryKey: ['todos'] });
+      queryClient.invalidateQueries({ queryKey: ['recurring-tasks'] });
       showSuccess(updatedTodo.status === 'DONE' ? t('todo.todoCompleted') : t('todo.todoUpdated'));
     },
   });
@@ -116,9 +128,17 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
                     )}
                   </button>
                 )}
-                <h3 className={`text-lg font-semibold ${todo.status === 'DONE' ? 'line-through text-muted-foreground' : 'text-card-foreground'}`}>
-                  {todo.title}
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className={`text-lg font-semibold ${todo.status === 'DONE' ? 'line-through text-muted-foreground' : 'text-card-foreground'}`}>
+                    {todo.title}
+                  </h3>
+                  {todo.isRepeatable && (
+                    <Repeat className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  )}
+                  {todo.originalTodoId && (
+                    <Link className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  )}
+                </div>
               </div>
               <div className="flex gap-2">
                 <span
