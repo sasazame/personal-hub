@@ -81,7 +81,8 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
 
   return (
     <Modal open={isOpen} onClose={handleClose}>
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+      <div className="p-6">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
         <div>
           <h2 className="text-xl font-semibold text-foreground mb-4">
             {event ? 'イベントを編集' : '新しいイベント'}
@@ -206,7 +207,8 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
             </Button>
           </div>
         </div>
-      </form>
+        </form>
+      </div>
     </Modal>
   );
 }

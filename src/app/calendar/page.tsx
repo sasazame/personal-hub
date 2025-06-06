@@ -181,7 +181,7 @@ function CalendarPage() {
         {/* Delete Confirmation Modal */}
         {eventToDelete && (
           <Modal open={true} onClose={() => setEventToDelete(null)}>
-            <div className="space-y-4">
+            <div className="p-6 space-y-4">
               <h2 className="text-xl font-semibold text-foreground">イベントを削除</h2>
               <p className="text-muted-foreground">
                 「{eventToDelete.title}」を削除してもよろしいですか？

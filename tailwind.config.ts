@@ -94,6 +94,9 @@ const config: Config = {
         sans: ['var(--font-family-sans)'],
         mono: ['var(--font-family-mono)'],
       },
+      zIndex: {
+        modal: '1040',
+      },
     },
   },
   plugins: [],
