@@ -19,7 +19,7 @@ export function NoteViewer({ note, isOpen, onClose, onEdit, onDelete, onTogglePi
 
   return (
     <Modal open={isOpen} onClose={onClose} size="lg">
-      <div className="space-y-6">
+      <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex-1">

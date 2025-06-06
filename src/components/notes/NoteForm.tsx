@@ -114,7 +114,8 @@ export function NoteForm({ isOpen, onClose, onSubmit, note, isSubmitting }: Note
 
   return (
     <Modal open={isOpen} onClose={handleClose} size="lg">
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+      <div className="p-6">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-foreground">
             {note ? 'ノートを編集' : '新しいノート'}
@@ -243,7 +244,8 @@ export function NoteForm({ isOpen, onClose, onSubmit, note, isSubmitting }: Note
             {isSubmitting ? '保存中...' : note ? '更新' : '作成'}
           </Button>
         </div>
-      </form>
+        </form>
+      </div>
     </Modal>
   );
 }
