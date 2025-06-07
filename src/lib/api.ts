@@ -93,6 +93,11 @@ export const todoApi = {
     const response = await api.post<Todo[]>('/todos/repeat/generate');
     return response.data;
   },
+
+  toggleStatus: async (id: number): Promise<Todo> => {
+    const response = await api.post<Todo>(`/todos/${id}/toggle-status`);
+    return response.data;
+  },
 };
 
 export default api;

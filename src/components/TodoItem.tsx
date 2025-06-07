@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { Todo, UpdateTodoDto } from '@/types/todo';
+import { Todo } from '@/types/todo';
 import { todoApi } from '@/lib/api';
 import { Button } from '@/components/ui';
 import { Check, ChevronDown, ChevronRight, Edit2, Repeat, Link } from 'lucide-react';
-import { showSuccess } from '@/components/ui/toast';
+import { showSuccess, showError } from '@/components/ui/toast';
 
 interface TodoItemProps {
   todo: Todo;
@@ -31,39 +31,32 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
 
   // Mutation for quick status toggle
   const toggleStatusMutation = useMutation({
-    mutationFn: async (newStatus: Todo['status']) => {
-      const updateData: UpdateTodoDto = {
-        status: newStatus,
-      };
+    mutationFn: async () => {
+      console.log('Toggling status for todo:', todo.id, 'Current status:', todo.status);
       
-      const updatedTodo = await todoApi.update(todo.id, updateData);
-      
-      // If this is a recurring task instance being completed, generate new instances
-      if (newStatus === 'DONE' && todo.originalTodoId) {
-        try {
-          await todoApi.generateInstances();
-        } catch (error) {
-          console.warn('Failed to generate new recurring task instances:', error);
-        }
-      }
+      const updatedTodo = await todoApi.toggleStatus(todo.id);
       
       return updatedTodo;
     },
     onSuccess: (updatedTodo) => {
+      console.log('Status update successful:', updatedTodo);
       queryClient.invalidateQueries({ queryKey: ['todos'] });
       queryClient.invalidateQueries({ queryKey: ['recurring-tasks'] });
       showSuccess(updatedTodo.status === 'DONE' ? t('todo.todoCompleted') : t('todo.todoUpdated'));
     },
     onError: (error) => {
       console.error('Failed to update todo status:', error);
+      showError(t('errors.general'));
     },
   });
 
   const handleToggleComplete = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent event bubbling
+    e.preventDefault();
+    e.stopPropagation();
     
-    const newStatus = todo.status === 'DONE' ? 'TODO' : 'DONE';
-    toggleStatusMutation.mutate(newStatus);
+    console.log('Checkbox clicked for todo:', todo.id, 'Current status:', todo.status);
+    
+    toggleStatusMutation.mutate();
   };
 
   const getStatusColor = (status: Todo['status']) => {
@@ -98,18 +91,20 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
         <div className="flex items-start p-4 gap-3">
           {/* Checkbox for completion */}
           <button
+            type="button"
             onClick={handleToggleComplete}
             onMouseEnter={() => setIsHoveringCheckbox(true)}
             onMouseLeave={() => setIsHoveringCheckbox(false)}
             disabled={toggleStatusMutation.isPending}
             className={`
-              mt-1 w-5 h-5 rounded border-2 transition-all duration-200 flex items-center justify-center cursor-pointer
+              relative z-10 mt-1 w-5 h-5 rounded border-2 transition-all duration-200 flex items-center justify-center
               ${todo.status === 'DONE' 
                 ? 'bg-primary border-primary text-primary-foreground' 
                 : 'border-muted-foreground/50 hover:border-primary hover:bg-primary/10'
               }
-              ${toggleStatusMutation.isPending ? 'opacity-50 cursor-not-allowed' : ''}
+              ${toggleStatusMutation.isPending ? 'opacity-50 cursor-wait' : 'cursor-pointer'}
               ${toggleStatusMutation.isPending ? 'animate-pulse' : ''}
+              focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
             `}
             aria-label={todo.status === 'DONE' ? t('todo.markIncomplete') : t('todo.markComplete')}
             title={todo.status === 'DONE' ? t('todo.markIncomplete') : t('todo.markComplete')}

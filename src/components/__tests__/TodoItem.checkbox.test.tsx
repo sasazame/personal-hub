@@ -7,7 +7,7 @@ import { todoApi } from '@/lib/api';
 // Mock the API
 jest.mock('@/lib/api', () => ({
   todoApi: {
-    update: jest.fn(),
+    toggleStatus: jest.fn(),
     getChildren: jest.fn(),
   },
 }));
@@ -118,9 +118,9 @@ describe('TodoItem Checkbox Functionality', () => {
     expect(checkbox).toHaveClass('bg-primary');
   });
 
-  it('calls API to complete todo when checkbox is clicked', async () => {
+  it('calls API to toggle todo status when checkbox is clicked', async () => {
     const mockUpdatedTodo = { ...mockTodo, status: 'DONE' as const };
-    (todoApi.update as jest.Mock).mockResolvedValue(mockUpdatedTodo);
+    (todoApi.toggleStatus as jest.Mock).mockResolvedValue(mockUpdatedTodo);
 
     renderWithQueryClient(
       <TodoItem
@@ -135,13 +135,13 @@ describe('TodoItem Checkbox Functionality', () => {
     fireEvent.click(checkbox);
 
     await waitFor(() => {
-      expect(todoApi.update).toHaveBeenCalledWith(1, { status: 'DONE' });
+      expect(todoApi.toggleStatus).toHaveBeenCalledWith(1);
     });
   });
 
-  it('calls API to uncomplete todo when completed checkbox is clicked', async () => {
+  it('calls API to toggle completed todo when completed checkbox is clicked', async () => {
     const mockUpdatedTodo = { ...mockCompletedTodo, status: 'TODO' as const };
-    (todoApi.update as jest.Mock).mockResolvedValue(mockUpdatedTodo);
+    (todoApi.toggleStatus as jest.Mock).mockResolvedValue(mockUpdatedTodo);
 
     renderWithQueryClient(
       <TodoItem
@@ -156,12 +156,12 @@ describe('TodoItem Checkbox Functionality', () => {
     fireEvent.click(checkbox);
 
     await waitFor(() => {
-      expect(todoApi.update).toHaveBeenCalledWith(2, { status: 'TODO' });
+      expect(todoApi.toggleStatus).toHaveBeenCalledWith(2);
     });
   });
 
   it('disables checkbox while mutation is pending', async () => {
-    (todoApi.update as jest.Mock).mockImplementation(() => new Promise(() => {})); // Never resolves
+    (todoApi.toggleStatus as jest.Mock).mockImplementation(() => new Promise(() => {})); // Never resolves
 
     renderWithQueryClient(
       <TodoItem
@@ -187,12 +187,7 @@ describe('TodoItem Checkbox Functionality', () => {
     };
     
     const mockUpdatedTodo = { ...recurringTodo, status: 'DONE' as const };
-    (todoApi.update as jest.Mock).mockResolvedValue(mockUpdatedTodo);
-    
-    // Mock generateInstances
-    const mockGenerateInstances = jest.fn().mockResolvedValue([]);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (todoApi as any).generateInstances = mockGenerateInstances;
+    (todoApi.toggleStatus as jest.Mock).mockResolvedValue(mockUpdatedTodo);
 
     renderWithQueryClient(
       <TodoItem
@@ -207,8 +202,7 @@ describe('TodoItem Checkbox Functionality', () => {
     fireEvent.click(checkbox);
 
     await waitFor(() => {
-      expect(todoApi.update).toHaveBeenCalledWith(1, { status: 'DONE' });
-      expect(mockGenerateInstances).toHaveBeenCalled();
+      expect(todoApi.toggleStatus).toHaveBeenCalledWith(1);
     });
   });
 
