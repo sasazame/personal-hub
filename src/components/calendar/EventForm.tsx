@@ -4,20 +4,12 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useTranslations } from 'next-intl';
 import { CalendarEvent, CreateCalendarEventDto } from '@/types/calendar';
 import { Button, Input, TextArea, Modal } from '@/components/ui';
 import { format } from 'date-fns';
 
-const eventSchema = z.object({
-  title: z.string().min(1, 'タイトルは必須です'),
-  description: z.string().optional(),
-  startDate: z.string().min(1, '開始日時は必須です'),
-  endDate: z.string().min(1, '終了日時は必須です'),
-  allDay: z.boolean(),
-  color: z.string().min(1, '色を選択してください'),
-});
-
-type EventFormData = z.infer<typeof eventSchema>;
+// Schema and type will be created inside component to access translations
 
 interface EventFormProps {
   isOpen: boolean;
@@ -29,16 +21,30 @@ interface EventFormProps {
   onDelete?: () => void;
 }
 
-const colorOptions = [
-  { value: 'blue', label: 'ブルー', class: 'bg-blue-500' },
-  { value: 'green', label: 'グリーン', class: 'bg-green-500' },
-  { value: 'red', label: 'レッド', class: 'bg-red-500' },
-  { value: 'purple', label: 'パープル', class: 'bg-purple-500' },
-  { value: 'orange', label: 'オレンジ', class: 'bg-orange-500' },
-];
+// Color options will be created inside component to access translations
 
 export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSubmitting, onDelete }: EventFormProps) {
+  const t = useTranslations();
   const [selectedColor, setSelectedColor] = useState(event?.color || 'blue');
+  
+  const eventSchema = z.object({
+    title: z.string().min(1, t('calendar.titleRequired')),
+    description: z.string().optional(),
+    startDate: z.string().min(1, t('calendar.startDateRequired')),
+    endDate: z.string().min(1, t('calendar.endDateRequired')),
+    allDay: z.boolean(),
+    color: z.string().min(1, t('calendar.colorRequired')),
+  });
+  
+  type EventFormData = z.infer<typeof eventSchema>;
+  
+  const colorOptions = [
+    { value: 'blue', label: t('calendar.colors.blue'), class: 'bg-blue-500' },
+    { value: 'green', label: t('calendar.colors.green'), class: 'bg-green-500' },
+    { value: 'red', label: t('calendar.colors.red'), class: 'bg-red-500' },
+    { value: 'purple', label: t('calendar.colors.purple'), class: 'bg-purple-500' },
+    { value: 'orange', label: t('calendar.colors.orange'), class: 'bg-orange-500' },
+  ];
   
   const {
     register,
@@ -85,30 +91,30 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
         <div>
           <h2 className="text-xl font-semibold text-foreground mb-4">
-            {event ? 'イベントを編集' : '新しいイベント'}
+            {event ? t('calendar.editEvent') : t('calendar.newEvent')}
           </h2>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
-            タイトル *
+            {t('calendar.eventTitle')} *
           </label>
           <Input
             {...register('title')}
             label=""
-            placeholder="イベントタイトル"
+            placeholder={t('calendar.eventTitlePlaceholder')}
             error={errors.title?.message}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
-            説明
+            {t('calendar.eventDescription')}
           </label>
           <TextArea
             {...register('description')}
             label=""
-            placeholder="イベントの詳細説明"
+            placeholder={t('calendar.eventDescriptionPlaceholder')}
             rows={3}
           />
         </div>
@@ -120,14 +126,14 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
               {...register('allDay')}
               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
-            <span className="text-sm text-foreground">終日</span>
+            <span className="text-sm text-foreground">{t('calendar.allDay')}</span>
           </label>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              開始{allDay ? '日' : '日時'} *
+              {t('calendar.startDate')}{allDay ? '' : ''} *
             </label>
             <Input
               type={allDay ? 'date' : 'datetime-local'}
@@ -139,7 +145,7 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
 
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              終了{allDay ? '日' : '日時'} *
+              {t('calendar.endDate')}{allDay ? '' : ''} *
             </label>
             <Input
               type={allDay ? 'date' : 'datetime-local'}
@@ -152,7 +158,7 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
 
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
-            色 *
+            {t('calendar.color')} *
           </label>
           <div className="flex gap-2">
             {colorOptions.map((color) => (
@@ -187,7 +193,7 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
               onClick={onDelete}
               disabled={isSubmitting}
             >
-              削除
+              {t('common.delete')}
             </Button>
           )}
           <div className="flex gap-3 ml-auto">
@@ -197,13 +203,13 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
               onClick={handleClose}
               disabled={isSubmitting}
             >
-              キャンセル
+              {t('common.cancel')}
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
             >
-              {isSubmitting ? '保存中...' : event ? '更新' : '作成'}
+              {isSubmitting ? t('calendar.saving') : event ? t('calendar.update') : t('calendar.create')}
             </Button>
           </div>
         </div>

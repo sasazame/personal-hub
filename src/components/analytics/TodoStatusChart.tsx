@@ -1,6 +1,7 @@
 'use client';
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui';
 import type { StatusDistribution } from '@/types/analytics';
 
@@ -9,22 +10,34 @@ interface TodoStatusChartProps {
 }
 
 const COLORS = {
-  PENDING: '#FFA500',     // オレンジ
-  IN_PROGRESS: '#3B82F6', // ブルー
-  COMPLETED: '#10B981',   // グリーン
-  CANCELLED: '#EF4444',   // レッド
+  PENDING: '#FFA500',
+  IN_PROGRESS: '#3B82F6',
+  COMPLETED: '#10B981',
+  CANCELLED: '#EF4444',
 };
 
-const STATUS_LABELS = {
-  PENDING: '未着手',
-  IN_PROGRESS: '進行中',
-  COMPLETED: '完了',
-  CANCELLED: 'キャンセル',
-};
+// Status labels will be translated dynamically
 
 export function TodoStatusChart({ data }: TodoStatusChartProps) {
+  const t = useTranslations();
+  
+  const getStatusLabel = (status: string): string => {
+    switch (status) {
+      case 'PENDING':
+        return t('analytics.statusLabels.notStarted');
+      case 'IN_PROGRESS':
+        return t('analytics.statusLabels.inProgress');
+      case 'COMPLETED':
+        return t('analytics.statusLabels.completed');
+      case 'CANCELLED':
+        return t('analytics.statusLabels.cancelled');
+      default:
+        return status;
+    }
+  };
+  
   const chartData = Object.entries(data).map(([key, value]) => ({
-    name: STATUS_LABELS[key as keyof typeof STATUS_LABELS],
+    name: getStatusLabel(key),
     value,
     color: COLORS[key as keyof typeof COLORS],
   }));
@@ -32,7 +45,7 @@ export function TodoStatusChart({ data }: TodoStatusChartProps) {
   return (
     <Card>
       <div className="p-6">
-        <h3 className="text-lg font-semibold mb-4">TODOステータス分布</h3>
+        <h3 className="text-lg font-semibold mb-4">{t('analytics.todoStatusDistribution')}</h3>
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Pie

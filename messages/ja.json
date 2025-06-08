@@ -210,7 +210,24 @@
     "endDate": "終了日時",
     "allDay": "終日",
     "color": "色",
-    "noEvents": "イベントがありません"
+    "noEvents": "イベントがありません",
+    "titleRequired": "タイトルは必須です",
+    "startDateRequired": "開始日時は必須です",
+    "endDateRequired": "終了日時は必須です",
+    "colorRequired": "色を選択してください",
+    "eventTitlePlaceholder": "イベントタイトル",
+    "eventDescriptionPlaceholder": "イベントの詳細説明",
+    "newEvent": "新しいイベント",
+    "saving": "保存中...",
+    "create": "作成",
+    "update": "更新",
+    "colors": {
+      "blue": "ブルー",
+      "green": "グリーン",
+      "red": "レッド",
+      "purple": "パープル",
+      "orange": "オレンジ"
+    }
   },
   "notes": {
     "title": "メモ",
@@ -222,6 +239,92 @@
     "category": "カテゴリ",
     "tags": "タグ",
     "pinned": "ピン留め",
-    "noNotes": "メモがありません"
+    "noNotes": "メモがありません",
+    "titleRequired": "タイトルは必須です",
+    "contentRequired": "内容は必須です",
+    "noteTitlePlaceholder": "ノートのタイトル",
+    "noteContentPlaceholder": "ノートの内容を入力してください...",
+    "noCategory": "カテゴリなし",
+    "newTagPlaceholder": "新しいタグを入力",
+    "pin": "ピン留め",
+    "unpin": "ピンを外す",
+    "creating": "作成中...",
+    "updating": "保存中...",
+    "create": "作成",
+    "update": "更新",
+    "categories": {
+      "work": "仕事",
+      "personal": "個人",
+      "ideas": "アイデア",
+      "learning": "学習",
+      "project": "プロジェクト",
+      "memo": "メモ",
+      "other": "その他"
+    }
+  },
+  "recurring": {
+    "title": "繰り返しタスク",
+    "pattern": "繰り返しパターン",
+    "interval": "間隔",
+    "endDate": "終了日 (任意)",
+    "endDateHelper": "未設定の場合は無期限で繰り返されます",
+    "daySelection": "曜日選択",
+    "monthDay": "月の何日",
+    "monthDayPlaceholder": "例: 31 (月末)",
+    "createRecurring": "繰り返しタスクを作成",
+    "types": {
+      "daily": "毎日",
+      "weekly": "毎週",
+      "monthly": "毎月",
+      "yearly": "毎年"
+    },
+    "intervalSuffixes": {
+      "day": "日おき",
+      "week": "週おき",
+      "month": "ヶ月おき",
+      "year": "年おき"
+    },
+    "daysOfWeek": {
+      "sun": "日",
+      "mon": "月",
+      "tue": "火",
+      "wed": "水",
+      "thu": "木",
+      "fri": "金",
+      "sat": "土"
+    }
+  },
+  "analytics": {
+    "todoStatusDistribution": "TODOステータス分布",
+    "statusLabels": {
+      "notStarted": "未着手",
+      "inProgress": "進行中",
+      "completed": "完了",
+      "cancelled": "キャンセル"
+    }
+  },
+  "theme": {
+    "toggle": "切り替え: {mode}",
+    "lightMode": "ライトモード",
+    "darkMode": "ダークモード"
+  },
+  "language": {
+    "japanese": "日本語"
+  },
+  "dashboard": {
+    "taskManagement": "タスクの管理と進捗確認",
+    "incompleteTasks": "{count}件の未完了タスク",
+    "scheduleManagement": "スケジュールとイベント管理",
+    "todayEventsCount": "今日のイベント: {count}件",
+    "noteDocumentCreation": "メモとドキュメント作成",
+    "recentNotesCount": "{count}件の最近のメモ",
+    "productivityAnalysis": "生産性の分析と改善",
+    "newTodo": "新しいTODO",
+    "allDay": "終日",
+    "viewAllArrow": "全て見る →",
+    "todoProgressSummary": "TODO進捗サマリー",
+    "totalTasks": "総タスク数",
+    "incomplete": "未完了",
+    "completionRate": "完了率"
   }
 }
