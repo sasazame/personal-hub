@@ -3,6 +3,36 @@ import userEvent from '@testing-library/user-event';
 import { EventForm } from '../EventForm';
 import { CalendarEvent } from '@/types/calendar';
 
+// Mock next-intl
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      'calendar.newEvent': '新しいイベント',
+      'calendar.editEvent': 'イベントを編集',
+      'calendar.eventTitle': 'イベントタイトル',
+      'calendar.eventTitlePlaceholder': 'イベントタイトル',
+      'calendar.eventDescription': 'イベントの説明',
+      'calendar.eventDescriptionPlaceholder': 'イベントの詳細説明',
+      'calendar.startDate': '開始日',
+      'calendar.endDate': '終了日',
+      'calendar.allDay': '終日',
+      'calendar.color': '色',
+      'calendar.creating': '作成中...',
+      'calendar.saving': '保存中...',
+      'calendar.create': '作成',
+      'calendar.update': '更新',
+      'calendar.titleRequired': 'タイトルは必須です',
+      'calendar.colors.blue': 'ブルー',
+      'calendar.colors.green': 'グリーン',
+      'calendar.colors.red': 'レッド',
+      'calendar.colors.purple': 'パープル',
+      'calendar.colors.orange': 'オレンジ',
+      'common.cancel': 'キャンセル',
+    };
+    return translations[key] || key;
+  },
+}));
+
 const mockEvent: CalendarEvent = {
   id: 1,
   title: 'Test Event',

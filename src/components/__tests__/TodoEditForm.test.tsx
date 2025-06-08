@@ -65,10 +65,10 @@ describe('TodoEditForm', () => {
     expect(screen.getByDisplayValue('Existing Todo')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Existing description')).toBeInTheDocument();
     
-    const statusSelect = screen.getByLabelText(/status/i) as HTMLSelectElement;
+    const statusSelect = screen.getByLabelText('Status') as HTMLSelectElement;
     expect(statusSelect.value).toBe('IN_PROGRESS');
     
-    const prioritySelect = screen.getByLabelText(/priority/i) as HTMLSelectElement;
+    const prioritySelect = screen.getByLabelText('Priority') as HTMLSelectElement;
     expect(prioritySelect.value).toBe('HIGH');
     
     expect(screen.getByDisplayValue('2024-12-31')).toBeInTheDocument();
@@ -86,7 +86,7 @@ describe('TodoEditForm', () => {
       />
     );
 
-    const titleInput = screen.getByLabelText(/title/i);
+    const titleInput = screen.getByLabelText('Title *');
     await user.clear(titleInput);
 
     const submitButton = screen.getByText('Update TODO');
@@ -111,11 +111,11 @@ describe('TodoEditForm', () => {
       />
     );
 
-    const titleInput = screen.getByLabelText(/title/i);
+    const titleInput = screen.getByLabelText('Title *');
     await user.clear(titleInput);
     await user.type(titleInput, 'Updated Todo');
 
-    await user.selectOptions(screen.getByLabelText(/status/i), 'DONE');
+    await user.selectOptions(screen.getByLabelText('Status'), 'DONE');
 
     const submitButton = screen.getByText('Update TODO');
     await user.click(submitButton);
@@ -179,7 +179,7 @@ describe('TodoEditForm', () => {
       />
     );
 
-    const dueDateInput = screen.getByLabelText(/due date/i) as HTMLInputElement;
+    const dueDateInput = screen.getByLabelText('Due Date') as HTMLInputElement;
     expect(dueDateInput.value).toBe('');
   });
 
@@ -193,11 +193,11 @@ describe('TodoEditForm', () => {
       />
     );
 
-    const titleInput = screen.getByLabelText(/title/i);
-    const descriptionTextarea = screen.getByLabelText(/description/i);
-    const statusSelect = screen.getByLabelText(/status/i);
-    const prioritySelect = screen.getByLabelText(/priority/i);
-    const dueDateInput = screen.getByLabelText(/due date/i);
+    const titleInput = screen.getByLabelText('Title *');
+    const descriptionTextarea = screen.getByLabelText('Description');
+    const statusSelect = screen.getByLabelText('Status');
+    const prioritySelect = screen.getByLabelText('Priority');
+    const dueDateInput = screen.getByLabelText('Due Date');
 
     expect(titleInput).toHaveClass('text-foreground');
     expect(descriptionTextarea).toHaveClass('text-foreground');

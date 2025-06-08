@@ -259,7 +259,7 @@ describe('useAuth hooks', () => {
 
   describe('useLogout', () => {
     it('successfully logs out user', async () => {
-      mockedAuthAPI.logout.mockResolvedValue(undefined);
+      mockedAuthAPI.logout.mockResolvedValue({});
 
       const { result } = renderHook(() => useLogout(), { wrapper });
 

@@ -213,7 +213,7 @@ describe('useNotes hooks', () => {
 
   describe('useDeleteNote', () => {
     it('deletes note successfully', async () => {
-      (notesService.deleteNote as jest.Mock).mockResolvedValue(undefined);
+      (notesService.deleteNote as jest.Mock).mockResolvedValue({});
 
       const { result } = renderHook(
         () => useDeleteNote(),

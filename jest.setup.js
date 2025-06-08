@@ -1,5 +1,32 @@
 import '@testing-library/jest-dom'
 
+// Suppress console warnings in tests
+const originalConsoleError = console.error;
+const originalConsoleWarn = console.warn;
+
+console.error = (...args) => {
+  // Suppress specific React warnings during tests
+  if (
+    typeof args[0] === 'string' && 
+    (args[0].includes('An update to') && args[0].includes('was not wrapped in act(...)')) ||
+    args[0].includes('Query data cannot be undefined')
+  ) {
+    return;
+  }
+  originalConsoleError.apply(console, args);
+};
+
+console.warn = (...args) => {
+  // Suppress specific warnings during tests
+  if (
+    typeof args[0] === 'string' && 
+    (args[0].includes('Logout request failed:'))
+  ) {
+    return;
+  }
+  originalConsoleWarn.apply(console, args);
+};
+
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
