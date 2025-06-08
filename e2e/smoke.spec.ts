@@ -4,8 +4,8 @@ test.describe('Smoke Tests', () => {
   test('should load the application successfully', async ({ page }) => {
     await page.goto('/');
     
-    // Wait for the page to load completely
-    await page.waitForLoadState('networkidle');
+    // Wait for DOM to be ready (networkidle is discouraged)
+    await page.waitForLoadState('domcontentloaded');
     
     // Check basic page properties
     await expect(page).toHaveTitle(/TODO App/);

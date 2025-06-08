@@ -38,7 +38,7 @@ test.describe('Authentication Flow', () => {
     await expect(page).toHaveURL('/');
     
     // Wait for dashboard to load
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     
     // Wait for the app to fully load and check for the header
     await page.waitForSelector('header', { timeout: 10000 });
@@ -67,7 +67,7 @@ test.describe('Authentication Flow', () => {
     await expect(page).toHaveURL('/');
     
     // Wait for dashboard to load
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     
     // Wait for the app to fully load and check for the header
     await page.waitForSelector('header', { timeout: 10000 });
@@ -87,7 +87,7 @@ test.describe('Authentication Flow', () => {
     await login(page, uniqueUser.email, uniqueUser.password);
     
     // Wait for app to load
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('header', { timeout: 10000 });
     await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
     
@@ -108,7 +108,7 @@ test.describe('Authentication Flow', () => {
     await login(page, uniqueUser.email, uniqueUser.password);
     
     // Verify logged in
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('header', { timeout: 10000 });
     await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
     
@@ -116,7 +116,7 @@ test.describe('Authentication Flow', () => {
     await page.reload();
     
     // Wait for reload to complete - don't use waitForApp as it expects unauthenticated state
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(2000); // Wait for React hydration
     
     // Should still be logged in

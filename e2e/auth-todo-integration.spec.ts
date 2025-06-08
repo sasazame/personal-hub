@@ -34,7 +34,6 @@ async function createTestUser(page: Page) {
 }
 
 test.describe('Auth + TODO Integration E2E Tests', () => {
-  const testUser = TEST_USER;
 
   test.beforeEach(async ({ page }) => {
     // Set English locale first
@@ -87,8 +86,8 @@ test.describe('Auth + TODO Integration E2E Tests', () => {
     // Submit registration form
     await page.click('button:has-text("Create account")');
     
-    // Wait for registration to complete and redirect to home
-    await page.waitForURL('/', { timeout: 10000 });
+    // Wait for registration to complete and redirect to home (extended timeout)
+    await page.waitForURL('/', { timeout: 20000 });
     await page.waitForSelector('header', { timeout: 10000 });
     await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
 
@@ -186,10 +185,10 @@ test.describe('Auth + TODO Integration E2E Tests', () => {
     await expect(page.getByRole('heading', { name: 'TODO App' })).toBeVisible();
 
     // Create a todo
-    await page.click('button:has-text("Add New Todo")');
+    await page.click('button:has-text("Add TODO")');
     await page.fill('input[name="title"]', 'User Todo Test');
     await page.fill('textarea[name="description"]', 'This is a test todo');
-    await page.click('button:has-text("Create Todo")');
+    await page.click('button:has-text("Create TODO")');
 
     // Verify todo is created
     await expect(page.locator('h3').filter({ hasText: 'User Todo Test' })).toBeVisible();

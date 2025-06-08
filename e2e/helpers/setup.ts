@@ -102,14 +102,22 @@ export async function setupTestUser(page: Page) {
 }
 
 export async function waitForApp(page: Page) {
-  // Wait for the app to be ready
-  await page.waitForLoadState('networkidle');
+  // Wait for DOM to be ready (recommended instead of networkidle)
+  await page.waitForLoadState('domcontentloaded');
+  
+  // Use web assertions to check app readiness
+  await page.waitForSelector('[id="__next"], #__next, body > div', { timeout: 30000 });
   
   // Additional wait for React hydration
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(2000);
   
   // Check if we're authenticated or on auth page
   const isAuthPage = page.url().includes('/login') || page.url().includes('/register');
+  
+  // Wait for form elements on auth pages
+  if (isAuthPage) {
+    await page.waitForSelector('form', { timeout: 10000 });
+  }
   const hasLogoutButton = await page.locator('button:has-text("Logout")').isVisible({ timeout: 3000 }).catch(() => false);
   
   // If we're not on auth page and don't have logout button, we might need redirect

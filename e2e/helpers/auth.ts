@@ -66,14 +66,14 @@ export async function login(page: Page, email: string, password: string) {
       
       // Check if backend is responding
       try {
-        const response = await page.evaluate(async () => {
+        const response = await page.evaluate(async ([email, password]) => {
           const response = await fetch('http://localhost:8080/api/v1/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: arguments[0], password: arguments[1] })
+            body: JSON.stringify({ email, password })
           });
           return { status: response.status, ok: response.ok };
-        }, email, password);
+        }, [email, password]);
         
         if (!response.ok) {
           throw new Error(`Backend authentication failed with status ${response.status}`);

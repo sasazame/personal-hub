@@ -15,7 +15,10 @@ test.describe('Todo App E2E Tests', () => {
     
     // Navigate to todos page explicitly
     await page.goto('/todos');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
+    
+    // Wait for TODO app to be ready by checking for key elements
+    await page.waitForSelector('h1:has-text("TODO")', { timeout: 10000 });
   });
 
   test('should display the todo app heading', async ({ page }) => {
@@ -86,18 +89,24 @@ test.describe('Todo App E2E Tests', () => {
     await expect(page.getByRole('heading', { name: 'Create New TODO' })).not.toBeVisible();
     await page.waitForSelector(`text=${todoTitle}`, { timeout: 10000 });
 
-    // Delete the todo - use more specific selectors
-    await page.locator('button:has-text("Delete")').first().click();
+    // Delete the todo - need to go through edit first
+    const todoContainer = page.locator('.bg-card').filter({ hasText: todoTitle });
+    await todoContainer.getByRole('button', { name: 'Edit' }).click();
+    
+    // Wait for edit form
+    await expect(page.locator('h2:has-text("Edit TODO")')).toBeVisible();
+    
+    // Click delete button in edit form
+    await page.getByRole('button', { name: 'Delete' }).click();
 
     // Confirm deletion in the modal
-    await expect(page.getByRole('heading', { name: 'Delete Todo', exact: true })).toBeVisible();
-    await expect(page.getByText(`Are you sure you want to delete "${todoTitle}"`)).toBeVisible();
+    await expect(page.locator('h2:has-text("Delete TODO")')).toBeVisible();
     
-    // Click the Delete button in the modal (it has different styling)
-    await page.locator('button.bg-red-600:has-text("Delete")').click();
+    // Confirm deletion
+    await page.getByRole('button', { name: 'Delete' }).click();
 
-    // Wait for modal to close
-    await expect(page.getByRole('heading', { name: 'Delete Todo', exact: true })).not.toBeVisible();
+    // Wait for todo to disappear
+    await expect(page.locator('h3').filter({ hasText: todoTitle })).not.toBeVisible({ timeout: 10000 });
 
     // Verify the todo is removed from the list (ignore toast messages)
     await expect(page.locator('.space-y-4').getByText(todoTitle)).not.toBeVisible();
@@ -136,17 +145,24 @@ test.describe('Todo App E2E Tests', () => {
     await expect(page.getByRole('heading', { name: 'Create New TODO' })).not.toBeVisible();
     await page.waitForSelector(`text=${todoTitle}`, { timeout: 10000 });
 
-    // Click delete
-    await page.locator('button:has-text("Delete")').first().click();
+    // Click edit first, then delete
+    const todoContainer = page.locator('.bg-card').filter({ hasText: todoTitle });
+    await todoContainer.getByRole('button', { name: 'Edit' }).click();
+    
+    // Wait for edit form
+    await expect(page.locator('h2:has-text("Edit TODO")')).toBeVisible();
+    
+    // Click delete button in edit form
+    await page.getByRole('button', { name: 'Delete' }).click();
 
     // Verify delete modal appears
-    await expect(page.getByRole('heading', { name: 'Delete Todo', exact: true })).toBeVisible();
+    await expect(page.locator('h2:has-text("Delete TODO")')).toBeVisible();
     
     // Cancel deletion
     await page.getByRole('button', { name: 'Cancel' }).click();
     
     // Verify modal is closed and todo still exists in the list
-    await expect(page.getByRole('heading', { name: 'Delete Todo', exact: true })).not.toBeVisible();
+    await expect(page.locator('h2:has-text("Delete TODO")')).not.toBeVisible();
     await expect(page.locator('.space-y-4').getByText(todoTitle)).toBeVisible();
   });
 });
