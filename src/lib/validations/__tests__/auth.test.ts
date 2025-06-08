@@ -109,38 +109,50 @@ describe('Auth Validation Schemas', () => {
         const result = registerSchema.safeParse(data);
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.issues[0].message).toContain('at least 6 characters');
+          expect(result.error.issues[0].message).toBe('Password must be at least 8 characters');
         }
       });
 
-      it('accepts simple passwords meeting minimum length', () => {
-        const data = { ...validData, password: 'password123', confirmPassword: 'password123' };
+      it('accepts strong passwords meeting all requirements', () => {
+        const data = { ...validData, password: 'ValidPass123!', confirmPassword: 'ValidPass123!' };
         const result = registerSchema.safeParse(data);
         expect(result.success).toBe(true);
       });
 
-      it('accepts passwords with only lowercase letters if long enough', () => {
-        const data = { ...validData, password: 'validpass', confirmPassword: 'validpass' };
+      it('requires uppercase letter', () => {
+        const data = { ...validData, password: 'validpass123!', confirmPassword: 'validpass123!' };
         const result = registerSchema.safeParse(data);
-        expect(result.success).toBe(true);
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.error.issues[0].message).toBe('Password must contain at least one uppercase letter');
+        }
       });
 
-      it('accepts passwords with only uppercase letters if long enough', () => {
-        const data = { ...validData, password: 'VALIDPASS', confirmPassword: 'VALIDPASS' };
+      it('requires lowercase letter', () => {
+        const data = { ...validData, password: 'VALIDPASS123!', confirmPassword: 'VALIDPASS123!' };
         const result = registerSchema.safeParse(data);
-        expect(result.success).toBe(true);
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.error.issues[0].message).toBe('Password must contain at least one lowercase letter');
+        }
       });
 
-      it('accepts passwords with only numbers if long enough', () => {
-        const data = { ...validData, password: '123456', confirmPassword: '123456' };
+      it('requires digit', () => {
+        const data = { ...validData, password: 'ValidPass!', confirmPassword: 'ValidPass!' };
         const result = registerSchema.safeParse(data);
-        expect(result.success).toBe(true);
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.error.issues[0].message).toBe('Password must contain at least one digit');
+        }
       });
 
-      it('accepts passwords without special characters', () => {
+      it('requires special character', () => {
         const data = { ...validData, password: 'ValidPass123', confirmPassword: 'ValidPass123' };
         const result = registerSchema.safeParse(data);
-        expect(result.success).toBe(true);
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.error.issues[0].message).toBe('Password must contain at least one special character');
+        }
       });
     });
 

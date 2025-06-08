@@ -7,7 +7,8 @@ jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
       'common.language': 'Language',
-      'language': 'Language',
+      'language.japanese': '日本語',
+      'language.english': 'English',
     };
     return translations[key] || key;
   },

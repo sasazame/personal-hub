@@ -3,6 +3,34 @@ import userEvent from '@testing-library/user-event';
 import { NoteForm } from '../NoteForm';
 import { Note } from '@/types/note';
 
+// Mock next-intl
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      'notes.title': 'タイトル',
+      'notes.noteTitle': 'ノートのタイトル',
+      'notes.noteTitlePlaceholder': 'ノートのタイトル',
+      'notes.noteContent': 'ノートの内容',
+      'notes.noteContentPlaceholder': 'ノートの内容',
+      'notes.category': 'カテゴリ',
+      'notes.noCategory': 'カテゴリなし',
+      'notes.tags': 'タグ',
+      'notes.newTagPlaceholder': 'タグを追加',
+      'notes.isPinned': 'ピン留め',
+      'notes.pin': 'ピン留め',
+      'notes.creating': '保存中...',
+      'notes.saving': '保存中...',
+      'notes.addNote': '新しいノート',
+      'notes.editNote': 'ノートを編集',
+      'notes.create': '作成',
+      'notes.update': '更新',
+      'common.save': '保存',
+      'common.cancel': 'キャンセル',
+    };
+    return translations[key] || key;
+  },
+}));
+
 const mockNote: Note = {
   id: 1,
   title: 'Test Note',
