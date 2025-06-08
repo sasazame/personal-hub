@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupTestUser, createUniqueTestUser } from './helpers/setup';
+import { createUniqueTestUser } from './helpers/setup';
 import { login } from './helpers/auth';
 
 test.describe('Todo Basic Operations', () => {

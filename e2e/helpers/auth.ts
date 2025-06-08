@@ -30,7 +30,7 @@ export async function login(page: Page, email: string, password: string) {
     page.waitForSelector('[data-sonner-toast][data-type="error"], .text-red-500, .text-red-600', { timeout: 10000 }).then(() => {
       throw new Error('Login error detected');
     })
-  ]).catch(async (error) => {
+  ]).catch(async () => {
     // Handle errors
     const errorToast = page.locator('[data-sonner-toast][data-type="error"]');
     const hasErrorToast = await errorToast.isVisible({ timeout: 1000 }).catch(() => false);

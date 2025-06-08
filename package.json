@@ -9,7 +9,7 @@
     "dev:debug": "NODE_OPTIONS='--inspect' next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "next lint -d .",
     "type-check": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",

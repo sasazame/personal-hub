@@ -11,7 +11,6 @@ test.describe('Smoke Tests', () => {
     await expect(page).toHaveTitle(/TODO App/);
     
     // Log current page content for debugging
-    const pageContent = await page.content();
     console.log('Page URL:', page.url());
     console.log('Page title:', await page.title());
     
