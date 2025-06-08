@@ -1,5 +1,4 @@
 import { test, expect, Page } from '@playwright/test';
-import { TEST_USER } from './helpers/auth';
 
 // Helper function to create a unique test user
 async function createTestUser(page: Page) {

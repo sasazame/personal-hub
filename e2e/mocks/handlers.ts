@@ -2,6 +2,14 @@ import { http, HttpResponse } from 'msw';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
 
+// Types for API requests
+interface TodoRequest {
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+}
+
 // Mock data
 let todos = [
   {
@@ -99,7 +107,7 @@ export const handlers = [
       );
     }
     
-    const body = await request.json() as any;
+    const body = await request.json() as TodoRequest;
     const newTodo = {
       id: nextId++,
       ...body,
@@ -122,7 +130,7 @@ export const handlers = [
     }
     
     const id = Number(params.id);
-    const body = await request.json() as any;
+    const body = await request.json() as TodoRequest;
     const index = todos.findIndex(t => t.id === id);
     
     if (index === -1) {

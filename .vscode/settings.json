@@ -1,0 +1,23 @@
+{
+  "eslint.workingDirectories": ["."],
+  "eslint.options": {
+    "ignorePattern": [
+      ".next/**",
+      "out/**", 
+      "build/**",
+      "dist/**",
+      "node_modules/**",
+      "coverage/**",
+      "test-results/**",
+      "playwright-report/**"
+    ]
+  },
+  "eslint.validate": [
+    "typescript",
+    "typescriptreact",
+    "javascript",
+    "javascriptreact"
+  ],
+  "eslint.lintTask.enable": true,
+  "typescript.preferences.includePackageJsonAutoImports": "on"
+}

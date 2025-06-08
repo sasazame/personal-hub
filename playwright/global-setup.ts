@@ -1,6 +1,6 @@
-import { chromium, FullConfig } from '@playwright/test';
+import { chromium } from '@playwright/test';
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup() {
   // Set up MSW for CI environment
   if (process.env.CI) {
     console.log('CI environment detected - MSW will be used for API mocking');
