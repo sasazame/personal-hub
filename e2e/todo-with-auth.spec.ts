@@ -11,7 +11,7 @@ test.describe('Todo E2E Tests with Auth', () => {
   test.beforeEach(async ({ page }) => {
     // First, try to register the user (in case it doesn't exist)
     await page.goto('/register');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     
     try {
       await page.fill('input[name="username"]', TEST_USER.username);

@@ -1,49 +1,46 @@
 import { test, expect } from '@playwright/test';
-import { login, TEST_USER } from './helpers/auth';
-import { waitForApp } from './helpers/setup';
+import { setupTestUser, createUniqueTestUser } from './helpers/setup';
+import { login } from './helpers/auth';
 
 test.describe('Todo Basic Operations', () => {
   test.beforeEach(async ({ page }) => {
-    // Login before each test (user should already exist)
-    await page.goto('/login');
-    await waitForApp(page);
-    await login(page, TEST_USER.email, TEST_USER.password);
-    
-    // Wait for app to be ready
-    await expect(page.locator('h1:has-text("TODO App")')).toBeVisible();
-    
-    // Clear any existing todos (best effort)
-    try {
-      const deleteButtons = await page.locator('button:has-text("Delete")').all();
-      for (const button of deleteButtons.slice(0, 5)) { // Limit to prevent infinite loops
-        await button.click();
-        const confirmButton = page.locator('.fixed button:has-text("Delete")').last();
-        if (await confirmButton.isVisible({ timeout: 1000 })) {
-          await confirmButton.click();
-          await page.waitForTimeout(500);
-        }
-      }
-    } catch {
-      // Ignore errors during cleanup
-    }
+    // Set English locale
+    await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
   });
 
-  test('should display empty state initially', async ({ page }) => {
-    // Check for empty state message
-    const emptyMessage = page.locator('text=No todos yet');
-    const hasTodos = await page.locator('[data-testid="todo-item"]').count() > 0;
+  test('should display empty state for new user', async ({ page }) => {
+    // Create a unique user for this test
+    const uniqueUser = await createUniqueTestUser(page);
     
-    if (!hasTodos) {
-      await expect(emptyMessage).toBeVisible();
-    }
+    // Login with the unique user
+    await page.goto('/login');
+    await login(page, uniqueUser.email, uniqueUser.password);
+    
+    // Navigate to todos page
+    await page.goto('/todos');
+    await expect(page.getByRole('heading', { name: 'TODO', exact: true })).toBeVisible();
+    
+    // Check for empty state message - updated to match current translation
+    await expect(page.locator('text=No TODOs found')).toBeVisible();
   });
 
   test('should create a new todo', async ({ page }) => {
-    // Click add todo button
-    await page.click('button:has-text("Add New Todo")');
+    // Create a unique user for this test
+    const uniqueUser = await createUniqueTestUser(page);
     
-    // Wait for form modal
-    await expect(page.locator('h2:has-text("Create New Todo")')).toBeVisible();
+    // Login with the unique user
+    await page.goto('/login');
+    await login(page, uniqueUser.email, uniqueUser.password);
+    
+    // Navigate to todos page
+    await page.goto('/todos');
+    await expect(page.getByRole('heading', { name: 'TODO', exact: true })).toBeVisible();
+    
+    // Click add todo button - updated to match current button text
+    await page.click('button:has-text("Add TODO")');
+    
+    // Wait for form to appear
+    await expect(page.locator('h2:has-text("Create New TODO")')).toBeVisible();
     
     // Fill form
     const title = `Test Todo ${Date.now()}`;
@@ -51,63 +48,93 @@ test.describe('Todo Basic Operations', () => {
     await page.fill('textarea[name="description"]', 'Test description');
     await page.selectOption('select[name="priority"]', 'MEDIUM');
     
-    // Submit
-    await page.click('button:has-text("Create Todo")');
+    // Submit - updated to match current button text
+    await page.click('button:has-text("Create TODO")');
     
     // Wait for todo to appear in the list
     await expect(page.locator('h3').filter({ hasText: title })).toBeVisible({ timeout: 10000 });
   });
 
   test('should delete a todo', async ({ page }) => {
+    // Create a unique user for this test
+    const uniqueUser = await createUniqueTestUser(page);
+    
+    // Login with the unique user
+    await page.goto('/login');
+    await login(page, uniqueUser.email, uniqueUser.password);
+    
+    // Navigate to todos page
+    await page.goto('/todos');
+    await expect(page.getByRole('heading', { name: 'TODO', exact: true })).toBeVisible();
+    
     // First create a todo
-    await page.click('button:has-text("Add New Todo")');
-    await expect(page.locator('h2:has-text("Create New Todo")')).toBeVisible();
+    await page.click('button:has-text("Add TODO")');
+    await expect(page.locator('h2:has-text("Create New TODO")')).toBeVisible();
     
     const title = `Delete Test ${Date.now()}`;
     await page.fill('input[name="title"]', title);
-    await page.click('button:has-text("Create Todo")');
+    await page.click('button:has-text("Create TODO")');
     
     // Wait for todo to appear
     await expect(page.locator('h3').filter({ hasText: title })).toBeVisible();
     
-    // Find and click delete button for this todo
-    const todoItem = page.locator('h3').filter({ hasText: title }).locator('..').locator('..');
-    await todoItem.locator('button:has-text("Delete")').click();
+    // Click edit button first (delete is available from edit form)
+    // Find the todo item container and click its edit button
+    const todoContainer = page.locator('.bg-card').filter({ hasText: title });
+    await todoContainer.getByRole('button', { name: 'Edit' }).click();
     
-    // Confirm deletion
-    await expect(page.locator('text=Delete Todo')).toBeVisible();
-    await page.locator('.fixed button:has-text("Delete")').last().click();
+    // Wait for edit form
+    await expect(page.locator('h2:has-text("Edit TODO")')).toBeVisible();
+    
+    // Click delete button in edit form
+    await page.getByRole('button', { name: 'Delete' }).click();
+    
+    // Confirm deletion - updated to match current modal
+    await expect(page.locator('h2:has-text("Delete TODO")')).toBeVisible();
+    await page.getByRole('button', { name: 'Delete' }).click();
     
     // Wait for todo to disappear
     await expect(page.locator('h3').filter({ hasText: title })).not.toBeVisible({ timeout: 10000 });
   });
 
   test('should update todo status', async ({ page }) => {
+    // Create a unique user for this test
+    const uniqueUser = await createUniqueTestUser(page);
+    
+    // Login with the unique user
+    await page.goto('/login');
+    await login(page, uniqueUser.email, uniqueUser.password);
+    
+    // Navigate to todos page
+    await page.goto('/todos');
+    await expect(page.getByRole('heading', { name: 'TODO', exact: true })).toBeVisible();
+    
     // First create a todo
-    await page.click('button:has-text("Add New Todo")');
-    await expect(page.locator('h2:has-text("Create New Todo")')).toBeVisible();
+    await page.click('button:has-text("Add TODO")');
+    await expect(page.locator('h2:has-text("Create New TODO")')).toBeVisible();
     
     const title = `Status Test ${Date.now()}`;
     await page.fill('input[name="title"]', title);
-    await page.click('button:has-text("Create Todo")');
+    await page.click('button:has-text("Create TODO")');
     
     // Wait for todo to appear
     await expect(page.locator('h3').filter({ hasText: title })).toBeVisible();
     
     // Click edit button
-    const todoItem = page.locator('h3').filter({ hasText: title }).locator('..').locator('..');
-    await todoItem.locator('button:has-text("Edit")').click();
+    // Find the todo item container and click its edit button
+    const todoContainer = page.locator('.bg-card').filter({ hasText: title });
+    await todoContainer.getByRole('button', { name: 'Edit' }).click();
     
-    // Wait for edit form
-    await expect(page.locator('h2:has-text("Edit Todo")')).toBeVisible();
+    // Wait for edit form - updated to match current modal
+    await expect(page.locator('h2:has-text("Edit TODO")')).toBeVisible();
     
     // Change status
     await page.selectOption('select[name="status"]', 'DONE');
     
-    // Save
-    await page.click('button:has-text("Update Todo")');
+    // Save - updated to match current button text
+    await page.click('button:has-text("Update TODO")');
     
-    // Verify status changed (look for visual indicator)
-    await expect(todoItem.locator('text=DONE')).toBeVisible({ timeout: 10000 });
+    // Verify status changed - look for 'Done' status badge
+    await expect(page.locator('span:has-text("Done")').first()).toBeVisible({ timeout: 10000 });
   });
 });

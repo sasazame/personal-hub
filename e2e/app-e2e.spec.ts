@@ -1,11 +1,16 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('App E2E Tests', () => {
+  test.beforeEach(async ({ page }) => {
+    // Set English locale
+    await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
+  });
+
   test('should load the application', async ({ page }) => {
     await page.goto('/');
     
-    // Wait for app to initialize
-    await page.waitForLoadState('networkidle');
+    // Wait for app to initialize - avoid networkidle for production builds
+    await page.waitForTimeout(3000);
     
     // Should redirect to login or show app
     const currentUrl = page.url();

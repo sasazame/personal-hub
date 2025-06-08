@@ -3,6 +3,9 @@ import { login, TEST_USER, ensureLoggedOut } from './helpers/auth';
 
 test.describe('Todo App E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
+    // Set English locale
+    await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
+    
     // Ensure clean state
     await ensureLoggedOut(page);
     
@@ -10,68 +13,28 @@ test.describe('Todo App E2E Tests', () => {
     await page.goto('/login');
     await login(page, TEST_USER.email, TEST_USER.password);
     
-    // Should be redirected to main app
-    await page.waitForLoadState('networkidle');
-    // Wait for React to hydrate and API calls to complete
-    await page.waitForTimeout(2000);
+    // Navigate to todos page explicitly
+    await page.goto('/todos');
+    await page.waitForLoadState('domcontentloaded');
     
-    // Wait for loading to finish
-    await page.waitForSelector('text=Loading', { state: 'detached', timeout: 10000 });
-    
-    // Close any open modals first
-    try {
-      // Try to close create form if open
-      const cancelButton = page.locator('button:has-text("Cancel")');
-      if (await cancelButton.first().isVisible({ timeout: 500 })) {
-        await cancelButton.first().click();
-        await page.waitForTimeout(500);
-      }
-    } catch {
-      // Ignore if no modal is open
-    }
-
-    // Clean up any existing todos to start fresh
-    const deleteButtons = await page.locator('button:has-text("Delete")').all();
-    for (const button of deleteButtons) {
-      try {
-        await button.click({ timeout: 1000 });
-        // Click Delete in modal if it appears
-        const modalDeleteButton = page.locator('button.bg-red-600:has-text("Delete")');
-        if (await modalDeleteButton.isVisible({ timeout: 1000 })) {
-          await modalDeleteButton.click();
-          await page.waitForTimeout(500);
-        }
-      } catch {
-        // Ignore errors during cleanup
-      }
-    }
-
-    // Ensure no modal is open after cleanup
-    try {
-      const modalOverlay = page.locator('div.fixed.inset-0.bg-gray-600');
-      if (await modalOverlay.isVisible({ timeout: 500 })) {
-        await page.keyboard.press('Escape');
-        await page.waitForTimeout(500);
-      }
-    } catch {
-      // Ignore if no modal overlay
-    }
+    // Wait for TODO app to be ready by checking for key elements
+    await page.waitForSelector('h1:has-text("TODO")', { timeout: 10000 });
   });
 
   test('should display the todo app heading', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'TODO App' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'TODO', exact: true })).toBeVisible();
   });
 
-  test('should show "Add New Todo" button', async ({ page }) => {
-    await expect(page.getByRole('button', { name: 'Add New Todo' })).toBeVisible();
+  test('should show "Add TODO" button', async ({ page }) => {
+    await expect(page.getByRole('button', { name: 'Add TODO' })).toBeVisible();
   });
 
-  test('should open todo form when clicking "Add New Todo"', async ({ page }) => {
+  test('should open todo form when clicking "Add TODO"', async ({ page }) => {
     // Ensure no modal is open first
     await expect(page.locator('div.fixed.inset-0.bg-gray-600')).not.toBeVisible();
     
-    await page.getByRole('button', { name: 'Add New Todo' }).click();
-    await expect(page.getByRole('heading', { name: 'Create New Todo' })).toBeVisible();
+    await page.getByRole('button', { name: 'Add TODO' }).click();
+    await expect(page.getByRole('heading', { name: 'Create New TODO' })).toBeVisible();
     await expect(page.locator('input[id="title"]')).toBeVisible();
     await expect(page.locator('textarea[id="description"]')).toBeVisible();
     await expect(page.locator('select[id="priority"]')).toBeVisible();
@@ -85,11 +48,11 @@ test.describe('Todo App E2E Tests', () => {
     // Ensure no modal is open first
     await expect(page.locator('div.fixed.inset-0.bg-gray-600')).not.toBeVisible();
 
-    // Click "Add New Todo" button
-    await page.getByRole('button', { name: 'Add New Todo' }).click();
+    // Click "Add TODO" button
+    await page.getByRole('button', { name: 'Add TODO' }).click();
 
     // Wait for the form to appear
-    await expect(page.getByRole('heading', { name: 'Create New Todo' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Create New TODO' })).toBeVisible();
 
     // Fill in the form
     await page.fill('input[id="title"]', todoTitle);
@@ -97,10 +60,10 @@ test.describe('Todo App E2E Tests', () => {
     await page.selectOption('select[id="priority"]', 'MEDIUM');
 
     // Submit the form
-    await page.click('button:has-text("Create Todo")');
+    await page.click('button:has-text("Create TODO")');
 
     // Wait for the modal to close
-    await expect(page.getByRole('heading', { name: 'Create New Todo' })).not.toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Create New TODO' })).not.toBeVisible();
 
     // Wait for the todo to appear
     await page.waitForSelector(`text=${todoTitle}`, { timeout: 10000 });
@@ -117,27 +80,33 @@ test.describe('Todo App E2E Tests', () => {
     // Ensure no modal is open first
     await expect(page.locator('div.fixed.inset-0.bg-gray-600')).not.toBeVisible();
     
-    await page.getByRole('button', { name: 'Add New Todo' }).click();
+    await page.getByRole('button', { name: 'Add TODO' }).click();
     await page.fill('input[id="title"]', todoTitle);
     await page.fill('textarea[id="description"]', 'Delete description');
-    await page.click('button:has-text("Create Todo")');
+    await page.click('button:has-text("Create TODO")');
     
     // Wait for modal to close
-    await expect(page.getByRole('heading', { name: 'Create New Todo' })).not.toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Create New TODO' })).not.toBeVisible();
     await page.waitForSelector(`text=${todoTitle}`, { timeout: 10000 });
 
-    // Delete the todo - use more specific selectors
-    await page.locator('button:has-text("Delete")').first().click();
+    // Delete the todo - need to go through edit first
+    const todoContainer = page.locator('.bg-card').filter({ hasText: todoTitle });
+    await todoContainer.getByRole('button', { name: 'Edit' }).click();
+    
+    // Wait for edit form
+    await expect(page.locator('h2:has-text("Edit TODO")')).toBeVisible();
+    
+    // Click delete button in edit form
+    await page.getByRole('button', { name: 'Delete' }).click();
 
     // Confirm deletion in the modal
-    await expect(page.getByRole('heading', { name: 'Delete Todo', exact: true })).toBeVisible();
-    await expect(page.getByText(`Are you sure you want to delete "${todoTitle}"`)).toBeVisible();
+    await expect(page.locator('h2:has-text("Delete TODO")')).toBeVisible();
     
-    // Click the Delete button in the modal (it has different styling)
-    await page.locator('button.bg-red-600:has-text("Delete")').click();
+    // Confirm deletion
+    await page.getByRole('button', { name: 'Delete' }).click();
 
-    // Wait for modal to close
-    await expect(page.getByRole('heading', { name: 'Delete Todo', exact: true })).not.toBeVisible();
+    // Wait for todo to disappear
+    await expect(page.locator('h3').filter({ hasText: todoTitle })).not.toBeVisible({ timeout: 10000 });
 
     // Verify the todo is removed from the list (ignore toast messages)
     await expect(page.locator('.space-y-4').getByText(todoTitle)).not.toBeVisible();
@@ -147,8 +116,8 @@ test.describe('Todo App E2E Tests', () => {
     // Ensure no modal is open first
     await expect(page.locator('div.fixed.inset-0.bg-gray-600')).not.toBeVisible();
     
-    await page.getByRole('button', { name: 'Add New Todo' }).click();
-    await expect(page.getByRole('heading', { name: 'Create New Todo' })).toBeVisible();
+    await page.getByRole('button', { name: 'Add TODO' }).click();
+    await expect(page.getByRole('heading', { name: 'Create New TODO' })).toBeVisible();
     
     // Fill some data
     await page.fill('input[id="title"]', 'Test Todo');
@@ -157,7 +126,7 @@ test.describe('Todo App E2E Tests', () => {
     await page.click('button:has-text("Cancel")');
     
     // Form should be closed
-    await expect(page.getByRole('heading', { name: 'Create New Todo' })).not.toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Create New TODO' })).not.toBeVisible();
   });
 
   test('should cancel todo deletion', async ({ page }) => {
@@ -167,26 +136,33 @@ test.describe('Todo App E2E Tests', () => {
     // Ensure no modal is open first
     await expect(page.locator('div.fixed.inset-0.bg-gray-600')).not.toBeVisible();
     
-    await page.getByRole('button', { name: 'Add New Todo' }).click();
+    await page.getByRole('button', { name: 'Add TODO' }).click();
     await page.fill('input[id="title"]', todoTitle);
     await page.fill('textarea[id="description"]', 'Cancel delete description');
-    await page.click('button:has-text("Create Todo")');
+    await page.click('button:has-text("Create TODO")');
     
     // Wait for modal to close
-    await expect(page.getByRole('heading', { name: 'Create New Todo' })).not.toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Create New TODO' })).not.toBeVisible();
     await page.waitForSelector(`text=${todoTitle}`, { timeout: 10000 });
 
-    // Click delete
-    await page.locator('button:has-text("Delete")').first().click();
+    // Click edit first, then delete
+    const todoContainer = page.locator('.bg-card').filter({ hasText: todoTitle });
+    await todoContainer.getByRole('button', { name: 'Edit' }).click();
+    
+    // Wait for edit form
+    await expect(page.locator('h2:has-text("Edit TODO")')).toBeVisible();
+    
+    // Click delete button in edit form
+    await page.getByRole('button', { name: 'Delete' }).click();
 
     // Verify delete modal appears
-    await expect(page.getByRole('heading', { name: 'Delete Todo', exact: true })).toBeVisible();
+    await expect(page.locator('h2:has-text("Delete TODO")')).toBeVisible();
     
     // Cancel deletion
     await page.getByRole('button', { name: 'Cancel' }).click();
     
     // Verify modal is closed and todo still exists in the list
-    await expect(page.getByRole('heading', { name: 'Delete Todo', exact: true })).not.toBeVisible();
+    await expect(page.locator('h2:has-text("Delete TODO")')).not.toBeVisible();
     await expect(page.locator('.space-y-4').getByText(todoTitle)).toBeVisible();
   });
 });
