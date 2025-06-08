@@ -179,10 +179,10 @@ function TodoApp() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              TODO管理
+              {t('todo.title')}
             </h1>
             <p className="text-muted-foreground mt-1">
-              タスクを効率的に管理しましょう
+              {t('app.subtitle')}
             </p>
           </div>
           <button

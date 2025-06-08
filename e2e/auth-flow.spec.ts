@@ -1,10 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { login, logout, ensureLoggedOut, TEST_USER } from './helpers/auth';
-import { setupTestUser, waitForApp } from './helpers/setup';
+import { setupTestUser, waitForApp, createUniqueTestUser } from './helpers/setup';
 
 test.describe('Authentication Flow', () => {
   test.beforeEach(async ({ page }) => {
-    await setupTestUser(page);
+    // Set English locale and ensure clean state
+    await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
     await ensureLoggedOut(page);
   });
 
@@ -18,29 +19,77 @@ test.describe('Authentication Flow', () => {
     await expect(page.locator('h1, h2, h3').first()).toContainText(/Welcome|Sign in|Login/i);
   });
 
-  test('should login successfully', async ({ page }) => {
+  test('should login successfully with existing user', async ({ page }) => {
+    // Ensure TEST_USER exists
+    await setupTestUser(page);
+    
     await page.goto('/login');
     await waitForApp(page);
+    
+    console.log('Before login - URL:', page.url());
     
     // Perform login
     await login(page, TEST_USER.email, TEST_USER.password);
+    console.log('Login completed successfully');
     
-    // Should be redirected to main app
-    await expect(page).toHaveURL(/\/$|\/todos/);
+    console.log('After login - URL:', page.url());
     
-    // Should see app header with user info
-    await expect(page.locator('h1:has-text("TODO App")')).toBeVisible();
-    await expect(page.locator('button:has-text("Logout")')).toBeVisible();
+    // Should be redirected to main app (dashboard)
+    await expect(page).toHaveURL('/');
+    
+    // Wait for dashboard to load
+    await page.waitForLoadState('networkidle');
+    
+    // Wait for the app to fully load and check for the header
+    await page.waitForSelector('header', { timeout: 10000 });
+    
+    // Should see app header with TODO App text - using flexible selector
+    await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Logout' }).first()).toBeVisible();
+  });
+  
+  test('should login successfully with unique user', async ({ page }) => {
+    // Create a unique user for this test
+    const uniqueUser = await createUniqueTestUser(page);
+    
+    await page.goto('/login');
+    await waitForApp(page);
+    
+    console.log('Before login with unique user - URL:', page.url());
+    
+    // Perform login
+    await login(page, uniqueUser.email, uniqueUser.password);
+    console.log('Login with unique user completed successfully');
+    
+    console.log('After login - URL:', page.url());
+    
+    // Should be redirected to main app (dashboard)
+    await expect(page).toHaveURL('/');
+    
+    // Wait for dashboard to load
+    await page.waitForLoadState('networkidle');
+    
+    // Wait for the app to fully load and check for the header
+    await page.waitForSelector('header', { timeout: 10000 });
+    
+    // Should see app header with TODO App text - using flexible selector
+    await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Logout' }).first()).toBeVisible();
   });
 
   test('should logout successfully', async ({ page }) => {
+    // Create a unique user for this test
+    const uniqueUser = await createUniqueTestUser(page);
+    
     // First login
     await page.goto('/login');
     await waitForApp(page);
-    await login(page, TEST_USER.email, TEST_USER.password);
+    await login(page, uniqueUser.email, uniqueUser.password);
     
     // Wait for app to load
-    await expect(page.locator('h1:has-text("TODO App")')).toBeVisible();
+    await page.waitForLoadState('networkidle');
+    await page.waitForSelector('header', { timeout: 10000 });
+    await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
     
     // Logout
     await logout(page);
@@ -50,20 +99,29 @@ test.describe('Authentication Flow', () => {
   });
 
   test('should persist authentication across page reloads', async ({ page }) => {
+    // Create a unique user for this test
+    const uniqueUser = await createUniqueTestUser(page);
+    
     // Login
     await page.goto('/login');
     await waitForApp(page);
-    await login(page, TEST_USER.email, TEST_USER.password);
+    await login(page, uniqueUser.email, uniqueUser.password);
     
     // Verify logged in
-    await expect(page.locator('h1:has-text("TODO App")')).toBeVisible();
+    await page.waitForLoadState('networkidle');
+    await page.waitForSelector('header', { timeout: 10000 });
+    await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
     
     // Reload page
     await page.reload();
-    await waitForApp(page);
+    
+    // Wait for reload to complete - don't use waitForApp as it expects unauthenticated state
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000); // Wait for React hydration
     
     // Should still be logged in
-    await expect(page.locator('h1:has-text("TODO App")')).toBeVisible();
-    await expect(page.locator('button:has-text("Logout")')).toBeVisible();
+    await page.waitForSelector('header', { timeout: 10000 });
+    await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Logout' }).first()).toBeVisible();
   });
 });

@@ -4,6 +4,9 @@ import { waitForApp } from './helpers/setup';
 
 test.describe('Todo Checkbox Functionality', () => {
   test.beforeEach(async ({ page }) => {
+    // Set English locale
+    await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
+    
     // Login before each test
     await page.goto('/login');
     await waitForApp(page);
@@ -11,12 +14,12 @@ test.describe('Todo Checkbox Functionality', () => {
     
     // Navigate to todos page
     await page.goto('/todos');
-    await expect(page.locator('h1:has-text("TODO管理")')).toBeVisible();
+    await expect(page.locator('h1:has-text("TODO")')).toBeVisible();
   });
 
   test('should complete todo by clicking checkbox', async ({ page }) => {
     // Create a new todo
-    await page.click('button:has-text("Add New Todo")');
+    await page.click('button:has-text("Add TODO")');
     await expect(page.locator('h2:has-text("Create New Todo")')).toBeVisible();
     
     const title = `Checkbox Test ${Date.now()}`;
@@ -49,7 +52,7 @@ test.describe('Todo Checkbox Functionality', () => {
 
   test('should uncomplete todo by clicking completed checkbox', async ({ page }) => {
     // Create a completed todo via edit form
-    await page.click('button:has-text("Add New Todo")');
+    await page.click('button:has-text("Add TODO")');
     const title = `Uncomplete Test ${Date.now()}`;
     await page.fill('input[name="title"]', title);
     await page.selectOption('select[name="status"]', 'DONE');
@@ -76,7 +79,7 @@ test.describe('Todo Checkbox Functionality', () => {
 
   test('should show loading state while updating', async ({ page }) => {
     // Create a todo
-    await page.click('button:has-text("Add New Todo")');
+    await page.click('button:has-text("Add TODO")');
     const title = `Loading Test ${Date.now()}`;
     await page.fill('input[name="title"]', title);
     await page.click('button:has-text("Create Todo")');

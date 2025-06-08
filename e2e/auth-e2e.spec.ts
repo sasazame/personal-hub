@@ -1,19 +1,12 @@
 import { test, expect } from '@playwright/test';
-
-const TEST_USER = {
-  email: 'test@example.com',
-  password: 'Test123!@#',
-  username: 'testuser'
-};
+import { setupTestUser, createUniqueTestUser } from './helpers/setup';
+import { ensureLoggedOut, login, TEST_USER } from './helpers/auth';
 
 test.describe('Auth E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
-    // Clear any existing auth state
-    await page.goto('/');
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
+    // Set English locale and ensure clean state
+    await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
+    await ensureLoggedOut(page);
   });
 
   test('should redirect to login when not authenticated', async ({ page }) => {
@@ -27,7 +20,7 @@ test.describe('Auth E2E Tests', () => {
     
     // Should see login form
     await expect(page.locator('input[type="email"]')).toBeVisible();
-    await expect(page.locator('button:has-text("Sign in")')).toBeVisible();
+    await expect(page.locator('button:has-text("Login")')).toBeVisible();
   });
 
   test('should show login form', async ({ page }) => {
@@ -37,52 +30,82 @@ test.describe('Auth E2E Tests', () => {
     await expect(page.locator('input[type="email"]')).toBeVisible();
     await expect(page.locator('input[type="password"]')).toBeVisible();
     await expect(page.locator('button[type="submit"]')).toBeVisible();
-    await expect(page.locator('text=Sign in')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Login' })).toBeVisible();
   });
 
-  test('should handle login attempt', async ({ page }) => {
+  test('should handle login attempt with existing user', async ({ page }) => {
+    // Ensure TEST_USER exists
+    await setupTestUser(page);
+    
+    // Now test login
     await page.goto('/login');
     
-    // Fill form
-    await page.fill('input[type="email"]', TEST_USER.email);
-    await page.fill('input[type="password"]', TEST_USER.password);
+    try {
+      await login(page, TEST_USER.email, TEST_USER.password);
+      
+      // Should be redirected to home page
+      await expect(page).toHaveURL('/');
+      
+      // Wait for header to appear
+      await page.waitForSelector('header', { timeout: 10000 });
+      await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
+      
+      console.log('Login test passed successfully');
+    } catch (error) {
+      console.log('Login test failed:', error);
+      throw error;
+    }
+  });
+  
+  test('should handle login with new unique user', async ({ page }) => {
+    // Create a unique user for this test
+    const uniqueUser = await createUniqueTestUser(page);
     
-    // Submit
-    await page.click('button[type="submit"]');
+    // Now test login with the unique user
+    await page.goto('/login');
     
-    // Wait for response - either error or redirect
-    await page.waitForTimeout(2000);
-    
-    // Check current state
-    const currentUrl = page.url();
-    const hasError = await page.locator('[role="alert"]').isVisible().catch(() => false);
-    
-    if (hasError) {
-      // Login failed - this is expected for local without backend setup
-      const errorText = await page.locator('[role="alert"]').textContent();
-      console.log('Login error (expected for local):', errorText);
-      expect(currentUrl).toContain('/login');
-    } else if (currentUrl.includes('/login')) {
-      // Still on login page but no error - wait more
-      await page.waitForURL((url) => !url.href.includes('/login'), { timeout: 5000 }).catch(() => {
-        console.log('Login did not redirect - backend may not be running');
-      });
-    } else {
-      // Successfully redirected
-      expect(currentUrl).not.toContain('/login');
-      await expect(page.locator('text=TODO App')).toBeVisible();
+    try {
+      await login(page, uniqueUser.email, uniqueUser.password);
+      
+      // Should be redirected to home page
+      await expect(page).toHaveURL('/');
+      
+      // Wait for header to appear
+      await page.waitForSelector('header', { timeout: 10000 });
+      await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
+      
+      console.log('Login with unique user test passed successfully');
+    } catch (error) {
+      console.log('Login with unique user test failed:', error);
+      throw error;
     }
   });
 
   test('should navigate between login and register', async ({ page }) => {
     await page.goto('/login');
     
-    // Click register link
-    await page.click('a[href="/register"]');
+    // Wait for page to load
+    await page.waitForSelector('h1:has-text("Login")', { timeout: 10000 });
+    
+    // Click register link - try different selectors
+    try {
+      // Try link with text "Register"
+      await page.getByRole('link', { name: 'Register' }).click();
+    } catch {
+      // Fallback: try href attribute
+      await page.click('a[href="/register"]');
+    }
+    
     await expect(page).toHaveURL(/\/register/);
     
     // Go back to login
-    await page.click('a[href="/login"]');
+    try {
+      await page.getByRole('link', { name: 'Login' }).click();
+    } catch {
+      // Fallback: try href attribute
+      await page.click('a[href="/login"]');
+    }
+    
     await expect(page).toHaveURL(/\/login/);
   });
 });
