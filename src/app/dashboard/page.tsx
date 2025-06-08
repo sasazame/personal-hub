@@ -38,35 +38,35 @@ function DashboardPage() {
   const features = [
     {
       title: 'TODOs',
-      description: 'タスクの管理と進捗確認',
+      description: t('dashboard.taskManagement'),
       icon: CheckSquare,
       href: '/todos',
       color: 'bg-blue-500',
-      stats: `${incompleteTodos.length}件の未完了タスク`,
+      stats: t('dashboard.incompleteTasks', { count: incompleteTodos.length }),
       count: incompleteTodos.length,
       total: todos.length
     },
     {
       title: 'Calendar',
-      description: 'スケジュールとイベント管理',
+      description: t('dashboard.scheduleManagement'),
       icon: Calendar,
       href: '/calendar',
       color: 'bg-green-500',
-      stats: `今日のイベント: ${todaysEvents.length}件`,
+      stats: t('dashboard.todayEventsCount', { count: todaysEvents.length }),
       count: todaysEvents.length
     },
     {
       title: 'Notes',
-      description: 'メモとドキュメント作成',
+      description: t('dashboard.noteDocumentCreation'),
       icon: FileText,
       href: '/notes',
       color: 'bg-purple-500',
-      stats: `${recentNotes.length}件の最近のメモ`,
+      stats: t('dashboard.recentNotesCount', { count: recentNotes.length }),
       count: recentNotes.length
     },
     {
       title: 'Analytics',
-      description: '生産性の分析と改善',
+      description: t('dashboard.productivityAnalysis'),
       icon: BarChart3,
       href: '/analytics',
       color: 'bg-orange-500',
@@ -84,8 +84,7 @@ function DashboardPage() {
             {t('dashboard.welcome')}
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            あなたの生産性を向上させる統合ワークスペースです。
-            TODO、カレンダー、メモを一箇所で管理しましょう。
+            {t('app.description')}
           </p>
         </div>
 
@@ -97,7 +96,7 @@ function DashboardPage() {
               className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md hover:shadow-lg transition-all"
             >
               <Plus className="w-5 h-5" />
-              新しいTODO
+              {t('dashboard.newTodo')}
             </Link>
           </div>
         </div>
@@ -158,7 +157,7 @@ function DashboardPage() {
                     <div className="flex-1">
                       <div className="font-medium text-sm">{event.title}</div>
                       <div className="text-xs text-muted-foreground">
-                        {event.allDay ? '終日' : format(new Date(event.startDate), 'HH:mm')}
+                        {event.allDay ? t('dashboard.allDay') : format(new Date(event.startDate), 'HH:mm')}
                       </div>
                     </div>
                   </div>
@@ -171,14 +170,14 @@ function DashboardPage() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-foreground">
-                最近のノート
+                {t('dashboard.recentNotes')}
               </h2>
               <Link href="/notes" className="text-purple-600 hover:text-purple-700 text-sm">
-                全て見る →
+                {t('dashboard.viewAllArrow')}
               </Link>
             </div>
             {recentNotes.length === 0 ? (
-              <p className="text-muted-foreground text-sm">ノートがありません</p>
+              <p className="text-muted-foreground text-sm">{t('dashboard.noNotes')}</p>
             ) : (
               <div className="space-y-3">
                 {recentNotes.map((note) => (
@@ -202,24 +201,24 @@ function DashboardPage() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-foreground">
-                TODO進捗サマリー
+                {t('dashboard.todoProgressSummary')}
               </h2>
               <Link href="/todos" className="text-blue-600 hover:text-blue-700 text-sm">
-                全て見る →
+                {t('dashboard.viewAllArrow')}
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                 <div className="text-2xl font-bold text-blue-600">{todos.length}</div>
-                <div className="text-sm text-muted-foreground">総タスク数</div>
+                <div className="text-sm text-muted-foreground">{t('dashboard.totalTasks')}</div>
               </div>
               <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
                 <div className="text-2xl font-bold text-orange-600">{incompleteTodos.length}</div>
-                <div className="text-sm text-muted-foreground">未完了</div>
+                <div className="text-sm text-muted-foreground">{t('dashboard.incomplete')}</div>
               </div>
               <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
                 <div className="text-2xl font-bold text-green-600">{completionRate}%</div>
-                <div className="text-sm text-muted-foreground">完了率</div>
+                <div className="text-sm text-muted-foreground">{t('dashboard.completionRate')}</div>
               </div>
             </div>
           </Card>

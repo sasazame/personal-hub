@@ -210,7 +210,24 @@
     "endDate": "End Date",
     "allDay": "All Day",
     "color": "Color",
-    "noEvents": "No events"
+    "noEvents": "No events",
+    "titleRequired": "Title is required",
+    "startDateRequired": "Start date is required",
+    "endDateRequired": "End date is required",
+    "colorRequired": "Please select a color",
+    "eventTitlePlaceholder": "Event title",
+    "eventDescriptionPlaceholder": "Event detail description",
+    "newEvent": "New Event",
+    "saving": "Saving...",
+    "create": "Create",
+    "update": "Update",
+    "colors": {
+      "blue": "Blue",
+      "green": "Green",
+      "red": "Red",
+      "purple": "Purple",
+      "orange": "Orange"
+    }
   },
   "notes": {
     "title": "Notes",
@@ -222,6 +239,92 @@
     "category": "Category",
     "tags": "Tags",
     "pinned": "Pinned",
-    "noNotes": "No notes"
+    "noNotes": "No notes",
+    "titleRequired": "Title is required",
+    "contentRequired": "Content is required",
+    "noteTitlePlaceholder": "Note title",
+    "noteContentPlaceholder": "Enter note content...",
+    "noCategory": "No category",
+    "newTagPlaceholder": "Enter new tag",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "creating": "Creating...",
+    "updating": "Updating...",
+    "create": "Create",
+    "update": "Update",
+    "categories": {
+      "work": "Work",
+      "personal": "Personal",
+      "ideas": "Ideas",
+      "learning": "Learning",
+      "project": "Project",
+      "memo": "Memo",
+      "other": "Other"
+    }
+  },
+  "recurring": {
+    "title": "Recurring Task",
+    "pattern": "Repeat Pattern",
+    "interval": "Interval",
+    "endDate": "End Date (Optional)",
+    "endDateHelper": "If not set, repeats indefinitely",
+    "daySelection": "Day Selection",
+    "monthDay": "Day of Month",
+    "monthDayPlaceholder": "e.g., 31 (end of month)",
+    "createRecurring": "Create Recurring Task",
+    "types": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "yearly": "Yearly"
+    },
+    "intervalSuffixes": {
+      "day": "day(s)",
+      "week": "week(s)",
+      "month": "month(s)",
+      "year": "year(s)"
+    },
+    "daysOfWeek": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    }
+  },
+  "analytics": {
+    "todoStatusDistribution": "TODO Status Distribution",
+    "statusLabels": {
+      "notStarted": "Not Started",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    }
+  },
+  "theme": {
+    "toggle": "Toggle: {mode} mode",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode"
+  },
+  "language": {
+    "japanese": "Japanese"
+  },
+  "dashboard": {
+    "taskManagement": "Task management and progress tracking",
+    "incompleteTasks": "{count} incomplete tasks",
+    "scheduleManagement": "Schedule and event management",
+    "todayEventsCount": "Today's events: {count}",
+    "noteDocumentCreation": "Note and document creation",
+    "recentNotesCount": "{count} recent notes",
+    "productivityAnalysis": "Productivity analysis and improvement",
+    "newTodo": "New TODO",
+    "allDay": "All Day",
+    "viewAllArrow": "View All →",
+    "todoProgressSummary": "TODO Progress Summary",
+    "totalTasks": "Total Tasks",
+    "incomplete": "Incomplete",
+    "completionRate": "Completion Rate"
   }
 }

@@ -7,10 +7,7 @@ import { Modal, ModalHeader, ModalTitle, ModalContent } from './Modal';
 import { Globe, Check } from 'lucide-react';
 import { type Locale, locales } from '@/i18n/config';
 
-const localeNames: Record<Locale, string> = {
-  ja: '日本語',
-  en: 'English',
-};
+// Locale names will be translated dynamically
 
 const localeFlags: Record<Locale, string> = {
   ja: '🇯🇵',
@@ -18,8 +15,19 @@ const localeFlags: Record<Locale, string> = {
 };
 
 export function LanguageSwitcher() {
-  const t = useTranslations('common');
+  const t = useTranslations();
   const { locale, setLocale } = useLocale();
+  
+  const getLocaleName = (localeCode: Locale): string => {
+    switch (localeCode) {
+      case 'ja':
+        return t('language.japanese');
+      case 'en':
+        return 'English';
+      default:
+        return localeCode;
+    }
+  };
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLocaleChange = (newLocale: Locale) => {
@@ -32,8 +40,8 @@ export function LanguageSwitcher() {
       <button
         onClick={() => setIsOpen(true)}
         className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        aria-label={t('language')}
-        title={t('language')}
+        aria-label={t('common.language')}
+        title={t('common.language')}
       >
         <Globe className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
       </button>
@@ -43,7 +51,7 @@ export function LanguageSwitcher() {
         onClose={() => setIsOpen(false)}
       >
         <ModalHeader onClose={() => setIsOpen(false)}>
-          <ModalTitle>{t('language')}</ModalTitle>
+          <ModalTitle>{t('common.language')}</ModalTitle>
         </ModalHeader>
         
         <ModalContent>
@@ -63,7 +71,7 @@ export function LanguageSwitcher() {
               >
                 <div className="flex items-center space-x-3">
                   <span className="text-xl">{localeFlags[loc]}</span>
-                  <span className="font-medium">{localeNames[loc]}</span>
+                  <span className="font-medium">{getLocaleName(loc)}</span>
                 </div>
                 {locale === loc && (
                   <Check className="h-5 w-5 text-primary" />

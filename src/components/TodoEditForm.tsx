@@ -150,7 +150,7 @@ export default function TodoEditForm({ todo, onSubmit, onCancel, onDelete, isSub
               />
               <label htmlFor="isRepeatable" className="flex items-center gap-2 text-sm font-medium text-foreground">
                 <Repeat className="h-4 w-4" />
-                繰り返しタスク
+                {t('recurring.title')}
               </label>
             </div>
 
@@ -159,7 +159,7 @@ export default function TodoEditForm({ todo, onSubmit, onCancel, onDelete, isSub
                 {/* Repeat Type */}
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    繰り返しパターン
+                    {t('recurring.pattern')}
                   </label>
                   <select
                     {...register('repeatConfig.repeatType')}
@@ -172,17 +172,17 @@ export default function TodoEditForm({ todo, onSubmit, onCancel, onDelete, isSub
                     }}
                     className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
                   >
-                    <option value="DAILY">毎日</option>
-                    <option value="WEEKLY">毎週</option>
-                    <option value="MONTHLY">毎月</option>
-                    <option value="YEARLY">毎年</option>
+                    <option value="DAILY">{t('recurring.types.daily')}</option>
+                    <option value="WEEKLY">{t('recurring.types.weekly')}</option>
+                    <option value="MONTHLY">{t('recurring.types.monthly')}</option>
+                    <option value="YEARLY">{t('recurring.types.yearly')}</option>
                   </select>
                 </div>
 
                 {/* Interval */}
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    間隔
+                    {t('recurring.interval')}
                   </label>
                   <div className="flex items-center gap-2">
                     <input
@@ -194,10 +194,10 @@ export default function TodoEditForm({ todo, onSubmit, onCancel, onDelete, isSub
                       className="w-20 px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
                     />
                     <span className="text-sm text-muted-foreground">
-                      {repeatType === 'DAILY' && '日おき'}
-                      {repeatType === 'WEEKLY' && '週おき'}
-                      {repeatType === 'MONTHLY' && 'ヶ月おき'}
-                      {repeatType === 'YEARLY' && '年おき'}
+                      {repeatType === 'DAILY' && t('recurring.intervalSuffixes.day')}
+                      {repeatType === 'WEEKLY' && t('recurring.intervalSuffixes.week')}
+                      {repeatType === 'MONTHLY' && t('recurring.intervalSuffixes.month')}
+                      {repeatType === 'YEARLY' && t('recurring.intervalSuffixes.year')}
                     </span>
                   </div>
                 </div>
@@ -206,10 +206,18 @@ export default function TodoEditForm({ todo, onSubmit, onCancel, onDelete, isSub
                 {repeatType === 'WEEKLY' && (
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
-                      曜日選択
+                      {t('recurring.daySelection')}
                     </label>
                     <div className="flex gap-2">
-                      {['日', '月', '火', '水', '木', '金', '土'].map((day, index) => (
+                      {[
+                        t('recurring.daysOfWeek.sun'),
+                        t('recurring.daysOfWeek.mon'),
+                        t('recurring.daysOfWeek.tue'),
+                        t('recurring.daysOfWeek.wed'),
+                        t('recurring.daysOfWeek.thu'),
+                        t('recurring.daysOfWeek.fri'),
+                        t('recurring.daysOfWeek.sat')
+                      ].map((day, index) => (
                         <button
                           key={index}
                           type="button"
@@ -238,7 +246,7 @@ export default function TodoEditForm({ todo, onSubmit, onCancel, onDelete, isSub
                 {repeatType === 'MONTHLY' && (
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
-                      月の何日
+                      {t('recurring.monthDay')}
                     </label>
                     <input
                       {...register('repeatConfig.dayOfMonth', { min: 1, max: 31 })}
@@ -246,7 +254,7 @@ export default function TodoEditForm({ todo, onSubmit, onCancel, onDelete, isSub
                       min="1"
                       max="31"
                       defaultValue={todo.repeatConfig?.dayOfMonth || ''}
-                      placeholder="例: 31 (月末)"
+                      placeholder={t('recurring.monthDayPlaceholder')}
                       className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
                     />
                   </div>
@@ -255,7 +263,7 @@ export default function TodoEditForm({ todo, onSubmit, onCancel, onDelete, isSub
                 {/* End Date */}
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    終了日 (任意)
+                    {t('recurring.endDate')}
                   </label>
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -267,7 +275,7 @@ export default function TodoEditForm({ todo, onSubmit, onCancel, onDelete, isSub
                     />
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    未設定の場合は無期限で繰り返されます
+                    {t('recurring.endDateHelper')}
                   </p>
                 </div>
               </div>

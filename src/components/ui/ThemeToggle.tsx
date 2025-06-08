@@ -2,10 +2,12 @@
 
 import React from 'react';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/cn';
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
+  const t = useTranslations();
 
   return (
     <button
@@ -17,7 +19,7 @@ export function ThemeToggle() {
         'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
         'hover:bg-neutral-300 dark:hover:bg-neutral-600'
       )}
-      aria-label={`切り替え: ${theme === 'light' ? 'ダークモード' : 'ライトモード'}`}
+      aria-label={t('theme.toggle', { mode: theme === 'light' ? t('theme.darkMode') : t('theme.lightMode') })}
     >
       <span
         className={cn(
@@ -29,7 +31,7 @@ export function ThemeToggle() {
         )}
       >
         <span className="sr-only">
-          {theme === 'light' ? 'ライトモード' : 'ダークモード'}
+          {theme === 'light' ? t('theme.lightMode') : t('theme.darkMode')}
         </span>
       </span>
       
