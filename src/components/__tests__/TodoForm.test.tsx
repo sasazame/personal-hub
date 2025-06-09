@@ -82,10 +82,10 @@ describe('TodoForm', () => {
       />
     );
 
-    await user.type(screen.getByLabelText(/title/i), 'New Todo');
-    await user.type(screen.getByLabelText(/description/i), 'Todo description');
-    await user.selectOptions(screen.getByLabelText(/status/i), 'IN_PROGRESS');
-    await user.selectOptions(screen.getByLabelText(/priority/i), 'HIGH');
+    await user.type(screen.getByLabelText('Title *'), 'New Todo');
+    await user.type(screen.getByLabelText('Description'), 'Todo description');
+    await user.selectOptions(screen.getByLabelText('Status'), 'IN_PROGRESS');
+    await user.selectOptions(screen.getByLabelText('Priority'), 'HIGH');
 
     const submitButton = screen.getByText('Create TODO');
     await user.click(submitButton);
@@ -137,8 +137,8 @@ describe('TodoForm', () => {
       />
     );
 
-    expect(screen.getByLabelText(/status/i)).toHaveValue('TODO');
-    expect(screen.getByLabelText(/priority/i)).toHaveValue('MEDIUM');
+    expect(screen.getByLabelText('Status')).toHaveValue('TODO');
+    expect(screen.getByLabelText('Priority')).toHaveValue('MEDIUM');
   });
 
   it('has visible text in input fields', () => {
@@ -149,11 +149,11 @@ describe('TodoForm', () => {
       />
     );
 
-    const titleInput = screen.getByLabelText(/title/i);
-    const descriptionTextarea = screen.getByLabelText(/description/i);
-    const statusSelect = screen.getByLabelText(/status/i);
-    const prioritySelect = screen.getByLabelText(/priority/i);
-    const dueDateInput = screen.getByLabelText(/due date/i);
+    const titleInput = screen.getByLabelText('Title *');
+    const descriptionTextarea = screen.getByLabelText('Description');
+    const statusSelect = screen.getByLabelText('Status');
+    const prioritySelect = screen.getByLabelText('Priority');
+    const dueDateInput = screen.getByLabelText('Due Date');
 
     expect(titleInput).toHaveClass('text-foreground');
     expect(descriptionTextarea).toHaveClass('text-foreground');

@@ -3,11 +3,47 @@ import userEvent from '@testing-library/user-event';
 import { NoteForm } from '../NoteForm';
 import { Note } from '@/types/note';
 
+// Mock next-intl
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      'notes.title': 'タイトル',
+      'notes.noteTitle': 'ノートのタイトル',
+      'notes.noteTitlePlaceholder': 'ノートのタイトル',
+      'notes.noteContent': 'ノートの内容',
+      'notes.noteContentPlaceholder': 'ノートの内容を入力してください...',
+      'notes.category': 'カテゴリ',
+      'notes.noCategory': 'カテゴリなし',
+      'notes.tags': 'タグ',
+      'notes.newTagPlaceholder': '新しいタグを入力',
+      'notes.isPinned': 'ピン留め',
+      'notes.pin': 'ピン留め',
+      'notes.creating': '保存中...',
+      'notes.saving': '保存中...',
+      'notes.addNote': '新しいノート',
+      'notes.editNote': 'ノートを編集',
+      'notes.create': '作成',
+      'notes.update': '更新',
+      'notes.titleRequired': 'タイトルは必須です',
+      'notes.contentRequired': '内容は必須です',
+      'notes.categories.work': '仕事',
+      'notes.categories.personal': '個人',
+      'notes.categories.ideas': 'アイデア',
+      'notes.categories.learning': '学習',
+      'notes.categories.project': 'プロジェクト',
+      'notes.categories.memo': 'メモ',
+      'common.save': '保存',
+      'common.cancel': 'キャンセル',
+    };
+    return translations[key] || key;
+  },
+}));
+
 const mockNote: Note = {
   id: 1,
   title: 'Test Note',
   content: 'Test content',
-  category: '仕事',
+  category: 'work',
   tags: ['test', 'example'],
   isPinned: true,
   createdAt: new Date().toISOString(),

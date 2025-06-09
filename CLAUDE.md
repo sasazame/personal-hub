@@ -117,6 +117,23 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 - **設定**: Jest除外設定（Playwright: `*.spec.ts`）
 - **品質**: AAA パターン、ユーザー視点、型安全性重視
 
+### テスト出力のクリーン化（重要）
+**コンソール出力は最小限に保つ**ことを徹底する：
+- **本番コード**: デバッグ用の`console.log`は必ず削除
+- **テストコード**: 期待される警告は`jest.setup.js`で抑制
+- **モック戻り値**: `undefined`ではなく`{}`や適切な値を返す
+- **理由**: CI/CDログの可読性向上、真の問題の発見を容易にする
+
+```javascript
+// ❌ 悪い例
+console.log('Debug:', data); // 本番コードに残してはいけない
+mockResolvedValue(undefined); // TanStack Queryの警告が出る
+
+// ✅ 良い例  
+mockResolvedValue({}); // 空オブジェクトを返す
+// jest.setup.jsで期待される警告を抑制
+```
+
 ## API連携
 - バックエンドURL: `http://localhost:8080/api/v1` (personal-hub-backend)
 - TanStack Query使用

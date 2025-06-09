@@ -3,6 +3,27 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { ThemeToggle } from '../ThemeToggle';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 
+// Mock next-intl
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string, params?: Record<string, string>) => {
+    const translations: Record<string, string> = {
+      'theme.toggle': '切り替え: {mode}',
+      'theme.lightMode': 'ライトモード',
+      'theme.darkMode': 'ダークモード'
+    };
+
+    let result = translations[key] || key;
+    
+    if (params) {
+      Object.entries(params).forEach(([param, value]) => {
+        result = result.replace(`{${param}}`, value);
+      });
+    }
+
+    return result;
+  }
+}));
+
 describe('ThemeToggle', () => {
   const renderWithTheme = (ui: React.ReactElement) => {
     return render(

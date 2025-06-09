@@ -247,7 +247,7 @@ describe('AuthContext', () => {
       // First, set up authenticated state
       localStorageMock.getItem.mockReturnValue('fake-token');
       mockedAuthAPI.getCurrentUser.mockResolvedValue(mockUser);
-      mockedAuthAPI.logout.mockResolvedValue(undefined);
+      mockedAuthAPI.logout.mockResolvedValue();
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 

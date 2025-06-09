@@ -32,14 +32,11 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
   // Mutation for quick status toggle
   const toggleStatusMutation = useMutation({
     mutationFn: async () => {
-      console.log('Toggling status for todo:', todo.id, 'Current status:', todo.status);
-      
       const updatedTodo = await todoApi.toggleStatus(todo.id);
       
       return updatedTodo;
     },
     onSuccess: (updatedTodo) => {
-      console.log('Status update successful:', updatedTodo);
       queryClient.invalidateQueries({ queryKey: ['todos'] });
       queryClient.invalidateQueries({ queryKey: ['recurring-tasks'] });
       showSuccess(updatedTodo.status === 'DONE' ? t('todo.todoCompleted') : t('todo.todoUpdated'));
@@ -53,8 +50,6 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
   const handleToggleComplete = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    console.log('Checkbox clicked for todo:', todo.id, 'Current status:', todo.status);
     
     toggleStatusMutation.mutate();
   };

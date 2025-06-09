@@ -161,7 +161,7 @@ describe('ProfilePage', () => {
 
   it('changes password successfully', async () => {
     const user = userEvent.setup();
-    (userApi.changePassword as jest.Mock).mockResolvedValue(undefined);
+    (userApi.changePassword as jest.Mock).mockResolvedValue({});
 
     renderWithQuery(<ProfilePage />);
 
@@ -216,7 +216,7 @@ describe('ProfilePage', () => {
 
   it('deletes account successfully', async () => {
     const user = userEvent.setup();
-    (userApi.delete as jest.Mock).mockResolvedValue(undefined);
+    (userApi.delete as jest.Mock).mockResolvedValue({});
 
     renderWithQuery(<ProfilePage />);
 

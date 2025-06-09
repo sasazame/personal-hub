@@ -202,7 +202,7 @@ describe('useCalendar hooks', () => {
 
   describe('useDeleteCalendarEvent', () => {
     it('deletes event successfully', async () => {
-      (calendarService.deleteEvent as jest.Mock).mockResolvedValue(undefined);
+      (calendarService.deleteEvent as jest.Mock).mockResolvedValue({});
 
       const { result } = renderHook(
         () => useDeleteCalendarEvent(),
