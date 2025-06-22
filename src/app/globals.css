@@ -24,12 +24,23 @@
     -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.1) inset !important;
     -webkit-text-fill-color: white !important;
     transition: background-color 5000s ease-in-out 0s !important;
+    /* 自動入力検知用アニメーション */
+    animation-name: autofill;
+    animation-fill-mode: both;
+    animation-duration: 0.001s;
   }
 
   /* Firefox向けオートフィル対策 */
   input:-moz-autofill {
     background-color: rgba(255, 255, 255, 0.1) !important;
     color: white !important;
+  }
+
+  /* 自動入力検知用キーフレーム */
+  @keyframes autofill {
+    to {
+      /* 何もしない、ただ検知のため */
+    }
   }
 }
 
