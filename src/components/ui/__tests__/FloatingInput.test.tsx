@@ -4,7 +4,7 @@ import { FloatingInput } from '../FloatingInput';
 
 // Mock next-intl
 jest.mock('next-intl', () => ({
-  useTranslations: () => (key: string, params?: any) => {
+  useTranslations: () => (key: string, params?: { field?: string }) => {
     if (key === 'input.emailPlaceholder') return 'Please enter your email address';
     if (key === 'input.passwordPlaceholder') return 'Please enter your password';
     if (key === 'input.placeholder') return `Please enter ${params?.field}`;
