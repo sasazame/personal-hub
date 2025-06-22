@@ -60,7 +60,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative">
       {/* Language Switcher */}
-      <div className="absolute top-4 right-4 z-20">
+      <div className="absolute top-4 right-4 z-50">
         <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-2">
           <LanguageSwitcher />
         </div>

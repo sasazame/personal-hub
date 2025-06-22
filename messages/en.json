@@ -78,7 +78,14 @@
     "authenticationError": "An error occurred during authentication",
     "ssoLoginFailed": "SSO login failed",
     "redirectingToProvider": "Redirecting to authentication provider...",
-    "processingCallback": "Processing authentication result..."
+    "processingCallback": "Processing authentication result...",
+    "resetPassword": "Reset Password",
+    "resetPasswordDescription": "Enter your email address and we'll send you a link to reset your password",
+    "sendResetLink": "Send Reset Link",
+    "resetLinkSent": "Password reset link sent",
+    "resetLinkSentMessage": "If an account exists with this email, you will receive a password reset link shortly",
+    "backToLogin": "Back to Login",
+    "sendingResetLink": "Sending reset link..."
   },
   "input": {
     "placeholder": "Please enter {field}",
@@ -342,5 +349,79 @@
     "totalTasks": "Total Tasks",
     "incomplete": "Incomplete",
     "completionRate": "Completion Rate"
+  },
+  "legal": {
+    "terms": {
+      "title": "Terms of Service",
+      "lastUpdated": "Last updated: {date}",
+      "acceptance": {
+        "title": "Acceptance of Terms",
+        "content": "By accessing and using Personal Hub (\"the Service\"), you accept and agree to be bound by the terms and provision of this agreement."
+      },
+      "description": {
+        "title": "Service Description",
+        "content": "Personal Hub is a personal productivity application that helps you manage tasks, calendar events, and notes. This is an open-source project developed for personal and educational purposes."
+      },
+      "userResponsibilities": {
+        "title": "User Responsibilities",
+        "content": "You are responsible for maintaining the confidentiality of your account and password. You agree to accept responsibility for all activities that occur under your account."
+      },
+      "limitations": {
+        "title": "Limitations and Disclaimer",
+        "content": "This service is provided \"as is\" without any warranties, express or implied. The developer is not liable for any damages arising from the use of this service."
+      },
+      "intellectualProperty": {
+        "title": "Intellectual Property",
+        "content": "The source code is available under the MIT License. Users retain ownership of their data and content created within the application."
+      },
+      "termination": {
+        "title": "Termination",
+        "content": "You may terminate your account at any time. We reserve the right to terminate accounts that violate these terms."
+      },
+      "contact": {
+        "title": "Contact Information",
+        "content": "For questions about these terms, please contact us through the project's GitHub repository."
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "lastUpdated": "Last updated: {date}",
+      "introduction": {
+        "title": "Introduction",
+        "content": "This Privacy Policy describes how Personal Hub (\"we\", \"our\", or \"us\") collects, uses, and protects your information when you use our service."
+      },
+      "dataCollection": {
+        "title": "Information We Collect",
+        "content": "We collect information you provide directly to us, such as when you create an account, add tasks, events, or notes. This includes your email address, username, and the content you create."
+      },
+      "dataUsage": {
+        "title": "How We Use Your Information",
+        "content": "We use your information to provide, maintain, and improve our services, to communicate with you, and to ensure the security of your account."
+      },
+      "dataStorage": {
+        "title": "Data Storage and Security",
+        "content": "Your data is stored securely and is only accessible to you. We implement appropriate technical and organizational measures to protect your personal information."
+      },
+      "dataDeletion": {
+        "title": "Data Deletion",
+        "content": "You can delete your account and all associated data at any time through your profile settings. Upon deletion, your data will be permanently removed from our systems."
+      },
+      "thirdParty": {
+        "title": "Third-Party Services",
+        "content": "We do not sell, trade, or otherwise transfer your personal information to third parties. This service may integrate with authentication providers (Google, GitHub) for login purposes only."
+      },
+      "userRights": {
+        "title": "Your Rights",
+        "content": "You have the right to access, update, or delete your personal information. You may also request a copy of your data at any time."
+      },
+      "changes": {
+        "title": "Changes to This Policy",
+        "content": "We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page."
+      },
+      "contact": {
+        "title": "Contact Us",
+        "content": "If you have any questions about this Privacy Policy, please contact us through the project's GitHub repository."
+      }
+    }
   }
 }
