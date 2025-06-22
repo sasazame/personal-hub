@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { type Locale, locales, defaultLocale } from '@/i18n/config';
 
 interface LocaleContextType {
@@ -31,11 +32,14 @@ export const LocaleProvider: React.FC<LocaleProviderProps> = ({
   initialLocale = defaultLocale,
 }) => {
   const [locale, setLocaleState] = useState<Locale>(initialLocale);
+  const router = useRouter();
 
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
     document.cookie = `locale=${newLocale}; path=/; max-age=31536000`; // 1 year
-    window.location.reload(); // Reload to apply new locale
+    
+    // Refresh the page to apply the new locale
+    router.refresh();
   };
 
   useEffect(() => {
