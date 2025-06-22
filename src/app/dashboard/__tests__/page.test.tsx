@@ -128,6 +128,7 @@ const mockAuthContext = {
     updatedAt: new Date().toISOString()
   },
   login: jest.fn(),
+  loginWithOIDC: jest.fn(),
   register: jest.fn(),
   logout: jest.fn(),
   clearError: jest.fn(),

@@ -68,7 +68,17 @@
     "invalidCredentials": "Invalid credentials",
     "accountExists": "Account already exists",
     "weakPassword": "Password is too weak",
-    "passwordMismatch": "Passwords do not match"
+    "passwordMismatch": "Passwords do not match",
+    "or": "or",
+    "continueWithGoogle": "Continue with Google",
+    "continueWithGitHub": "Continue with GitHub",
+    "continueWithEmail": "Continue with Email",
+    "authenticationInProgress": "Authentication in progress...",
+    "authenticationSuccess": "Authentication completed successfully",
+    "authenticationError": "An error occurred during authentication",
+    "ssoLoginFailed": "SSO login failed",
+    "redirectingToProvider": "Redirecting to authentication provider...",
+    "processingCallback": "Processing authentication result..."
   },
   "todo": {
     "title": "TODO",

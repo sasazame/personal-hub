@@ -68,7 +68,17 @@
     "invalidCredentials": "認証情報が正しくありません",
     "accountExists": "このアカウントは既に存在します",
     "weakPassword": "パスワードが弱すぎます",
-    "passwordMismatch": "パスワードが一致しません"
+    "passwordMismatch": "パスワードが一致しません",
+    "or": "または",
+    "continueWithGoogle": "Googleで続行",
+    "continueWithGitHub": "GitHubで続行",
+    "continueWithEmail": "メールで続行",
+    "authenticationInProgress": "認証処理中...",
+    "authenticationSuccess": "認証が完了しました",
+    "authenticationError": "認証中にエラーが発生しました",
+    "ssoLoginFailed": "SSO ログインに失敗しました",
+    "redirectingToProvider": "認証プロバイダーにリダイレクト中...",
+    "processingCallback": "認証結果を処理中..."
   },
   "todo": {
     "title": "TODO",

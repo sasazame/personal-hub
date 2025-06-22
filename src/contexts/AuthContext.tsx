@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useReducer, useEffect, ReactNode, useCallback } from 'react';
 import { User } from '@/types/auth';
 import { authAPI } from '@/services/auth';
 import { showSuccess, showError } from '@/components/ui/toast';
@@ -71,6 +71,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<void>;
+  loginWithOIDC: (provider?: string) => Promise<void>;
   register: (username: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
@@ -105,6 +106,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
       throw error;
     }
   };
+
+  const loginWithOIDC = useCallback(async (provider?: string) => {
+    try {
+      dispatch({ type: 'AUTH_LOADING' });
+      
+      // Placeholder for OIDC implementation
+      showError(`${provider} ログインは現在開発中です。`);
+      dispatch({ type: 'AUTH_ERROR', payload: `${provider} login not implemented yet` });
+      
+    } catch (error) {
+      const message = getErrorMessage(error);
+      dispatch({ type: 'AUTH_ERROR', payload: message });
+      showError(message);
+      throw error;
+    }
+  }, []);
 
   const register = async (username: string, email: string, password: string): Promise<void> => {
     dispatch({ type: 'AUTH_LOADING' });
@@ -182,6 +199,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const value: AuthContextType = {
     ...state,
     login,
+    loginWithOIDC,
     register,
     logout,
     clearError,
