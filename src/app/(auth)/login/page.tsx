@@ -10,6 +10,7 @@ import { Eye, EyeOff, LogIn, CheckCircle, Mail, Lock, Sparkles } from 'lucide-re
 import { Button, FloatingInput } from '@/components/ui';
 import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
 import { useLogin, useAuth } from '@/hooks/useAuth';
+import { Icons } from '@/components/ui/icons';
 
 export default function LoginPage() {
   const t = useTranslations();
@@ -19,7 +20,7 @@ export default function LoginPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   
   const { login, isLoading, clearError } = useLogin();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loginWithOIDC } = useAuth();
 
   const {
     register,
@@ -137,6 +138,37 @@ export default function LoginPage() {
             >
               {isLoading ? t('common.loading') : t('auth.login')}
             </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/20"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-transparent text-white/70">{t('auth.or')}</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Button
+                type="button"
+                onClick={() => loginWithOIDC('google')}
+                className="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold py-3 transition-all duration-300"
+                size="lg"
+                leftIcon={<Icons.google className="h-5 w-5" />}
+              >
+                {t('auth.continueWithGoogle')}
+              </Button>
+              
+              <Button
+                type="button"
+                onClick={() => loginWithOIDC('github')}
+                className="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold py-3 transition-all duration-300"
+                size="lg"
+                leftIcon={<Icons.gitHub className="h-5 w-5" />}
+              >
+                {t('auth.continueWithGitHub')}
+              </Button>
+            </div>
 
             <div className="text-center text-sm text-white/70">
               {t('auth.dontHaveAccount')}{' '}
