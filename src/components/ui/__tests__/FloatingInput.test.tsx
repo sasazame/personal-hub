@@ -2,27 +2,62 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { FloatingInput } from '../FloatingInput';
 
+// Mock next-intl
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string, params?: { field?: string }) => {
+    if (key === 'input.emailPlaceholder') return 'Please enter your email address';
+    if (key === 'input.passwordPlaceholder') return 'Please enter your password';
+    if (key === 'input.placeholder') return `Please enter ${params?.field}`;
+    return key;
+  },
+}));
+
 describe('FloatingInput', () => {
   it('renders with label', () => {
     render(<FloatingInput label="Email" />);
     expect(screen.getByLabelText('Email')).toBeInTheDocument();
   });
 
-  it('floats label when focused', () => {
+  it('shows fixed label position', () => {
     render(<FloatingInput label="Email" />);
     const input = screen.getByLabelText('Email');
     const label = screen.getByText('Email');
     
+    // Label should be fixed at top
+    expect(label).toHaveClass('block', 'text-sm', 'font-medium', 'text-white/90');
+    
     fireEvent.focus(input);
     
-    expect(label).toHaveClass('top-2', 'text-xs');
+    // Label position should not change on focus
+    expect(label).toHaveClass('block', 'text-sm', 'font-medium', 'text-white/90');
   });
 
-  it('floats label when has value', () => {
-    render(<FloatingInput label="Email" value="test@example.com" onChange={() => {}} />);
-    const label = screen.getByText('Email');
+  it('shows correct placeholder text for email type', () => {
+    render(<FloatingInput label="Email" type="email" />);
+    const input = screen.getByLabelText('Email');
     
-    expect(label).toHaveClass('top-2', 'text-xs');
+    expect(input).toHaveAttribute('placeholder', 'Please enter your email address');
+  });
+
+  it('shows correct placeholder text for password type', () => {
+    render(<FloatingInput label="Password" type="password" />);
+    const input = screen.getByLabelText('Password');
+    
+    expect(input).toHaveAttribute('placeholder', 'Please enter your password');
+  });
+
+  it('shows generic placeholder for other types', () => {
+    render(<FloatingInput label="Name" type="text" />);
+    const input = screen.getByLabelText('Name');
+    
+    expect(input).toHaveAttribute('placeholder', 'Please enter Name');
+  });
+
+  it('uses custom placeholder key when provided', () => {
+    render(<FloatingInput label="Custom Field" placeholderKey="custom.placeholder" />);
+    const input = screen.getByLabelText('Custom Field');
+    
+    expect(input).toHaveAttribute('placeholder', 'custom.placeholder');
   });
 
   it('shows error message', () => {

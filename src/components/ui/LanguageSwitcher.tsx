@@ -39,11 +39,11 @@ export function LanguageSwitcher() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-white/20 transition-colors"
         aria-label={t('common.language')}
         title={t('common.language')}
       >
-        <Globe className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
+        <Globe className="h-5 w-5 text-white/70 hover:text-white transition-colors" />
       </button>
 
       <Modal
