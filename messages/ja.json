@@ -80,6 +80,12 @@
     "redirectingToProvider": "認証プロバイダーにリダイレクト中...",
     "processingCallback": "認証結果を処理中..."
   },
+  "input": {
+    "placeholder": "{field}を入力してください",
+    "emailPlaceholder": "メールアドレスを入力してください",
+    "passwordPlaceholder": "パスワードを入力してください",
+    "usernamePlaceholder": "ユーザー名を入力してください"
+  },
   "todo": {
     "title": "TODO",
     "todos": "TODO一覧",

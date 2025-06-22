@@ -80,6 +80,12 @@
     "redirectingToProvider": "Redirecting to authentication provider...",
     "processingCallback": "Processing authentication result..."
   },
+  "input": {
+    "placeholder": "Please enter {field}",
+    "emailPlaceholder": "Please enter your email address",
+    "passwordPlaceholder": "Please enter your password",
+    "usernamePlaceholder": "Please enter your username"
+  },
   "todo": {
     "title": "TODO",
     "todos": "TODOs",

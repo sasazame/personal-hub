@@ -10,6 +10,7 @@ import { Eye, EyeOff, UserPlus, User, Mail, Lock, Sparkles } from 'lucide-react'
 import { Button, FloatingInput, PasswordStrength } from '@/components/ui';
 import { registerSchema, type RegisterFormData } from '@/lib/validations/auth';
 import { useRegister, useAuth } from '@/hooks/useAuth';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 
 export default function RegisterPage() {
@@ -50,7 +51,14 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 relative">
+      {/* Language Switcher */}
+      <div className="absolute top-4 right-4 z-20">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-2">
+          <LanguageSwitcher />
+        </div>
+      </div>
+
       {/* Premium Glass Card */}
       <div className="w-full max-w-md">
         <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-2xl">

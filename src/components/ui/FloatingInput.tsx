@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, forwardRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/cn';
 
 export interface FloatingInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'placeholder'> {
@@ -8,12 +9,33 @@ export interface FloatingInputProps extends Omit<React.InputHTMLAttributes<HTMLI
   error?: string;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  placeholderKey?: string; // Custom translation key for placeholder
 }
 
 export const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
-  ({ className, type = 'text', label, error, leftIcon, rightIcon, disabled, id, ...props }, ref) => {
+  ({ className, type = 'text', label, error, leftIcon, rightIcon, disabled, id, placeholderKey, ...props }, ref) => {
     const [focused, setFocused] = useState(false);
+    const t = useTranslations();
     const inputId = id || `floating-input-${Math.random().toString(36).substr(2, 9)}`;
+
+    // Generate placeholder text
+    const getPlaceholder = () => {
+      if (placeholderKey) {
+        return t(placeholderKey);
+      }
+      
+      // Map common field types to specific translation keys
+      const fieldType = type === 'email' ? 'email' : 
+                       type === 'password' ? 'password' : 
+                       label.toLowerCase().includes('username') ? 'username' : null;
+      
+      if (fieldType) {
+        return t(`input.${fieldType}Placeholder`);
+      }
+      
+      // Fallback to generic placeholder
+      return t('input.placeholder', { field: label });
+    };
 
     const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
       setFocused(true);
@@ -62,7 +84,7 @@ export const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
               focused && 'bg-white/15',
               className
             )}
-            placeholder={`${label}を入力してください`}
+            placeholder={getPlaceholder()}
             disabled={disabled}
             ref={ref}
             onFocus={handleFocus}
