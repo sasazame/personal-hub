@@ -1,142 +1,65 @@
+import apiClient from '@/lib/api-client';
 import { Note, CreateNoteDto, UpdateNoteDto, NoteFilters } from '@/types/note';
 
-const notes: Note[] = [];
-let nextId = 1;
-
-// Simulate API delays
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+// Use the unified apiClient instance that includes OIDC support and proper token management
+const api = apiClient;
 
 export const notesService = {
   async getNotes(filters?: NoteFilters): Promise<Note[]> {
-    await delay(300);
-    
-    let filteredNotes = [...notes];
-
-    if (filters?.search) {
-      const search = filters.search.toLowerCase();
-      filteredNotes = filteredNotes.filter(note =>
-        note.title.toLowerCase().includes(search) ||
-        note.content.toLowerCase().includes(search) ||
-        note.tags.some(tag => tag.toLowerCase().includes(search))
-      );
-    }
-
-    if (filters?.category) {
-      filteredNotes = filteredNotes.filter(note => note.category === filters.category);
-    }
-
-    if (filters?.tags && filters.tags.length > 0) {
-      filteredNotes = filteredNotes.filter(note =>
-        filters.tags!.some(tag => note.tags.includes(tag))
-      );
-    }
-
-    if (filters?.isPinned !== undefined) {
-      filteredNotes = filteredNotes.filter(note => note.isPinned === filters.isPinned);
-    }
-
-    return filteredNotes;
+    const response = await api.get<Note[]>('/notes', { params: filters });
+    return response.data;
   },
 
   async getNote(id: number): Promise<Note | null> {
-    await delay(200);
-    return notes.find(note => note.id === id) || null;
+    try {
+      const response = await api.get<Note>(`/notes/${id}`);
+      return response.data;
+    } catch (error) {
+      // Return null if note not found (404)
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response: { status: number } };
+        if (axiosError.response?.status === 404) {
+          return null;
+        }
+      }
+      throw error;
+    }
   },
 
   async createNote(data: CreateNoteDto): Promise<Note> {
-    await delay(500);
-    
-    const newNote: Note = {
-      id: nextId++,
-      ...data,
-      isPinned: data.isPinned || false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    
-    notes.push(newNote);
-    return newNote;
+    const response = await api.post<Note>('/notes', data);
+    return response.data;
   },
 
   async updateNote(id: number, data: UpdateNoteDto): Promise<Note> {
-    await delay(500);
-    
-    const noteIndex = notes.findIndex(note => note.id === id);
-    if (noteIndex === -1) {
-      throw new Error('Note not found');
-    }
-    
-    const updatedNote: Note = {
-      ...notes[noteIndex],
-      ...data,
-      updatedAt: new Date().toISOString(),
-    };
-    
-    notes[noteIndex] = updatedNote;
-    return updatedNote;
+    const response = await api.put<Note>(`/notes/${id}`, data);
+    return response.data;
   },
 
   async deleteNote(id: number): Promise<void> {
-    await delay(300);
-    
-    const noteIndex = notes.findIndex(note => note.id === id);
-    if (noteIndex === -1) {
-      throw new Error('Note not found');
-    }
-    
-    notes.splice(noteIndex, 1);
+    await api.delete(`/notes/${id}`);
   },
 
   async togglePin(id: number): Promise<Note> {
-    await delay(200);
-    
-    const noteIndex = notes.findIndex(note => note.id === id);
-    if (noteIndex === -1) {
-      throw new Error('Note not found');
-    }
-    
-    const updatedNote: Note = {
-      ...notes[noteIndex],
-      isPinned: !notes[noteIndex].isPinned,
-      updatedAt: new Date().toISOString(),
-    };
-    
-    notes[noteIndex] = updatedNote;
-    return updatedNote;
+    const response = await api.post<Note>(`/notes/${id}/toggle-pin`);
+    return response.data;
   },
 
   // Get all unique categories
   async getCategories(): Promise<string[]> {
-    await delay(100);
-    
-    const categories = new Set<string>();
-    notes.forEach(note => {
-      if (note.category) {
-        categories.add(note.category);
-      }
-    });
-    
-    return Array.from(categories).sort();
+    const response = await api.get<string[]>('/notes/categories');
+    return response.data;
   },
 
   // Get all unique tags
   async getTags(): Promise<string[]> {
-    await delay(100);
-    
-    const tags = new Set<string>();
-    notes.forEach(note => {
-      note.tags.forEach(tag => tags.add(tag));
-    });
-    
-    return Array.from(tags).sort();
+    const response = await api.get<string[]>('/notes/tags');
+    return response.data;
   },
 
   // Get recently updated notes
   async getRecentNotes(limit: number = 5): Promise<Note[]> {
-    await delay(200);
-    
-    return [...notes]
-      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-      .slice(0, limit);
+    const response = await api.get<Note[]>('/notes/recent', { params: { limit } });
+    return response.data;
   },
 };
