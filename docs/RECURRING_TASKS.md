@@ -1,68 +1,68 @@
-# 繰り返しタスク機能
+# Recurring Tasks Feature
 
-このドキュメントは、Personal Hubアプリケーションの繰り返しタスク機能について説明します。
+This document describes the recurring tasks feature of the Personal Hub application.
 
-## 概要
+## Overview
 
-繰り返しタスク機能では、定期的に実行されるタスクを設定・管理できます。バックエンドで既に実装済みのAPIを活用し、フロントエンドで直感的なユーザーインターフェースを提供します。
+The recurring tasks feature allows users to set up and manage tasks that execute periodically. It leverages backend APIs already implemented and provides an intuitive user interface on the frontend.
 
-## 機能
+## Features
 
-### 1. 繰り返しタスクの作成
+### 1. Creating Recurring Tasks
 
-TODOフォームで繰り返し設定を有効にすることで、以下のパターンで繰り返しタスクを作成できます：
+By enabling repeat settings in the TODO form, you can create recurring tasks with the following patterns:
 
-- **毎日**: 指定した間隔（日数）で繰り返し
-- **毎週**: 指定した曜日に繰り返し（複数選択可能）
-- **毎月**: 指定した日付に繰り返し
-- **毎年**: 指定した日付に毎年繰り返し
+- **Daily**: Repeat at specified intervals (days)
+- **Weekly**: Repeat on specified weekdays (multiple selection possible)
+- **Monthly**: Repeat on specified date
+- **Yearly**: Repeat annually on specified date
 
-#### 設定項目
+#### Configuration Options
 
-- **繰り返しパターン**: DAILY/WEEKLY/MONTHLY/YEARLY
-- **間隔**: 繰り返しの間隔（例：2日おき、3週おき）
-- **曜日選択**: 週次繰り返しの場合のみ（複数選択可能）
-- **月の日付**: 月次繰り返しの場合のみ
-- **終了日**: 繰り返しを停止する日付（任意）
+- **Repeat Pattern**: DAILY/WEEKLY/MONTHLY/YEARLY
+- **Interval**: Repeat interval (e.g., every 2 days, every 3 weeks)
+- **Weekday Selection**: Only for weekly repeat (multiple selection possible)
+- **Day of Month**: Only for monthly repeat
+- **End Date**: Date to stop repetition (optional)
 
-### 2. 繰り返しタスク管理画面
+### 2. Recurring Tasks Management Screen
 
-専用の管理画面（`/recurring-tasks`）では以下の操作が可能です：
+The dedicated management screen (`/recurring-tasks`) provides the following operations:
 
-- 作成済み繰り返しタスクの一覧表示
-- 各タスクの繰り返し設定の確認
-- インスタンス（自動生成されたタスク）の表示
-- 手動でのインスタンス生成
+- List view of created recurring tasks
+- View repeat settings for each task
+- Display instances (auto-generated tasks)
+- Manual instance generation
 
-### 3. インスタンス管理
+### 3. Instance Management
 
-繰り返しタスクから自動生成されたタスクインスタンスを確認できます：
+You can view task instances automatically generated from recurring tasks:
 
-- 生成済みインスタンスの一覧表示
-- 各インスタンスのステータス（TODO/IN_PROGRESS/DONE）
-- インスタンスごとの期限日
-- 元の繰り返しタスクとの関連性表示
+- List view of generated instances
+- Each instance's status (TODO/IN_PROGRESS/DONE)
+- Due date for each instance
+- Relationship display with original recurring task
 
-### 4. 既存TODOリストとの統合
+### 4. Integration with Existing TODO List
 
-通常のTODOリスト画面でも繰り返しタスクが識別できます：
+Recurring tasks are also identifiable in the regular TODO list screen:
 
-- 繰り返しタスクには🔄アイコンが表示
-- インスタンスには🔗アイコンが表示
-- 元タスクとの関連がツールチップで確認可能
+- Recurring tasks display 🔄 icon
+- Instances display 🔗 icon
+- Relationship with original task viewable via tooltip
 
-## 技術仕様
+## Technical Specifications
 
-### API エンドポイント
+### API Endpoints
 
-フロントエンドでは以下のバックエンドAPIを使用：
+Frontend uses the following backend APIs:
 
-- `POST /api/v1/todos` - 繰り返しタスク作成
-- `GET /api/v1/todos/repeatable` - 繰り返し設定有効タスク一覧
-- `GET /api/v1/todos/{id}/instances` - 特定タスクのインスタンス一覧
-- `POST /api/v1/todos/repeat/generate` - インスタンス手動生成
+- `POST /api/v1/todos` - Create recurring task
+- `GET /api/v1/todos/repeatable` - List tasks with repeat settings enabled
+- `GET /api/v1/todos/{id}/instances` - List instances for specific task
+- `POST /api/v1/todos/repeat/generate` - Manual instance generation
 
-### データ型
+### Data Types
 
 ```typescript
 export interface RepeatConfig {
@@ -74,125 +74,125 @@ export interface RepeatConfig {
 }
 
 export interface Todo {
-  // ... 既存フィールド
+  // ... existing fields
   isRepeatable?: boolean;
   repeatConfig?: RepeatConfig | null;
   originalTodoId?: number | null;
 }
 ```
 
-### コンポーネント構成
+### Component Structure
 
 ```
 src/
 ├── components/
-│   ├── TodoForm.tsx              # 繰り返し設定追加済み
-│   └── TodoItem.tsx              # アイコン表示対応
+│   ├── TodoForm.tsx              # Repeat settings added
+│   └── TodoItem.tsx              # Icon display support
 ├── app/
 │   └── recurring-tasks/
-│       ├── page.tsx              # 管理画面
-│       └── __tests__/            # テスト
+│       ├── page.tsx              # Management screen
+│       └── __tests__/            # Tests
 ├── lib/
-│   └── api.ts                    # API関数追加
+│   └── api.ts                    # API functions added
 └── types/
-    └── todo.ts                   # 型定義更新
+    └── todo.ts                   # Type definitions updated
 ```
 
-## 使用方法
+## Usage
 
-### 繰り返しタスクの作成
+### Creating Recurring Tasks
 
-1. TODOページで「新しいタスクを作成」をクリック
-2. 基本情報（タイトル、説明、優先度等）を入力
-3. 「繰り返しタスク」チェックボックスを有効化
-4. 繰り返しパターンと詳細設定を選択
-5. 「繰り返しタスクを作成」をクリック
+1. Click "Create New Task" on TODO page
+2. Enter basic information (title, description, priority, etc.)
+3. Enable "Recurring Task" checkbox
+4. Select repeat pattern and detailed settings
+5. Click "Create Recurring Task"
 
-### 管理画面での操作
+### Management Screen Operations
 
-1. サイドバーから「繰り返しタスク」をクリック
-2. 作成済みタスクの一覧を確認
-3. 「インスタンスを表示」でタスクインスタンスを確認
-4. 「インスタンス生成」で手動生成を実行
+1. Click "Recurring Tasks" from sidebar
+2. View list of created tasks
+3. Click "View Instances" to see task instances
+4. Execute "Generate Instance" for manual generation
 
-### 設定例
+### Configuration Examples
 
-#### 毎日の運動
-- パターン: 毎日
-- 間隔: 1日おき
-- 終了日: なし
+#### Daily Exercise
+- Pattern: Daily
+- Interval: Every 1 day
+- End Date: None
 
-#### 週3回のジム
-- パターン: 毎週
-- 間隔: 1週おき
-- 曜日: 月・水・金
-- 終了日: なし
+#### Gym 3 Times a Week
+- Pattern: Weekly
+- Interval: Every 1 week
+- Weekdays: Monday, Wednesday, Friday
+- End Date: None
 
-#### 月末レポート
-- パターン: 毎月
-- 間隔: 1ヶ月おき
-- 日付: 31日
-- 終了日: 2025年12月31日
+#### Month-end Report
+- Pattern: Monthly
+- Interval: Every 1 month
+- Date: 31st
+- End Date: December 31, 2025
 
-## テスト
+## Testing
 
-### 単体テスト
+### Unit Tests
 
-- `TodoForm.recurring.test.tsx`: フォームの繰り返し設定機能
-- `api.recurring.test.ts`: API関数のテスト
-- `page.test.tsx`: 管理画面のテスト
+- `TodoForm.recurring.test.tsx`: Form repeat settings functionality
+- `api.recurring.test.ts`: API function tests
+- `page.test.tsx`: Management screen tests
 
-### 統合テスト
+### Integration Tests
 
-- `integration.test.tsx`: エンドツーエンドのワークフローテスト
+- `integration.test.tsx`: End-to-end workflow tests
 
-### テスト実行
+### Running Tests
 
 ```bash
-# 単体テスト
+# Unit tests
 npm test TodoForm.recurring
 npm test api.recurring
 npm test page.test
 
-# 統合テスト
+# Integration tests
 npm test integration.test
 
-# 全テスト
+# All tests
 npm test
 ```
 
-## 今後の拡張予定
+## Future Extension Plans
 
-1. **テンプレート機能**: よく使用される繰り返しパターンのテンプレート
-2. **通知機能**: インスタンス生成時やタスク期限の通知
-3. **カレンダー連携**: カレンダー画面での繰り返しタスク表示
-4. **統計機能**: 繰り返しタスクの完了率や傾向分析
-5. **一括操作**: 複数インスタンスの一括ステータス変更
+1. **Template Feature**: Templates for commonly used repeat patterns
+2. **Notification Feature**: Notifications for instance generation or task deadlines
+3. **Calendar Integration**: Display recurring tasks in calendar screen
+4. **Statistics Feature**: Completion rate and trend analysis for recurring tasks
+5. **Batch Operations**: Bulk status changes for multiple instances
 
-## トラブルシューティング
+## Troubleshooting
 
-### よくある問題
+### Common Issues
 
-1. **インスタンスが生成されない**
-   - バックエンドサーバーが起動していることを確認
-   - 繰り返し設定が正しく保存されているか確認
+1. **Instances Not Generated**
+   - Verify backend server is running
+   - Check if repeat settings are saved correctly
 
-2. **曜日選択が保存されない**
-   - WEEKLY選択時に少なくとも1つの曜日を選択
-   - 日曜日は「7」として扱われることに注意
+2. **Weekday Selection Not Saved**
+   - Select at least one weekday when WEEKLY is selected
+   - Note that Sunday is treated as "7"
 
-3. **月次設定で日付が無効**
-   - 月によって存在しない日付（例：2月31日）は避ける
-   - 月末を指定したい場合は31日を設定
+3. **Invalid Date in Monthly Settings**
+   - Avoid dates that don't exist in some months (e.g., February 31st)
+   - Set to 31st if you want month-end
 
-### デバッグ
+### Debugging
 
-1. ブラウザの開発者ツールでAPIリクエストを確認
-2. コンソールエラーをチェック
-3. バックエンドログを確認
+1. Check API requests in browser developer tools
+2. Check console errors
+3. Review backend logs
 
-## 参考資料
+## References
 
-- [バックエンドAPI仕様書](../../personal-hub-backend/docs/API.md#繰り返しtodoエンドポイント認証必須)
-- [React Hook Form公式ドキュメント](https://react-hook-form.com/)
-- [TanStack Query公式ドキュメント](https://tanstack.com/query/latest)
+- [Backend API Specification](../../personal-hub-backend/docs/API.md#recurring-todo-endpoints-authentication-required)
+- [React Hook Form Official Documentation](https://react-hook-form.com/)
+- [TanStack Query Official Documentation](https://tanstack.com/query/latest)

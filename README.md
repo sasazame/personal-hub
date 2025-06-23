@@ -1,169 +1,179 @@
 # Personal Hub
 
-個人の生産性向上を目的とした統合ワークスペースアプリケーション
+An integrated workspace application designed to enhance personal productivity
 
-## 🚀 プロジェクト概要
+## 🚀 Project Overview
 
-### 技術スタック
-- **フレームワーク**: Next.js 15 (App Router)
-- **言語**: TypeScript 5+
-- **UIライブラリ**: React 19
-- **スタイリング**: Tailwind CSS 4
-- **状態管理**: TanStack Query + React Hook Form
-- **テスト**: Jest, React Testing Library, Playwright
-- **ツール**: ESLint, Prettier, Turbopack
+### Technology Stack
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript 5+
+- **UI Library**: React 19
+- **Styling**: Tailwind CSS 4
+- **State Management**: TanStack Query + React Hook Form
+- **Authentication**: OpenID Connect (OIDC) with JWT
+- **Testing**: Jest, React Testing Library, Playwright
+- **Tools**: ESLint, Prettier, Turbopack
 
-### 主な機能
-- ✅ **TODO管理**: CRUD操作、ステータス管理、優先度設定、親子タスク
-- ✅ **カレンダー**: イベント管理、月間表示、カラー分類、終日/時間指定
-- ✅ **メモ機能**: リッチエディタ、カテゴリ・タグ分類、ピン留め、検索
-- ✅ **ダッシュボード**: リアルタイム統合ビュー、進捗状況、分析
-- ✅ **ユーザー管理**: プロフィール、認証、設定
-- ✅ **UI/UX**: レスポンシブ、ダークモード、アクセシビリティ対応
+### Key Features
+- ✅ **TODO Management**: CRUD operations, status management, priority settings, subtasks
+- ✅ **Calendar**: Event management, monthly view, color categorization, all-day/timed events
+- ✅ **Notes**: Rich text editor, category/tag classification, pinning, search
+- ✅ **Dashboard**: Real-time integrated view, progress tracking, analytics
+- ✅ **User Management**: Profile, OIDC authentication, settings
+- ✅ **UI/UX**: Responsive design, dark mode, accessibility support
 
-## ⚡ クイックスタート
+## ⚡ Quick Start
 
-### 前提条件
+### Prerequisites
 - Node.js 18+
 - npm 9+
-- バックエンドAPI（localhost:8080）
+- Backend API (localhost:8080)
 
-### 起動手順
+### Setup Instructions
 ```bash
-# 1. リポジトリをクローン
+# 1. Clone the repository
 git clone https://github.com/sasazame/personal-hub.git
 cd personal-hub
 
-# 2. 依存関係をインストール
+# 2. Install dependencies
 npm install
 
-# 3. 開発サーバー起動
+# 3. Start development server
 npm run dev
 
-# 4. ブラウザで確認
+# 4. Open in browser
 open http://localhost:3000
 ```
 
-## 🛠️ 環境構築
+## 🛠️ Environment Setup
 
-### 環境変数設定
-`.env.local` ファイルを作成:
+### Environment Variables
+Create `.env.local` file:
 ```bash
-# API エンドポイント
+# API Endpoint
 NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
 
-# アプリケーション設定
+# Application Settings
 NEXT_PUBLIC_APP_NAME=Personal Hub
 ```
 
-### バックエンド連携
-バックエンドAPIが localhost:8080 で動作している必要があります。
-詳細は [todo-app-backend](https://github.com/sasazame/todo-app-backend) を参照。
+### Backend Integration
+The backend API must be running on localhost:8080.
+See [todo-app-backend](https://github.com/sasazame/todo-app-backend) for details.
 
-## 👨‍💻 開発ガイド
+## 👨‍💻 Development Guide
 
-### 開発サーバー
+### Development Server
 ```bash
-# Turbopack を使用した高速開発サーバー
+# Fast development server with Turbopack
 npm run dev
 
-# 本番ビルド
+# Production build
 npm run build
 
-# 本番サーバー起動
+# Start production server
 npm start
 ```
 
-### コード品質
+### Code Quality
 ```bash
-# ESLint チェック
+# ESLint check
 npm run lint
 
-# 型チェック
+# Type check
 npm run type-check
 
-# テスト実行
+# Run tests
 npm test
 
-# E2Eテスト
+# E2E tests
 npm run test:e2e
 ```
 
-### ブランチ戦略
+### Branch Strategy
 ```bash
-# 新機能開発
+# New feature development
 git checkout -b feat/feature-name
 
-# バグ修正
+# Bug fixes
 git checkout -b fix/bug-description
 
-# ローカルでテスト実行（PR前に必須）
+# Run tests locally (required before PR)
 npm run type-check && npm run lint && npm test && npm run build
 
-# プルリクエスト作成
+# Create pull request
 git push origin feat/feature-name
 gh pr create --assignee sasazame
 ```
 
-## 🧩 アーキテクチャ
+## 🧩 Architecture
 
-### ディレクトリ構造
+### Directory Structure
 ```
 src/
-├── app/                    # App Router（pages）
-│   ├── dashboard/         # ダッシュボード
-│   ├── todos/             # TODO管理
-│   ├── calendar/          # カレンダー
-│   ├── notes/             # メモ機能
-│   └── profile/           # ユーザー設定
+├── app/                    # App Router (pages)
+│   ├── dashboard/         # Dashboard
+│   ├── todos/             # TODO management
+│   ├── calendar/          # Calendar
+│   ├── notes/             # Notes feature
+│   └── profile/           # User settings
 ├── components/
-│   ├── ui/                # 基本UIコンポーネント
-│   ├── todos/             # TODO関連コンポーネント
-│   ├── calendar/          # カレンダー関連
-│   ├── notes/             # メモ関連
-│   ├── dashboard/         # ダッシュボード関連
-│   ├── auth/              # 認証関連
-│   └── layout/            # レイアウト
-├── hooks/                 # カスタムフック
-├── lib/                   # 外部ライブラリ設定
-├── services/              # API 通信ロジック
-├── types/                 # 型定義
-└── utils/                 # ヘルパー関数
+│   ├── ui/                # Basic UI components
+│   ├── todos/             # TODO-related components
+│   ├── calendar/          # Calendar-related
+│   ├── notes/             # Notes-related
+│   ├── dashboard/         # Dashboard-related
+│   ├── auth/              # Authentication-related
+│   └── layout/            # Layout
+├── hooks/                 # Custom hooks
+├── lib/                   # External library configurations
+├── services/              # API communication logic
+├── types/                 # Type definitions
+└── utils/                 # Helper functions
 ```
 
-### モジュール設計
-- **todos/**: TODO機能（完全実装済み）
-- **calendar/**: カレンダー・イベント管理（完全実装済み）
-- **notes/**: メモ・ノート機能（完全実装済み）
-- **dashboard/**: リアルタイム統合ダッシュボード（完全実装済み）
-- **analytics/**: 分析・レポート機能（開発予定）
-- **shared/**: 共通コンポーネント・ユーティリティ
+### Module Design
+- **todos/**: TODO functionality (fully implemented)
+- **calendar/**: Calendar and event management (fully implemented)
+- **notes/**: Notes functionality (fully implemented)
+- **dashboard/**: Real-time integrated dashboard (fully implemented)
+- **analytics/**: Analytics and reporting (planned)
+- **shared/**: Common components and utilities
 
-## 🧪 テスト
+## 🔐 Authentication
 
-### テスト実行
+### OIDC Authentication
+The application uses OpenID Connect (OIDC) for authentication:
+- JWT tokens stored in localStorage
+- Automatic token refresh before expiration
+- Support for multiple OAuth providers (Google, GitHub)
+- Secure user session management
+
+## 🧪 Testing
+
+### Test Execution
 ```bash
-# 単体テスト
+# Unit tests
 npm test
 
-# テスト（ウォッチモード）
+# Tests in watch mode
 npm run test:watch
 
-# カバレッジ
+# Coverage
 npm run test:coverage
 
-# E2Eテスト
+# E2E tests
 npm run test:e2e
 ```
 
-### テスト戦略
-- **単体テスト**: コンポーネント、フック、ユーティリティ
-- **統合テスト**: 機能間連携、API通信
-- **E2Eテスト**: ユーザーフロー、クリティカルパス
+### Testing Strategy
+- **Unit Tests**: Components, hooks, utilities
+- **Integration Tests**: Feature interactions, API communication
+- **E2E Tests**: User flows, critical paths
 
-## 📡 API 連携
+## 📡 API Integration
 
-### TanStack Query ベースの状態管理
+### TanStack Query-based State Management
 ```typescript
 // hooks/useTodos.ts
 export function useTodos(status?: TodoStatus) {
@@ -193,56 +203,56 @@ export function useNotes(filters?: NoteFilters) {
 }
 ```
 
-## 🎨 デザインシステム
+## 🎨 Design System
 
-### テーマ設定
-- **カラーパレット**: Primary (Blue), Secondary (Gray), Accent colors
-- **タイポグラフィ**: Inter フォント、統一された階層
-- **スペーシング**: 8px grid system
-- **レスポンシブ**: Mobile-first approach
+### Theme Configuration
+- **Color Palette**: Primary (Blue), Secondary (Gray), Accent colors
+- **Typography**: Inter font, unified hierarchy
+- **Spacing**: 8px grid system
+- **Responsive**: Mobile-first approach
 
-### コンポーネント設計
-- **UI Components**: 再利用可能な基本要素
-- **Feature Components**: 機能特化型コンポーネント
-- **Layout Components**: ページ構造・ナビゲーション
+### Component Design
+- **UI Components**: Reusable basic elements
+- **Feature Components**: Function-specific components
+- **Layout Components**: Page structure and navigation
 
-## 🚧 開発ロードマップ
+## 🚧 Development Roadmap
 
-### Phase 1: 基盤整備 ✅
-- [x] プロジェクト構成・アーキテクチャ設計
-- [x] TODO機能の完全実装
-- [x] 認証システム・ユーザー管理
-- [x] 基本UI コンポーネントライブラリ
-- [x] TypeScript型安全性・テスト基盤
+### Phase 1: Foundation Setup ✅
+- [x] Project structure and architecture design
+- [x] Full TODO functionality implementation
+- [x] Authentication system with OIDC
+- [x] Basic UI component library
+- [x] TypeScript type safety and testing foundation
 
-### Phase 2: 新機能開発 ✅
-- [x] カレンダー機能（月間ビュー、イベント管理）
-- [x] メモ機能（リッチエディタ、カテゴリ・タグ）
-- [x] ダッシュボード（リアルタイム統合表示）
-- [x] 機能間データ連携
-- [x] 包括的テストカバレッジ
+### Phase 2: New Feature Development ✅
+- [x] Calendar functionality (monthly view, event management)
+- [x] Notes feature (rich text editor, categories/tags)
+- [x] Dashboard (real-time integrated display)
+- [x] Cross-feature data integration
+- [x] Comprehensive test coverage
 
-### Phase 3: 最適化・拡張 🚧
-- [ ] 分析・レポート機能
-- [ ] 高度な検索・フィルタリング
-- [ ] パフォーマンス最適化
-- [ ] PWA対応
+### Phase 3: Optimization & Enhancement 🚧
+- [ ] Analytics and reporting features
+- [ ] Advanced search and filtering
+- [ ] Performance optimization
+- [ ] PWA support
 
-### Phase 4: エンタープライズ機能
-- [ ] データエクスポート・インポート
-- [ ] 外部カレンダー連携（Google Calendar）
-- [ ] 通知・リマインダーシステム
-- [ ] チーム機能・共有
+### Phase 4: Enterprise Features
+- [ ] Data export/import
+- [ ] External calendar integration (Google Calendar)
+- [ ] Notification and reminder system
+- [ ] Team features and sharing
 
-## 📝 開発ガイドライン
+## 📝 Development Guidelines
 
-### コーディング規約
-- TypeScript strict モード
+### Coding Standards
+- TypeScript strict mode
 - React functional components
-- Server Components優先
-- Tailwind CSS でのスタイリング
+- Server Components first approach
+- Styling with Tailwind CSS
 
-### コミット規約
+### Commit Convention
 ```
 <type>(<scope>): <subject>
 
@@ -250,19 +260,19 @@ export function useNotes(filters?: NoteFilters) {
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-## 📚 ドキュメント
+## 📚 Documentation
 
-詳細な開発情報は `CLAUDE.md` および `docs/` フォルダーを参照してください。
+For detailed development information, refer to `CLAUDE.md` and the `docs/` folder.
 
-## 🤝 貢献
+## 🤝 Contributing
 
-1. このリポジトリをフォーク
-2. feature ブランチを作成
-3. 変更をコミット
-4. テスト実行（必須）
-5. プルリクエストを作成
+1. Fork this repository
+2. Create a feature branch
+3. Commit your changes
+4. Run tests (required)
+5. Create a pull request
 
 ---
 
-**開発者**: sasazame  
-**最終更新**: 2025年6月
+**Developer**: sasazame  
+**Last Updated**: June 2025

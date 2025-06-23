@@ -1,81 +1,81 @@
-# モダンなレイアウトとナビゲーション実装
+# Modern Layout and Navigation Implementation
 
-## 概要
+## Overview
 
-Personal Hubアプリケーションにモダンなレイアウトとナビゲーションシステムを実装しました。この実装では、グラスモーフィズムデザイン、レスポンシブナビゲーション、ページトランジションなどの最新のUIパターンを採用しています。
+This implementation provides a modern layout and navigation system for the Personal Hub application. The implementation adopts the latest UI patterns including glassmorphism design, responsive navigation, and page transitions.
 
-## 実装内容
+## Implementation Details
 
-### 1. グラスモーフィズムヘッダー
+### 1. Glassmorphism Header
 
-#### 特徴
-- 半透明の背景とbackdrop-blurによるガラス効果
-- ブランドロゴにグラデーションとSparklesアイコンを使用
-- レスポンシブ対応（デスクトップ/モバイル）
-- ダークモード対応
+#### Features
+- Semi-transparent background with backdrop-blur glass effect
+- Brand logo with gradients and Sparkles icon
+- Responsive design (desktop/mobile)
+- Dark mode support
 
-#### コンポーネント: `src/components/layout/Header.tsx`
+#### Component: `src/components/layout/Header.tsx`
 ```typescript
-// グラスモーフィズム効果
+// Glassmorphism effect
 className="bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl border-b border-white/20"
 ```
 
-### 2. サイドバーナビゲーション
+### 2. Sidebar Navigation
 
-#### 特徴
-- 折りたたみ可能なサイドバー
-- アクティブリンクのハイライト表示
-- グラデーションによる選択状態の表示
-- アイコン付きナビゲーション項目
+#### Features
+- Collapsible sidebar
+- Active link highlighting
+- Gradient selection state display
+- Icon-based navigation items
 
-#### コンポーネント: `src/components/layout/Sidebar.tsx`
-- Home、TODOs、Calendar、Notes、Analytics、Profile、Settingsのナビゲーション項目
-- 折りたたみ時はアイコンのみ表示
-- ツールチップによるラベル表示
+#### Component: `src/components/layout/Sidebar.tsx`
+- Navigation items for Home, TODOs, Calendar, Notes, Analytics, Profile, Settings
+- Icon-only display when collapsed
+- Label display via tooltips
 
-### 3. ブレッドクラム
+### 3. Breadcrumbs
 
-#### 特徴
-- 現在のページ階層を表示
-- 動的なパス解析
-- 多言語対応（i18n）
+#### Features
+- Display current page hierarchy
+- Dynamic path parsing
+- Multi-language support (i18n)
 
-#### コンポーネント: `src/components/layout/Breadcrumb.tsx`
-- URLパスを自動解析
-- 翻訳可能なセグメント名
-- ホームアイコン付きのルートリンク
+#### Component: `src/components/layout/Breadcrumb.tsx`
+- Automatic URL path parsing
+- Translatable segment names
+- Home icon with root link
 
-### 4. ページトランジション
+### 4. Page Transitions
 
-#### 特徴
-- Framer Motionによるスムーズなページ遷移
-- フェードイン/アウト効果
-- Y軸方向のスライドアニメーション
+#### Features
+- Smooth page transitions with Framer Motion
+- Fade in/out effects
+- Y-axis slide animations
 
-#### コンポーネント: `src/components/layout/PageTransition.tsx`
+#### Component: `src/components/layout/PageTransition.tsx`
 ```typescript
-// アニメーション設定
+// Animation settings
 initial: { opacity: 0, y: 20 }
 animate: { opacity: 1, y: 0 }
 exit: { opacity: 0, y: -20 }
 ```
 
-### 5. 統合レイアウト
+### 5. Integrated Layout
 
-#### 特徴
-- すべてのレイアウトコンポーネントを統合
-- グリッドパターン背景
-- レスポンシブコンテナ
+#### Features
+- Integrates all layout components
+- Grid pattern background
+- Responsive container
 
-#### コンポーネント: `src/components/layout/AppLayout.tsx`
-- Header、Sidebar、Breadcrumb、PageTransitionを統合
-- サイドバーの状態に応じたメインコンテンツの調整
+#### Component: `src/components/layout/AppLayout.tsx`
+- Integrates Header, Sidebar, Breadcrumb, PageTransition
+- Main content adjustment based on sidebar state
 
-## 技術的な実装詳細
+## Technical Implementation Details
 
-### CSS カスタマイズ
+### CSS Customization
 
-`src/app/globals.css`に追加されたグリッドパターン：
+Grid pattern added to `src/app/globals.css`:
 ```css
 .bg-grid-pattern {
   background-image: 
@@ -85,28 +85,28 @@ exit: { opacity: 0, y: -20 }
 }
 ```
 
-### 翻訳キー
+### Translation Keys
 
-以下の翻訳キーが追加されました：
-- `nav.home` - ホーム
+The following translation keys have been added:
+- `nav.home` - Home
 - `nav.todos` - TODO
-- `nav.calendar` - カレンダー
-- `nav.notes` - メモ
-- `nav.analytics` - 分析
-- `nav.dashboard` - ダッシュボード
-- `nav.settings` - 設定
-- `nav.profile` - プロフィール
-- `header.loggingOut` - ログアウト中...
-- `app.subtitle` - タスクを効率的に整理する
+- `nav.calendar` - Calendar
+- `nav.notes` - Notes
+- `nav.analytics` - Analytics
+- `nav.dashboard` - Dashboard
+- `nav.settings` - Settings
+- `nav.profile` - Profile
+- `header.loggingOut` - Logging out...
+- `app.subtitle` - Organize tasks efficiently
 
-### 依存関係
+### Dependencies
 
-新しく追加されたパッケージ：
-- `framer-motion` - ページトランジションとアニメーション効果
+Newly added packages:
+- `framer-motion` - Page transitions and animation effects
 
-## 使用方法
+## Usage
 
-認証済みのページで新しいレイアウトを使用するには、`AppLayout`コンポーネントでラップします：
+To use the new layout on authenticated pages, wrap with the `AppLayout` component:
 
 ```tsx
 import { AppLayout } from '@/components/layout';
@@ -114,30 +114,30 @@ import { AppLayout } from '@/components/layout';
 export default function MyPage() {
   return (
     <AppLayout>
-      {/* ページコンテンツ */}
+      {/* Page content */}
     </AppLayout>
   );
 }
 ```
 
-## アクセシビリティ
+## Accessibility
 
-- すべてのインタラクティブ要素に適切なaria-label
-- キーボードナビゲーション対応
-- フォーカスインジケーター
-- スクリーンリーダー対応
+- Appropriate aria-label for all interactive elements
+- Keyboard navigation support
+- Focus indicators
+- Screen reader support
 
-## パフォーマンス最適化
+## Performance Optimization
 
-- Client Componentsの最小化
-- 遅延レンダリング（モバイルメニュー）
-- CSS transitionによる滑らかなアニメーション
-- 条件付きレンダリングによる不要なDOMの削減
+- Minimize Client Components
+- Lazy rendering (mobile menu)
+- Smooth animations with CSS transitions
+- Reduce unnecessary DOM with conditional rendering
 
-## 今後の拡張予定
+## Future Extension Plans
 
-1. サイドバーの永続的な折りたたみ状態の保存
-2. カスタマイズ可能なナビゲーション項目
-3. ドラッグ＆ドロップによるナビゲーション項目の並び替え
-4. キーボードショートカットの追加
-5. 検索機能の統合
+1. Persistent sidebar collapse state storage
+2. Customizable navigation items
+3. Drag & drop navigation item reordering
+4. Keyboard shortcuts
+5. Integrated search functionality

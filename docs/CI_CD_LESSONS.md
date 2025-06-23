@@ -1,13 +1,13 @@
-# CI/CD実装の学びとベストプラクティス
+# CI/CD Implementation Lessons and Best Practices
 
-## 概要
-Personal Hub（統合アプリケーション）のGitHub Actions CI/CDパイプライン実装時に遭遇した問題と解決策をまとめたドキュメント。
+## Overview
+This document summarizes the issues encountered and solutions found during the implementation of GitHub Actions CI/CD pipeline for Personal Hub (integrated application).
 
-## 主要な学び
+## Key Learnings
 
-### 1. Jest + Playwright競合問題
-**問題**: JestがPlaywrightのE2Eテストファイル（*.spec.ts）を認識してエラー
-**解決策**: 
+### 1. Jest + Playwright Conflict Issue
+**Problem**: Jest recognizes Playwright E2E test files (*.spec.ts) and causes errors
+**Solution**: 
 ```javascript
 // jest.config.js
 testPathIgnorePatterns: [
@@ -15,136 +15,136 @@ testPathIgnorePatterns: [
   '/e2e/',
   '/test-results/',
   '/playwright-report/',
-  '\\.spec\\.(ts|tsx|js)$'  // 重要: PlaywrightのE2Eテストを除外
+  '\\.spec\\.(ts|tsx|js)$'  // Important: Exclude Playwright E2E tests
 ],
 ```
 
-### 2. TypeScript型安全性の重要性
-**問題**: `any`タイプの使用でESLintエラー
-**解決策**: 
+### 2. Importance of TypeScript Type Safety
+**Problem**: ESLint errors due to usage of `any` type
+**Solution**: 
 ```typescript
-// ❌ NG
+// ❌ BAD
 const obj = global as any;
 
-// ✅ OK  
+// ✅ GOOD  
 const obj = global as unknown as { window: Window };
 ```
 
-### 3. CVAライブラリのdefaultVariants問題
-**問題**: `undefined`プロパティでdefaultVariantsが適用されない
-**解決策**:
+### 3. CVA Library defaultVariants Issue
+**Problem**: defaultVariants not applied with `undefined` properties
+**Solution**:
 ```typescript
-// CVA内でundefinedチェックを追加
+// Add undefined check in CVA
 if ((!(variantKey in variantProps) || variantProps[variantKey] === undefined) && defaultValue) {
   classes.push(config.variants[variantKey][defaultValue]);
 }
 ```
 
-### 4. UIコンポーネントテストの現実的アプローチ
-**問題**: 期待するCSSクラスと実際の出力が異なる
-**解決策**: 
+### 4. Practical Approach to UI Component Testing
+**Problem**: Expected CSS classes differ from actual output
+**Solution**: 
 ```typescript
-// テスト時に実際のレンダリング結果を確認
+// Check actual rendering results during testing
 console.log('Button classes:', button.className);
-// 実際の出力に合わせてテストを調整
+// Adjust tests to match actual output
 ```
 
-### 5. モーダルテストでのセレクタ戦略
-**問題**: 複数の「Delete」ボタンが存在する場合の特定
-**解決策**:
+### 5. Selector Strategy in Modal Testing
+**Problem**: Identifying when multiple "Delete" buttons exist
+**Solution**:
 ```typescript
-// DOM構造を利用した特定
+// Use DOM structure for identification
 const modal = screen.getByText('Delete Todo').closest('div');
 const confirmButton = modal!.querySelector('button:last-child');
 ```
 
-## CI/CDパイプライン設計原則
+## CI/CD Pipeline Design Principles
 
-### 1. 段階的実行
+### 1. Staged Execution
 ```yaml
-# 依存関係のある実行順序
+# Execution order with dependencies
 lint-and-type-check → [unit-test, build] → e2e-test → deploy
 ```
 
-### 2. キャッシュ戦略
-- Node.js依存関係のキャッシュ
-- Next.jsビルドキャッシュ
-- Playwrightブラウザキャッシュ
+### 2. Caching Strategy
+- Node.js dependencies cache
+- Next.js build cache
+- Playwright browser cache
 
-### 3. 失敗時の対応
-- 各段階での適切なエラーハンドリング
-- アーティファクトの保存（テスト結果、ビルド成果物）
-- 開発者への明確なフィードバック
+### 3. Failure Handling
+- Appropriate error handling at each stage
+- Artifact preservation (test results, build outputs)
+- Clear feedback to developers
 
-## ローカル開発のベストプラクティス
+## Local Development Best Practices
 
-### 1. Push前の必須チェック
+### 1. Required Checks Before Push
 ```bash
 npm run type-check && npm run lint && npm test && npm run build
 ```
 
-### 2. テスト作成時の注意点
-- 実際のコンポーネントの動作を確認してからテストを書く
-- モックよりも実際の動作に近いテストを優先
-- 非同期処理は`waitFor`を適切に使用
+### 2. Considerations When Creating Tests
+- Verify actual component behavior before writing tests
+- Prioritize tests that are closer to real behavior over mocks
+- Use `waitFor` appropriately for async operations
 
-### 3. 型安全性の維持
-- `any`の使用を避け、`unknown`+型ガードを使用
-- 外部ライブラリの型定義を適切に拡張
-- テストでも型安全性を重視
+### 3. Maintaining Type Safety
+- Avoid using `any`, use `unknown` + type guards
+- Properly extend type definitions for external libraries
+- Emphasize type safety in tests as well
 
-### 6. E2Eテストでのサーバー起動問題
-**問題**: CIでPlaywrightがサーバー起動待機でハング
-**解決策**:
+### 6. Server Startup Issues in E2E Tests
+**Problem**: Playwright hangs waiting for server startup in CI
+**Solution**:
 ```typescript
-// playwright.config.ts - CI/ローカル環境分離
+// playwright.config.ts - CI/Local environment separation
 webServer: process.env.CI ? {
-  command: 'npm run start',        // CI: ビルド済み使用
+  command: 'npm run start',        // CI: Use pre-built
   reuseExistingServer: false,
 } : {
-  command: 'npm run dev',          // ローカル: 開発サーバー
+  command: 'npm run dev',          // Local: Development server
   reuseExistingServer: true,
 }
 ```
 
-**スモークテスト戦略**:
-- 完全E2Eの代わりにスモークテストを実装
-- API依存を排除し、アプリの基本動作確認
-- 認証フローを考慮した現実的なテスト
+**Smoke Test Strategy**:
+- Implement smoke tests instead of full E2E
+- Eliminate API dependencies and verify basic app behavior
+- Realistic tests considering authentication flow
 
-## 今後の改善点
+## Future Improvements
 
-1. **Codecov統合**: テストカバレッジの可視化
-2. **Performance Budget**: Lighthouseスコアの基準設定
-3. **Branch Protection**: mainブランチのプロテクションルール
-4. **Semantic Release**: 自動バージョニング
-5. **E2E完全復活**: ~~バックエンドAPI利用可能時の完全E2Eテスト~~ CI環境でのE2Eテスト再有効化（[Issue #24](https://github.com/sasazame/personal-hub/issues/24)）
+1. **Codecov Integration**: Test coverage visualization
+2. **Performance Budget**: Lighthouse score baseline setting
+3. **Branch Protection**: Main branch protection rules
+4. **Semantic Release**: Automatic versioning
+5. **Full E2E Restoration**: ~~Complete E2E tests when backend API is available~~ Re-enable E2E tests in CI environment ([Issue #24](https://github.com/sasazame/personal-hub/issues/24))
 
-## 結論
-CI/CDパイプラインの成功は、ローカル開発環境での品質担保が基盤。
-型安全性、テスト設計、実装の現実性を重視することで、
-安定したパイプラインが構築可能。
+## Conclusion
+The success of CI/CD pipeline is based on quality assurance in local development environment.
+By emphasizing type safety, test design, and implementation realism,
+a stable pipeline can be built.
 
-## 追記: E2Eテストの一時無効化（2025-05-31）
+## Addendum: Temporary Disabling of E2E Tests (2025-05-31)
 
-### 決定事項
-CI環境でのE2Eテスト実行に技術的課題が発生したため、一時的に無効化。
+### Decision
+Temporarily disabled E2E test execution in CI environment due to technical challenges.
 
-### 理由
-1. **環境差異**: CI環境でのNext.js本番サーバー起動タイミング問題
-2. **リソース制約**: GitHub Actions環境でのポート管理とプロセス制御
-3. **開発速度優先**: 完全な解決より開発継続を優先
+### Reasons
+1. **Environment Differences**: Next.js production server startup timing issues in CI environment
+2. **Resource Constraints**: Port management and process control in GitHub Actions environment
+3. **Development Speed Priority**: Prioritize development continuation over complete resolution
 
-### 暫定対応
-- ローカルでのE2Eテスト実行を必須化
-- PR要件ドキュメント（`docs/PR_REQUIREMENTS.md`）でプロセスを明文化
-- Issue #24で長期的な解決を追跡
+### Interim Measures
+- Made local E2E test execution mandatory
+- Documented process in PR requirements document (`docs/PR_REQUIREMENTS.md`)
+- Track long-term solution with Issue #24
 
-### 学んだこと
-- CI環境特有の制約を早期に把握する重要性
-- 完璧を求めすぎず、実用的な妥協点を見つける判断
-- ドキュメント化による運用カバーの有効性
+### Lessons Learned
+- Importance of early understanding of CI environment-specific constraints
+- Judgment to find practical compromises without seeking perfection
+- Effectiveness of operational coverage through documentation
 
 ---
-更新日: 2025-05-31
-作成者: Claude Code
+Last Updated: 2025-05-31
+Author: Claude Code
