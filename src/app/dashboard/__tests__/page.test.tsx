@@ -121,7 +121,7 @@ jest.mock('@/contexts/LocaleContext', () => ({
 
 const mockAuthContext = {
   user: {
-    id: 1,
+    id: '1',
     username: 'testuser', 
     email: 'test@example.com',
     createdAt: new Date().toISOString(),
@@ -133,6 +133,7 @@ const mockAuthContext = {
   logout: jest.fn(),
   clearError: jest.fn(),
   checkAuth: jest.fn(),
+  handleOAuthCallback: jest.fn(),
   isAuthenticated: true,
   isLoading: false,
   error: null,

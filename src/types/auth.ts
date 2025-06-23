@@ -1,7 +1,7 @@
 // Authentication related types
 
 export interface User {
-  id: number;
+  id: string;
   username: string;
   email: string;
   createdAt: string;

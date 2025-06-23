@@ -65,7 +65,7 @@ jest.mock('next-intl', () => ({
 }));
 
 const mockUser = {
-  id: 1,
+  id: '1',
   username: 'testuser',
   email: 'test@example.com',
   createdAt: '2024-01-01T00:00:00Z',

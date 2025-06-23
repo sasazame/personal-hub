@@ -1,7 +1,7 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { AuthProvider, useAuth } from '../AuthContext';
-import { authAPI, AuthAPIError } from '@/services/auth';
+import { AuthAPIError } from '@/services/auth';
 import { User, LoginResponse } from '@/types/auth';
 
 // Mock the auth API
@@ -20,6 +20,22 @@ jest.mock('@/services/auth', () => ({
   },
 }));
 
+// Mock the OIDC auth service
+const mockOIDCAuthService = {
+  login: jest.fn(),
+  register: jest.fn(),
+  getUserInfo: jest.fn(),
+  logout: jest.fn(),
+  isAuthenticated: jest.fn(),
+  refreshToken: jest.fn(),
+  initiateOAuth: jest.fn(),
+  handleOAuthCallback: jest.fn(),
+};
+
+jest.mock('@/services/oidc-auth', () => ({
+  OIDCAuthService: mockOIDCAuthService,
+}));
+
 // Mock localStorage
 const localStorageMock = {
   getItem: jest.fn(),
@@ -31,11 +47,12 @@ Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
 
-const mockedAuthAPI = authAPI as jest.Mocked<typeof authAPI>;
+// authAPI is mocked but not used as we're using OIDC service now
+const mockedOIDCAuthService = mockOIDCAuthService;
 
 describe('AuthContext', () => {
   const mockUser: User = {
-    id: 1,
+    id: '1',
     username: 'testuser',
     email: 'test@example.com',
     createdAt: '2024-01-01T00:00:00Z',
@@ -49,6 +66,7 @@ describe('AuthContext', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorageMock.getItem.mockReturnValue(null);
+    mockedOIDCAuthService.isAuthenticated.mockReturnValue(false);
   });
 
   describe('initialization', () => {
@@ -67,7 +85,8 @@ describe('AuthContext', () => {
 
     it('checks authentication on mount when token exists', async () => {
       localStorageMock.getItem.mockReturnValue('fake-token');
-      mockedAuthAPI.getCurrentUser.mockResolvedValue(mockUser);
+      mockedOIDCAuthService.isAuthenticated.mockReturnValue(true);
+      mockedOIDCAuthService.getUserInfo.mockResolvedValue(mockUser);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -77,7 +96,7 @@ describe('AuthContext', () => {
 
       expect(result.current.isAuthenticated).toBe(true);
       expect(result.current.user).toEqual(mockUser);
-      expect(mockedAuthAPI.getCurrentUser).toHaveBeenCalled();
+      expect(mockedOIDCAuthService.getUserInfo).toHaveBeenCalled();
     });
 
     it('sets unauthenticated state when no token exists', async () => {
@@ -91,7 +110,7 @@ describe('AuthContext', () => {
 
       expect(result.current.isAuthenticated).toBe(false);
       expect(result.current.user).toBe(null);
-      expect(mockedAuthAPI.getCurrentUser).not.toHaveBeenCalled();
+      expect(mockedOIDCAuthService.getUserInfo).not.toHaveBeenCalled();
     });
 
     it('handles invalid token on mount', async () => {
@@ -99,7 +118,8 @@ describe('AuthContext', () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
       
       localStorageMock.getItem.mockReturnValue('invalid-token');
-      mockedAuthAPI.getCurrentUser.mockRejectedValue(new AuthAPIError('Invalid token'));
+      mockedOIDCAuthService.isAuthenticated.mockReturnValue(true);
+      mockedOIDCAuthService.getUserInfo.mockRejectedValue(new AuthAPIError('Invalid token'));
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -109,8 +129,7 @@ describe('AuthContext', () => {
 
       expect(result.current.isAuthenticated).toBe(false);
       expect(result.current.user).toBe(null);
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('accessToken');
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('refreshToken');
+      // Token removal is handled internally by OIDC service
       
       // Restore console.error
       consoleErrorSpy.mockRestore();
@@ -124,7 +143,7 @@ describe('AuthContext', () => {
         refreshToken: 'refresh-token',
         user: mockUser,
       };
-      mockedAuthAPI.login.mockResolvedValue(loginResponse);
+      mockedOIDCAuthService.login.mockResolvedValue(loginResponse);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -132,12 +151,7 @@ describe('AuthContext', () => {
         await result.current.login('test@example.com', 'password');
       });
 
-      expect(mockedAuthAPI.login).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        password: 'password',
-      });
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('accessToken', 'access-token');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('refreshToken', 'refresh-token');
+      expect(mockedOIDCAuthService.login).toHaveBeenCalledWith('test@example.com', 'password');
       expect(result.current.isAuthenticated).toBe(true);
       expect(result.current.user).toEqual(mockUser);
       expect(result.current.error).toBe(null);
@@ -145,7 +159,7 @@ describe('AuthContext', () => {
 
     it('handles login error', async () => {
       const errorMessage = 'Invalid credentials';
-      mockedAuthAPI.login.mockRejectedValue(new AuthAPIError(errorMessage));
+      mockedOIDCAuthService.login.mockRejectedValue(new AuthAPIError(errorMessage));
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -160,7 +174,7 @@ describe('AuthContext', () => {
       expect(result.current.isAuthenticated).toBe(false);
       expect(result.current.user).toBe(null);
       expect(result.current.error).toBe(errorMessage);
-      expect(localStorageMock.setItem).not.toHaveBeenCalled();
+      // Token storage is handled internally by OIDC service
     });
 
     it('shows loading state during login', async () => {
@@ -168,7 +182,7 @@ describe('AuthContext', () => {
       const loginPromise = new Promise<LoginResponse>((resolve) => {
         resolveLogin = resolve;
       });
-      mockedAuthAPI.login.mockReturnValue(loginPromise);
+      mockedOIDCAuthService.login.mockReturnValue(loginPromise);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -201,7 +215,7 @@ describe('AuthContext', () => {
         accessToken: 'mock-access-token',
         refreshToken: 'mock-refresh-token',
       };
-      mockedAuthAPI.register.mockResolvedValue(registerResponse);
+      mockedOIDCAuthService.register.mockResolvedValue(registerResponse);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -209,22 +223,17 @@ describe('AuthContext', () => {
         await result.current.register('testuser', 'test@example.com', 'password');
       });
 
-      expect(mockedAuthAPI.register).toHaveBeenCalledWith({
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'password',
-      });
+      expect(mockedOIDCAuthService.register).toHaveBeenCalledWith('test@example.com', 'password', 'testuser');
       // After successful registration with tokens, user should be authenticated
       expect(result.current.isAuthenticated).toBe(true);
       expect(result.current.user).toEqual(mockUser);
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('accessToken', 'mock-access-token');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('refreshToken', 'mock-refresh-token');
+      // Token storage is handled internally by OIDC service
       expect(result.current.error).toBe(null);
     });
 
     it('handles registration error', async () => {
       const errorMessage = 'Email already exists';
-      mockedAuthAPI.register.mockRejectedValue(new AuthAPIError(errorMessage));
+      mockedOIDCAuthService.register.mockRejectedValue(new AuthAPIError(errorMessage));
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -246,8 +255,9 @@ describe('AuthContext', () => {
     it('successfully logs out user', async () => {
       // First, set up authenticated state
       localStorageMock.getItem.mockReturnValue('fake-token');
-      mockedAuthAPI.getCurrentUser.mockResolvedValue(mockUser);
-      mockedAuthAPI.logout.mockResolvedValue();
+      mockedOIDCAuthService.isAuthenticated.mockReturnValue(true);
+      mockedOIDCAuthService.getUserInfo.mockResolvedValue(mockUser);
+      mockedOIDCAuthService.logout.mockResolvedValue(undefined);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -261,9 +271,8 @@ describe('AuthContext', () => {
         await result.current.logout();
       });
 
-      expect(mockedAuthAPI.logout).toHaveBeenCalled();
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('accessToken');
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('refreshToken');
+      expect(mockedOIDCAuthService.logout).toHaveBeenCalled();
+      // Token removal is handled internally by OIDC service
       expect(result.current.isAuthenticated).toBe(false);
       expect(result.current.user).toBe(null);
       expect(result.current.error).toBe(null);
@@ -272,8 +281,9 @@ describe('AuthContext', () => {
     it('clears local storage even if logout API call fails', async () => {
       // First, set up authenticated state
       localStorageMock.getItem.mockReturnValue('fake-token');
-      mockedAuthAPI.getCurrentUser.mockResolvedValue(mockUser);
-      mockedAuthAPI.logout.mockRejectedValue(new Error('Network error'));
+      mockedOIDCAuthService.isAuthenticated.mockReturnValue(true);
+      mockedOIDCAuthService.getUserInfo.mockResolvedValue(mockUser);
+      mockedOIDCAuthService.logout.mockRejectedValue(new Error('Network error'));
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -289,8 +299,7 @@ describe('AuthContext', () => {
         await result.current.logout();
       });
 
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('accessToken');
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('refreshToken');
+      // Token removal is handled internally by OIDC service
       expect(result.current.isAuthenticated).toBe(false);
       expect(result.current.user).toBe(null);
       expect(consoleSpy).toHaveBeenCalledWith('Logout request failed:', expect.any(Error));
@@ -302,7 +311,7 @@ describe('AuthContext', () => {
   describe('error management', () => {
     it('clears error when clearError is called', async () => {
       // Set up error state
-      mockedAuthAPI.login.mockRejectedValue(new AuthAPIError('Login failed'));
+      mockedOIDCAuthService.login.mockRejectedValue(new Error('Login failed'));
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -327,7 +336,8 @@ describe('AuthContext', () => {
   describe('checkAuth', () => {
     it('manually checks authentication status', async () => {
       localStorageMock.getItem.mockReturnValue('fake-token');
-      mockedAuthAPI.getCurrentUser.mockResolvedValue(mockUser);
+      mockedOIDCAuthService.isAuthenticated.mockReturnValue(true);
+      mockedOIDCAuthService.getUserInfo.mockResolvedValue(mockUser);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 

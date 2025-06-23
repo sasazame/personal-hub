@@ -25,7 +25,9 @@ export const LoginButton: React.FC<LoginButtonProps> = ({
 
   const handleLogin = async () => {
     try {
-      await loginWithOIDC(provider);
+      if (provider && (provider === 'google' || provider === 'github')) {
+        await loginWithOIDC(provider);
+      }
     } catch (error) {
       console.error('Login error:', error);
     }

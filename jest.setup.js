@@ -7,9 +7,10 @@ const originalConsoleWarn = console.warn;
 console.error = (...args) => {
   // Suppress specific React warnings during tests
   if (
-    typeof args[0] === 'string' && 
-    (args[0].includes('An update to') && args[0].includes('was not wrapped in act(...)')) ||
-    args[0].includes('Query data cannot be undefined')
+    typeof args[0] === 'string' && (
+      (args[0].includes('An update to') && args[0].includes('was not wrapped in act(...)')) ||
+      args[0].includes('Query data cannot be undefined')
+    )
   ) {
     return;
   }
