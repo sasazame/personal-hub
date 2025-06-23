@@ -27,15 +27,18 @@ export class OIDCAuthService {
     const response = await apiClient.post('/auth/login', { email, password });
     const data = response.data;
     
-    // Store tokens
+    // Store tokens and user info
     localStorage.setItem('accessToken', data.accessToken);
     if (data.refreshToken) {
       localStorage.setItem('refreshToken', data.refreshToken);
     }
+    if (data.user) {
+      localStorage.setItem('user', JSON.stringify(data.user));
+    }
     
     // Debug token in development
     if (process.env.NODE_ENV === 'development') {
-      console.log('OIDC Login: Stored access token');
+      console.log('OIDC Login: Stored access token and user info');
       debugToken(data.accessToken);
     }
     
@@ -57,10 +60,13 @@ export class OIDCAuthService {
     if (data.refreshToken) {
       localStorage.setItem('refreshToken', data.refreshToken);
     }
+    if (data.user) {
+      localStorage.setItem('user', JSON.stringify(data.user));
+    }
     
     // Debug token in development
     if (process.env.NODE_ENV === 'development') {
-      console.log('OIDC Register: Stored access token');
+      console.log('OIDC Register: Stored access token and user info');
       debugToken(data.accessToken);
     }
     
@@ -99,10 +105,13 @@ export class OIDCAuthService {
     if (data.refreshToken) {
       localStorage.setItem('refreshToken', data.refreshToken);
     }
+    if (data.user) {
+      localStorage.setItem('user', JSON.stringify(data.user));
+    }
     
     // Debug token in development
     if (process.env.NODE_ENV === 'development') {
-      console.log('OIDC OAuth Callback: Stored access token');
+      console.log('OIDC OAuth Callback: Stored access token and user info');
       debugToken(data.accessToken);
     }
     
@@ -113,8 +122,26 @@ export class OIDCAuthService {
    * Get current user info
    */
   static async getUserInfo(): Promise<AuthResponse['user']> {
-    const response = await apiClient.get('/oauth2/userinfo');
-    return response.data;
+    // Try to get user info from localStorage first (stored during login)
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        return JSON.parse(storedUser);
+      } catch (error) {
+        console.warn('Failed to parse stored user:', error);
+      }
+    }
+    
+    // If no stored user, try to fetch from backend
+    // Note: Both /oauth2/userinfo and /auth/me endpoints return 403 currently
+    try {
+      const response = await apiClient.get('/auth/me');
+      return response.data;
+    } catch (error) {
+      // If backend endpoints are not available, return null
+      console.warn('Unable to fetch user info from backend:', error);
+      throw error;
+    }
   }
   
   /**
@@ -133,10 +160,13 @@ export class OIDCAuthService {
     if (data.refreshToken) {
       localStorage.setItem('refreshToken', data.refreshToken);
     }
+    if (data.user) {
+      localStorage.setItem('user', JSON.stringify(data.user));
+    }
     
     // Debug token in development
     if (process.env.NODE_ENV === 'development') {
-      console.log('OIDC Refresh: Stored new access token');
+      console.log('OIDC Refresh: Stored new access token and user info');
       debugToken(data.accessToken);
     }
     
@@ -181,6 +211,7 @@ export class OIDCAuthService {
     } finally {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
       // Clear OAuth state if exists
       sessionStorage.removeItem('oauth_state');
       sessionStorage.removeItem('oauth_provider');
