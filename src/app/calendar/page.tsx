@@ -139,7 +139,7 @@ function CalendarPage() {
             </button>
             
             <h2 className="text-xl font-semibold text-foreground min-w-[200px] text-center">
-              {format(currentDate, 'yyyy年 M月')}
+              {format(currentDate, 'MMMM yyyy')}
             </h2>
             
             <button
