@@ -56,13 +56,23 @@ describe('OAuthCallbackPage', () => {
     });
   });
 
-  it('renders processing state initially', () => {
+  it('renders processing state initially', async () => {
     (useSearchParams as jest.Mock).mockReturnValue({
-      get: jest.fn().mockReturnValue('test-value'),
+      get: jest.fn((param: string) => {
+        if (param === 'code') return 'test-code';
+        if (param === 'state') return 'test-state';
+        return null;
+      }),
+    });
+
+    mockHandleOAuthCallback.mockResolvedValueOnce({
+      accessToken: 'test-token',
+      user: { id: '1', email: 'test@example.com' }
     });
 
     render(<OAuthCallbackPage />);
 
+    // The component shows the raw translation key since our mock returns it unchanged
     expect(screen.getByText('Processing authentication...')).toBeInTheDocument();
   });
 

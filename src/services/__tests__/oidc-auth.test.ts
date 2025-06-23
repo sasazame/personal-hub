@@ -109,7 +109,11 @@ describe('OIDCAuthService', () => {
 
       const result = await OIDCAuthService.initiateOAuth('google');
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/auth/oidc/google/authorize');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/auth/oidc/google/authorize', {
+        params: {
+          redirect_url: 'http://localhost:3000/auth/callback'
+        }
+      });
       expect(result).toEqual(mockResponse.data);
     });
   });

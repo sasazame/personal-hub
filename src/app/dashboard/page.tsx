@@ -23,17 +23,30 @@ function DashboardPage() {
   const t = useTranslations();
 
   // Fetch real data
-  const { data: todosResponse } = useQuery({
+  const { data: todosResponse, error: todosError } = useQuery({
     queryKey: ['todos', 'ALL'],
     queryFn: () => todoApi.getAll(),
+    retry: (failureCount, error: unknown) => {
+      // Don't retry on 403 errors in development
+      if ((error as { response?: { status?: number } })?.response?.status === 403 && process.env.NODE_ENV === 'development') {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
   const { data: todaysEvents = [] } = useTodaysEvents();
   const { data: recentNotes = [] } = useRecentNotes(3);
 
+  // Handle 403 errors in development gracefully
   const todos = todosResponse?.content || [];
   const incompleteTodos = todos.filter(todo => todo.status !== 'DONE');
   const completedTodos = todos.filter(todo => todo.status === 'DONE');
   const completionRate = todos.length > 0 ? Math.round((completedTodos.length / todos.length) * 100) : 0;
+  
+  // Log error for debugging but don't break the UI
+  if (todosError && process.env.NODE_ENV === 'development') {
+    console.warn('Dashboard: Failed to fetch todos (this is expected in development without backend):', todosError);
+  }
 
   const features = [
     {

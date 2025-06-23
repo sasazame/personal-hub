@@ -34,6 +34,14 @@ export default function OAuthCallbackPage() {
           if (refreshToken) {
             localStorage.setItem('refreshToken', refreshToken);
           }
+          
+          // Debug token in development
+          if (process.env.NODE_ENV === 'development') {
+            console.log('OAuth Callback: Received tokens directly from URL');
+            const { debugToken } = await import('@/utils/jwt');
+            debugToken(accessToken);
+          }
+          
           setStatus('success');
           setTimeout(() => {
             router.push('/dashboard');

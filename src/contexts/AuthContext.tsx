@@ -179,6 +179,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       console.warn('Logout request failed:', error);
     } finally {
       // Always clear local storage and update state
+      const { clearAuthTokens } = await import('@/lib/api-client');
+      clearAuthTokens();
       dispatch({ type: 'AUTH_LOGOUT' });
       showSuccess('You have been logged out successfully.');
     }
@@ -189,9 +191,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const checkAuth = async (): Promise<void> => {
-    dispatch({ type: 'AUTH_LOADING' });
-    
     try {
+      // Clean up expired tokens first
+      const { cleanupExpiredTokens } = await import('@/lib/api-client');
+      cleanupExpiredTokens();
+      
       const { OIDCAuthService } = await import('@/services/oidc-auth');
       
       if (!OIDCAuthService.isAuthenticated()) {
@@ -199,16 +203,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return;
       }
 
+      dispatch({ type: 'AUTH_LOADING' });
       const user = await OIDCAuthService.getUserInfo();
       dispatch({ type: 'AUTH_SUCCESS', payload: user });
     } catch (error) {
       // Clear tokens and logout on auth check failure
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      const { clearAuthTokens } = await import('@/lib/api-client');
+      clearAuthTokens();
       dispatch({ type: 'AUTH_LOGOUT' });
       
-      // Log error for debugging
-      console.error('Auth check failed:', error);
+      // Log error for debugging, don't show to user during silent auth check
+      console.warn('Auth check failed:', error);
     }
   };
 
@@ -216,6 +221,54 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     checkAuth();
   }, []);
+
+  // Set up automatic token refresh timer
+  useEffect(() => {
+    if (!state.isAuthenticated || !state.user) {
+      return;
+    }
+
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      return;
+    }
+
+    try {
+      // Decode JWT to get expiration time
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expiresAt = payload.exp * 1000; // Convert to milliseconds
+      const now = Date.now();
+      const expiresIn = expiresAt - now;
+      
+      // If token expires within next hour, set up refresh timer
+      if (expiresIn > 0 && expiresIn <= 60 * 60 * 1000) { // 1 hour
+        // Schedule refresh 1 minute before expiration
+        const refreshTime = Math.max(expiresIn - 60 * 1000, 0);
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`Token refresh scheduled in ${Math.round(refreshTime / 1000)} seconds`);
+        }
+        
+        const timeoutId = setTimeout(async () => {
+          try {
+            const { OIDCAuthService } = await import('@/services/oidc-auth');
+            await OIDCAuthService.refreshToken();
+            
+            if (process.env.NODE_ENV === 'development') {
+              console.log('Proactive token refresh completed successfully');
+            }
+          } catch (error) {
+            console.warn('Proactive token refresh failed:', error);
+            // Don't logout here - let the response interceptor handle it
+          }
+        }, refreshTime);
+
+        return () => clearTimeout(timeoutId);
+      }
+    } catch (error) {
+      console.warn('Failed to schedule token refresh:', error);
+    }
+  }, [state.isAuthenticated, state.user]);
 
   const value: AuthContextType = {
     ...state,

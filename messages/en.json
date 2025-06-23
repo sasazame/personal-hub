@@ -43,6 +43,36 @@
     "logout": "Logout",
     "loggingOut": "Logging out..."
   },
+  "dashboard": {
+    "welcome": "Welcome to Personal Hub",
+    "newTodo": "New TODO",
+    "newNote": "New Note",
+    "quickStats": "Quick Stats",
+    "todaysTodos": "Today's TODOs",
+    "noTodos": "No TODOs for today",
+    "recentNotes": "Recent Notes",
+    "noNotes": "No notes yet",
+    "todayEvents": "Today's Events",
+    "noEvents": "No events for today",
+    "viewAll": "View All",
+    "viewAllArrow": "View All →",
+    "dueToday": "Due Today",
+    "thisWeek": "This Week",
+    "completed": "Completed",
+    "totalNotes": "Total Notes",
+    "taskManagement": "Task management and progress tracking",
+    "incompleteTasks": "{count} incomplete tasks",
+    "scheduleManagement": "Schedule and event management",
+    "todayEventsCount": "Today's events: {count}",
+    "noteDocumentCreation": "Note and document creation",
+    "recentNotesCount": "{count} recent notes",
+    "productivityAnalysis": "Productivity analysis and improvement",
+    "allDay": "All Day",
+    "todoProgressSummary": "TODO Progress Summary",
+    "totalTasks": "Total Tasks",
+    "incomplete": "Incomplete",
+    "completionRate": "Completion Rate"
+  },
   "auth": {
     "login": "Login",
     "loginDescription": "Enter your credentials to access your account",
@@ -205,22 +235,6 @@
       "special": "One special character"
     }
   },
-  "dashboard": {
-    "title": "Dashboard",
-    "welcome": "Welcome to Personal Hub",
-    "todayEvents": "Today's Events",
-    "recentNotes": "Recent Notes",
-    "todoProgress": "TODO Progress",
-    "viewAll": "View All",
-    "noEvents": "No events scheduled for today",
-    "noNotes": "No recent notes",
-    "features": {
-      "todos": "Manage TODOs",
-      "calendar": "Check Schedule",
-      "notes": "Record Notes",
-      "analytics": "Analyze Progress"
-    }
-  },
   "calendar": {
     "title": "Calendar",
     "events": "Events",
@@ -333,22 +347,6 @@
   },
   "language": {
     "japanese": "Japanese"
-  },
-  "dashboard": {
-    "taskManagement": "Task management and progress tracking",
-    "incompleteTasks": "{count} incomplete tasks",
-    "scheduleManagement": "Schedule and event management",
-    "todayEventsCount": "Today's events: {count}",
-    "noteDocumentCreation": "Note and document creation",
-    "recentNotesCount": "{count} recent notes",
-    "productivityAnalysis": "Productivity analysis and improvement",
-    "newTodo": "New TODO",
-    "allDay": "All Day",
-    "viewAllArrow": "View All →",
-    "todoProgressSummary": "TODO Progress Summary",
-    "totalTasks": "Total Tasks",
-    "incomplete": "Incomplete",
-    "completionRate": "Completion Rate"
   },
   "legal": {
     "terms": {

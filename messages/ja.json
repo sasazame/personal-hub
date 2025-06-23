@@ -43,6 +43,36 @@
     "logout": "ログアウト",
     "loggingOut": "ログアウト中..."
   },
+  "dashboard": {
+    "welcome": "Personal Hubへようこそ",
+    "newTodo": "新しいTODO",
+    "newNote": "新しいメモ",
+    "quickStats": "クイック統計",
+    "todaysTodos": "今日のTODO",
+    "noTodos": "今日のTODOはありません",
+    "recentNotes": "最近のメモ", 
+    "noNotes": "メモはまだありません",
+    "todayEvents": "今日のイベント",
+    "noEvents": "今日のイベントはありません",
+    "viewAll": "すべて表示",
+    "viewAllArrow": "全て見る →",
+    "dueToday": "今日が期限",
+    "thisWeek": "今週",
+    "completed": "完了済み",
+    "totalNotes": "メモ総数",
+    "taskManagement": "タスクの管理と進捗確認",
+    "incompleteTasks": "{count}件の未完了タスク",
+    "scheduleManagement": "スケジュールとイベント管理",
+    "todayEventsCount": "今日のイベント: {count}件",
+    "noteDocumentCreation": "メモとドキュメント作成",
+    "recentNotesCount": "{count}件の最近のメモ",
+    "productivityAnalysis": "生産性の分析と改善",
+    "allDay": "終日",
+    "todoProgressSummary": "TODO進捗サマリー",
+    "totalTasks": "総タスク数",
+    "incomplete": "未完了",
+    "completionRate": "完了率"
+  },
   "auth": {
     "login": "ログイン",
     "loginDescription": "認証情報を入力してアカウントにアクセスしてください",
@@ -205,22 +235,6 @@
       "special": "特殊文字を1文字以上"
     }
   },
-  "dashboard": {
-    "title": "ダッシュボード",
-    "welcome": "Personal Hubへようこそ",
-    "todayEvents": "今日のイベント",
-    "recentNotes": "最近のメモ",
-    "todoProgress": "TODOの進捗",
-    "viewAll": "全て見る",
-    "noEvents": "今日の予定はありません",
-    "noNotes": "最近のメモはありません",
-    "features": {
-      "todos": "TODOを管理",
-      "calendar": "予定を確認",
-      "notes": "メモを記録",
-      "analytics": "進捗を分析"
-    }
-  },
   "calendar": {
     "title": "カレンダー",
     "events": "イベント",
@@ -333,22 +347,6 @@
   },
   "language": {
     "japanese": "日本語"
-  },
-  "dashboard": {
-    "taskManagement": "タスクの管理と進捗確認",
-    "incompleteTasks": "{count}件の未完了タスク",
-    "scheduleManagement": "スケジュールとイベント管理",
-    "todayEventsCount": "今日のイベント: {count}件",
-    "noteDocumentCreation": "メモとドキュメント作成",
-    "recentNotesCount": "{count}件の最近のメモ",
-    "productivityAnalysis": "生産性の分析と改善",
-    "newTodo": "新しいTODO",
-    "allDay": "終日",
-    "viewAllArrow": "全て見る →",
-    "todoProgressSummary": "TODO進捗サマリー",
-    "totalTasks": "総タスク数",
-    "incomplete": "未完了",
-    "completionRate": "完了率"
   },
   "legal": {
     "terms": {

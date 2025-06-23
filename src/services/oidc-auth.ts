@@ -1,4 +1,5 @@
 import apiClient from '@/lib/api-client';
+import { hasValidAccessToken, debugToken, isTokenExpired as isJWTExpired } from '@/utils/jwt';
 
 export interface AuthResponse {
   accessToken: string;
@@ -32,6 +33,12 @@ export class OIDCAuthService {
       localStorage.setItem('refreshToken', data.refreshToken);
     }
     
+    // Debug token in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('OIDC Login: Stored access token');
+      debugToken(data.accessToken);
+    }
+    
     return data;
   }
   
@@ -49,6 +56,12 @@ export class OIDCAuthService {
     localStorage.setItem('accessToken', data.accessToken);
     if (data.refreshToken) {
       localStorage.setItem('refreshToken', data.refreshToken);
+    }
+    
+    // Debug token in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('OIDC Register: Stored access token');
+      debugToken(data.accessToken);
     }
     
     return data;
@@ -87,6 +100,12 @@ export class OIDCAuthService {
       localStorage.setItem('refreshToken', data.refreshToken);
     }
     
+    // Debug token in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('OIDC OAuth Callback: Stored access token');
+      debugToken(data.accessToken);
+    }
+    
     return data;
   }
   
@@ -115,7 +134,39 @@ export class OIDCAuthService {
       localStorage.setItem('refreshToken', data.refreshToken);
     }
     
+    // Debug token in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('OIDC Refresh: Stored new access token');
+      debugToken(data.accessToken);
+    }
+    
     return data;
+  }
+
+  /**
+   * Get valid token (refresh if needed)
+   */
+  static async getValidToken(): Promise<string | null> {
+    const accessToken = localStorage.getItem('accessToken');
+    
+    if (!accessToken) {
+      return null;
+    }
+
+    // Check if token is expired (with 1 minute buffer)
+    if (isJWTExpired(accessToken, 60)) {
+      try {
+        const response = await this.refreshToken();
+        return response.accessToken;
+      } catch (error) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Failed to refresh token:', error);
+        }
+        return null;
+      }
+    }
+
+    return accessToken;
   }
   
   /**
@@ -140,49 +191,16 @@ export class OIDCAuthService {
    * Check if user is authenticated
    */
   static isAuthenticated(): boolean {
-    const token = localStorage.getItem('accessToken');
-    if (!token) return false;
-    
-    // Check if token is expired
-    try {
-      const decoded = this.decodeJWT(token);
-      if (!decoded || !decoded.exp) return false;
-      
-      const currentTime = Date.now() / 1000;
-      return decoded.exp > currentTime;
-    } catch {
-      return false;
-    }
+    return hasValidAccessToken();
   }
   
-  /**
-   * Decode JWT token
-   */
-  private static decodeJWT(token: string): { exp?: number } | null {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split('')
-          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-          .join('')
-      );
-      return JSON.parse(jsonPayload);
-    } catch {
-      return null;
-    }
-  }
+  // Removed decodeJWT method - now using unified JWT utilities from @/utils/jwt
   
   /**
    * Check if token is expired
    */
   static isTokenExpired(token: string): boolean {
-    const decoded = this.decodeJWT(token);
-    if (!decoded || !decoded.exp) return true;
-    
-    const currentTime = Date.now() / 1000;
-    return decoded.exp < currentTime;
+    return isJWTExpired(token);
   }
   
   /**
