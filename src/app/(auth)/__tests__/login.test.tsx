@@ -26,6 +26,22 @@ jest.mock('@/services/auth', () => ({
   },
 }));
 
+// Mock OIDC service
+const mockOIDCAuthService = {
+  login: jest.fn(),
+  register: jest.fn(),
+  getUserInfo: jest.fn(),
+  logout: jest.fn(),
+  isAuthenticated: jest.fn().mockReturnValue(false),
+  refreshToken: jest.fn(),
+  initiateOAuth: jest.fn(),
+  handleOAuthCallback: jest.fn(),
+};
+
+jest.mock('@/services/oidc-auth', () => ({
+  OIDCAuthService: mockOIDCAuthService,
+}));
+
 // Mock localStorage
 const localStorageMock = {
   getItem: jest.fn(),
@@ -81,8 +97,13 @@ describe('LoginPage', () => {
     mockSearchParams.get.mockReturnValue(null);
   });
 
-  it('renders login form correctly', () => {
+  it('renders login form correctly', async () => {
     render(<LoginPage />, { wrapper });
+
+    // Wait for the initial loading state to complete
+    await waitFor(() => {
+      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+    });
 
     expect(screen.getByRole('heading', { name: 'Login' })).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -96,6 +117,11 @@ describe('LoginPage', () => {
   it('shows validation errors for empty fields', async () => {
     const user = userEvent.setup();
     render(<LoginPage />, { wrapper });
+
+    // Wait for the initial loading state to complete
+    await waitFor(() => {
+      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+    });
 
     const submitButton = screen.getByRole('button', { name: 'Login' });
     await user.click(submitButton);
@@ -147,6 +173,11 @@ describe('LoginPage', () => {
     const user = userEvent.setup();
     render(<LoginPage />, { wrapper });
 
+    // Wait for the initial loading state to complete
+    await waitFor(() => {
+      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+    });
+
     const emailInput = screen.getByLabelText(/email/i);
     const passwordInput = screen.getByLabelText(/password/i);
 
@@ -164,6 +195,11 @@ describe('LoginPage', () => {
   it('shows loading state during submission', async () => {
     const user = userEvent.setup();
     render(<LoginPage />, { wrapper });
+
+    // Wait for the initial loading state to complete
+    await waitFor(() => {
+      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+    });
 
     const emailInput = screen.getByLabelText(/email/i);
     const passwordInput = screen.getByLabelText(/password/i);

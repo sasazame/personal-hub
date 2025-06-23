@@ -2,7 +2,7 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { useLogin, useRegister, useLogout } from '../useAuth';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { authAPI, AuthAPIError } from '@/services/auth';
+import { AuthAPIError } from '@/services/auth';
 import { LoginResponse, RegisterResponse } from '@/types/auth';
 
 // Mock the auth API
@@ -21,6 +21,22 @@ jest.mock('@/services/auth', () => ({
   },
 }));
 
+// Mock the OIDC auth service
+const mockOIDCAuthService = {
+  login: jest.fn(),
+  register: jest.fn(),
+  getUserInfo: jest.fn(),
+  logout: jest.fn(),
+  isAuthenticated: jest.fn(),
+  refreshToken: jest.fn(),
+  initiateOAuth: jest.fn(),
+  handleOAuthCallback: jest.fn(),
+};
+
+jest.mock('@/services/oidc-auth', () => ({
+  OIDCAuthService: mockOIDCAuthService,
+}));
+
 // Mock localStorage
 const localStorageMock = {
   getItem: jest.fn(),
@@ -32,7 +48,8 @@ Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
 
-const mockedAuthAPI = authAPI as jest.Mocked<typeof authAPI>;
+// authAPI is mocked but not used as we're using OIDC service now
+const mockedOIDCAuthService = mockOIDCAuthService;
 
 describe('useAuth hooks', () => {
   const wrapper = ({ children }: { children: ReactNode }) => (
@@ -42,6 +59,7 @@ describe('useAuth hooks', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorageMock.getItem.mockReturnValue(null);
+    mockedOIDCAuthService.isAuthenticated.mockReturnValue(false);
   });
 
   describe('useLogin', () => {
@@ -50,14 +68,14 @@ describe('useAuth hooks', () => {
         accessToken: 'access-token',
         refreshToken: 'refresh-token',
         user: {
-          id: 1,
+          id: '1',
           username: 'testuser',
           email: 'test@example.com',
           createdAt: '2024-01-01T00:00:00Z',
           updatedAt: '2024-01-01T00:00:00Z',
         },
       };
-      mockedAuthAPI.login.mockResolvedValue(mockResponse);
+      mockedOIDCAuthService.login.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useLogin(), { wrapper });
 
@@ -65,16 +83,13 @@ describe('useAuth hooks', () => {
         await result.current.login('test@example.com', 'password');
       });
 
-      expect(mockedAuthAPI.login).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        password: 'password',
-      });
+      expect(mockedOIDCAuthService.login).toHaveBeenCalledWith('test@example.com', 'password');
       expect(result.current.error).toBe(null);
     });
 
     it('handles login error', async () => {
       const errorMessage = 'Invalid credentials';
-      mockedAuthAPI.login.mockRejectedValue(new AuthAPIError(errorMessage));
+      mockedOIDCAuthService.login.mockRejectedValue(new AuthAPIError(errorMessage));
 
       const { result } = renderHook(() => useLogin(), { wrapper });
 
@@ -94,7 +109,7 @@ describe('useAuth hooks', () => {
       const loginPromise = new Promise<LoginResponse>((resolve) => {
         resolveLogin = resolve;
       });
-      mockedAuthAPI.login.mockReturnValue(loginPromise);
+      mockedOIDCAuthService.login.mockReturnValue(loginPromise);
 
       const { result } = renderHook(() => useLogin(), { wrapper });
 
@@ -111,7 +126,7 @@ describe('useAuth hooks', () => {
           accessToken: 'token',
           refreshToken: 'refresh',
           user: {
-            id: 1,
+            id: '1',
             username: 'testuser',
             email: 'test@example.com',
             createdAt: '2024-01-01T00:00:00Z',
@@ -126,7 +141,7 @@ describe('useAuth hooks', () => {
     });
 
     it('clears error when clearError is called', async () => {
-      mockedAuthAPI.login.mockRejectedValue(new AuthAPIError('Login failed'));
+      mockedOIDCAuthService.login.mockRejectedValue(new Error('Login failed'));
 
       const { result } = renderHook(() => useLogin(), { wrapper });
 
@@ -154,7 +169,7 @@ describe('useAuth hooks', () => {
     it('successfully registers user', async () => {
       const mockResponse = {
         user: {
-          id: 1,
+          id: '1',
           username: 'testuser',
           email: 'test@example.com',
           createdAt: '2024-01-01T00:00:00Z',
@@ -163,7 +178,7 @@ describe('useAuth hooks', () => {
         accessToken: 'mock-access-token',
         refreshToken: 'mock-refresh-token',
       };
-      mockedAuthAPI.register.mockResolvedValue(mockResponse);
+      mockedOIDCAuthService.register.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useRegister(), { wrapper });
 
@@ -171,17 +186,13 @@ describe('useAuth hooks', () => {
         await result.current.register('testuser', 'test@example.com', 'password123');
       });
 
-      expect(mockedAuthAPI.register).toHaveBeenCalledWith({
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'password123',
-      });
+      expect(mockedOIDCAuthService.register).toHaveBeenCalledWith('test@example.com', 'password123', 'testuser');
       expect(result.current.error).toBe(null);
     });
 
     it('handles registration error', async () => {
       const errorMessage = 'Email already exists';
-      mockedAuthAPI.register.mockRejectedValue(new AuthAPIError(errorMessage));
+      mockedOIDCAuthService.register.mockRejectedValue(new AuthAPIError(errorMessage));
 
       const { result } = renderHook(() => useRegister(), { wrapper });
 
@@ -201,7 +212,7 @@ describe('useAuth hooks', () => {
       const registerPromise = new Promise<RegisterResponse>((resolve) => {
         resolveRegister = resolve;
       });
-      mockedAuthAPI.register.mockReturnValue(registerPromise);
+      mockedOIDCAuthService.register.mockReturnValue(registerPromise);
 
       const { result } = renderHook(() => useRegister(), { wrapper });
 
@@ -216,7 +227,7 @@ describe('useAuth hooks', () => {
       act(() => {
         resolveRegister!({
           user: {
-            id: 1,
+            id: '1',
             username: 'testuser',
             email: 'test@example.com',
             createdAt: '2024-01-01T00:00:00Z',
@@ -233,7 +244,7 @@ describe('useAuth hooks', () => {
     });
 
     it('clears error when clearError is called', async () => {
-      mockedAuthAPI.register.mockRejectedValue(new AuthAPIError('Registration failed'));
+      mockedOIDCAuthService.register.mockRejectedValue(new Error('Registration failed'));
 
       const { result } = renderHook(() => useRegister(), { wrapper });
 
@@ -259,7 +270,7 @@ describe('useAuth hooks', () => {
 
   describe('useLogout', () => {
     it('successfully logs out user', async () => {
-      mockedAuthAPI.logout.mockResolvedValue();
+      mockedOIDCAuthService.logout.mockResolvedValue(undefined);
 
       const { result } = renderHook(() => useLogout(), { wrapper });
 
@@ -267,13 +278,13 @@ describe('useAuth hooks', () => {
         await result.current.logout();
       });
 
-      expect(mockedAuthAPI.logout).toHaveBeenCalled();
+      expect(mockedOIDCAuthService.logout).toHaveBeenCalled();
       expect(result.current.isLoading).toBe(false);
     });
 
     it('handles logout error gracefully', async () => {
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
-      mockedAuthAPI.logout.mockRejectedValue(new Error('Network error'));
+      mockedOIDCAuthService.logout.mockRejectedValue(new Error('Network error'));
 
       const { result } = renderHook(() => useLogout(), { wrapper });
 
@@ -292,7 +303,7 @@ describe('useAuth hooks', () => {
       const logoutPromise = new Promise<void>((resolve) => {
         resolveLogout = resolve;
       });
-      mockedAuthAPI.logout.mockReturnValue(logoutPromise);
+      mockedOIDCAuthService.logout.mockReturnValue(logoutPromise);
 
       const { result } = renderHook(() => useLogout(), { wrapper });
 
