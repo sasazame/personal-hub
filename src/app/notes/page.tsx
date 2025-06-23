@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { AuthGuard } from '@/components/auth';
 import { AppLayout } from '@/components/layout';
 import { Button, Input, Modal } from '@/components/ui';
@@ -11,6 +12,7 @@ import { showSuccess, showError } from '@/components/ui/toast';
 import { Plus, Search, Pin } from 'lucide-react';
 
 function NotesPage() {
+  const t = useTranslations();
   const [filters] = useState<NoteFilters>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -37,11 +39,11 @@ function NotesPage() {
   const handleCreateNote = (data: CreateNoteDto) => {
     createMutation.mutate(data, {
       onSuccess: () => {
-        showSuccess('ノートを作成しました');
+        showSuccess(t('notes.noteCreated'));
         setIsFormOpen(false);
       },
       onError: (error) => {
-        showError(error instanceof Error ? error.message : 'ノートの作成に失敗しました');
+        showError(error instanceof Error ? error.message : t('notes.createFailed'));
       },
     });
   };
@@ -50,13 +52,13 @@ function NotesPage() {
     if (selectedNote) {
       updateMutation.mutate({ id: selectedNote.id, data }, {
         onSuccess: () => {
-          showSuccess('ノートを更新しました');
+          showSuccess(t('notes.noteUpdated'));
           setIsFormOpen(false);
           setSelectedNote(null);
           setViewingNote(null);
         },
         onError: (error) => {
-          showError(error instanceof Error ? error.message : 'ノートの更新に失敗しました');
+          showError(error instanceof Error ? error.message : t('notes.updateFailed'));
         },
       });
     }
@@ -66,12 +68,12 @@ function NotesPage() {
     if (noteToDelete) {
       deleteMutation.mutate(noteToDelete.id, {
         onSuccess: () => {
-          showSuccess('ノートを削除しました');
+          showSuccess(t('notes.noteDeleted'));
           setNoteToDelete(null);
           setViewingNote(null);
         },
         onError: (error) => {
-          showError(error instanceof Error ? error.message : 'ノートの削除に失敗しました');
+          showError(error instanceof Error ? error.message : t('notes.deleteFailed'));
         },
       });
     }
@@ -80,10 +82,10 @@ function NotesPage() {
   const handleTogglePin = (note: Note) => {
     togglePinMutation.mutate(note.id, {
       onSuccess: () => {
-        showSuccess(note.isPinned ? 'ピンを外しました' : 'ピン留めしました');
+        showSuccess(note.isPinned ? t('notes.unpinned') : t('notes.pinned'));
       },
       onError: (error) => {
-        showError(error instanceof Error ? error.message : 'ピン留めの切り替えに失敗しました');
+        showError(error instanceof Error ? error.message : t('notes.pinToggleFailed'));
       },
     });
   };
@@ -120,7 +122,7 @@ function NotesPage() {
     return (
       <AppLayout>
         <div className="min-h-[400px] flex items-center justify-center">
-          <div className="text-lg text-muted-foreground">ノートを読み込み中...</div>
+          <div className="text-lg text-muted-foreground">{t('common.loading')}</div>
         </div>
       </AppLayout>
     );
@@ -133,10 +135,10 @@ function NotesPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              ノート
+              {t('notes.title')}
             </h1>
             <p className="text-muted-foreground mt-1">
-              アイデアや情報を記録・整理しましょう
+              {t('notes.subtitle')}
             </p>
           </div>
           <Button 
@@ -144,7 +146,7 @@ function NotesPage() {
             className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700"
           >
             <Plus className="w-5 h-5 mr-2" />
-            新しいノート
+            {t('notes.newNote')}
           </Button>
         </div>
 
@@ -156,7 +158,7 @@ function NotesPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 label=""
-                placeholder="ノートを検索..."
+                placeholder={t('notes.searchPlaceholder')}
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="pl-10"
@@ -170,7 +172,7 @@ function NotesPage() {
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="">全てのカテゴリ</option>
+            <option value="">{t('notes.allCategories')}</option>
             {categories.map((category) => (
               <option key={category} value={category}>
                 {category}
@@ -185,16 +187,16 @@ function NotesPage() {
             size="sm"
           >
             <Pin className="w-4 h-4 mr-1" />
-            ピン留めのみ
+            {t('notes.pinnedOnly')}
           </Button>
         </div>
 
         {/* Stats */}
         <div className="text-sm text-muted-foreground">
-          {notes.length}件のノート
-          {searchQuery && ` (「${searchQuery}」で検索)`}
-          {selectedCategory && ` (カテゴリ: ${selectedCategory})`}
-          {showPinnedOnly && ` (ピン留めのみ)`}
+          {t('notes.countNotes', { count: notes.length })}
+          {searchQuery && ` (${t('notes.searchResults', { query: searchQuery })})`}
+          {selectedCategory && ` (${t('notes.categoryFilter', { category: selectedCategory })})`}
+          {showPinnedOnly && ` (${t('notes.pinnedOnly')})`}
         </div>
 
         {/* Note List */}
@@ -232,10 +234,9 @@ function NotesPage() {
         {noteToDelete && (
           <Modal open={true} onClose={() => setNoteToDelete(null)}>
             <div className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-foreground">ノートを削除</h2>
+              <h2 className="text-xl font-semibold text-foreground">{t('notes.deleteNote')}</h2>
               <p className="text-muted-foreground">
-                「{noteToDelete.title}」を削除してもよろしいですか？
-                この操作は取り消せません。
+                {t('notes.confirmDelete', { title: noteToDelete.title })}
               </p>
               <div className="flex gap-3 justify-end">
                 <Button
@@ -243,14 +244,14 @@ function NotesPage() {
                   onClick={() => setNoteToDelete(null)}
                   disabled={deleteMutation.isPending}
                 >
-                  キャンセル
+                  {t('common.cancel')}
                 </Button>
                 <Button
                   variant="danger"
                   onClick={handleDeleteNote}
                   disabled={deleteMutation.isPending}
                 >
-                  {deleteMutation.isPending ? '削除中...' : '削除'}
+                  {deleteMutation.isPending ? t('common.deleting') : t('common.delete')}
                 </Button>
               </div>
             </div>

@@ -48,6 +48,30 @@ function TodoApp() {
 
   const todos = todosResponse?.content || [];
 
+  // Sort todos: incomplete tasks with near deadlines first
+  const sortedTodos = [...todos].sort((a, b) => {
+    // First, sort by completion status (incomplete first)
+    if (a.status === 'DONE' && b.status !== 'DONE') return 1;
+    if (a.status !== 'DONE' && b.status === 'DONE') return -1;
+    
+    // For incomplete tasks, sort by due date (nearest first)
+    if (a.status !== 'DONE' && b.status !== 'DONE') {
+      if (a.dueDate && b.dueDate) {
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      }
+      if (a.dueDate && !b.dueDate) return -1;
+      if (!a.dueDate && b.dueDate) return 1;
+    }
+    
+    // For completed tasks or same status, sort by priority (HIGH > MEDIUM > LOW)
+    const priorityOrder = { HIGH: 3, MEDIUM: 2, LOW: 1 };
+    const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
+    if (priorityDiff !== 0) return priorityDiff;
+    
+    // Finally, sort by creation date (newest first)
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
   const createMutation = useMutation({
     mutationFn: todoApi.create,
     onSuccess: () => {
@@ -201,13 +225,13 @@ function TodoApp() {
           onStatusChange={setSelectedStatus}
         />
 
-        {todos.length === 0 ? (
+        {sortedTodos.length === 0 ? (
           <div className="text-center py-12 bg-card rounded-lg shadow">
             <p className="text-muted-foreground text-lg">{t('todo.noTodos')}</p>
           </div>
         ) : (
           <div className="space-y-4">
-            {todos.filter(todo => !todo.parentId).map((todo) => (
+            {sortedTodos.filter(todo => !todo.parentId).map((todo) => (
               <TodoItem
                 key={todo.id}
                 todo={todo}
