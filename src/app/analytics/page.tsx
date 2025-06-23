@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { AuthGuard } from '@/components/auth';
 import { AppLayout } from '@/components/layout';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -18,6 +19,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 function AnalyticsPage() {
+  const t = useTranslations();
   const { dashboardData, todoActivity, isLoading, dashboardError, todoActivityError } = useAnalytics();
 
   if (isLoading) {
@@ -26,7 +28,7 @@ function AnalyticsPage() {
         <div className="flex items-center justify-center h-[calc(100vh-200px)]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">データを読み込んでいます...</p>
+            <p className="text-muted-foreground">{t('common.loading')}</p>
           </div>
         </div>
       </AppLayout>
@@ -39,7 +41,7 @@ function AnalyticsPage() {
         <div className="flex items-center justify-center h-[calc(100vh-200px)]">
           <div className="text-center">
             <ExclamationTriangleIcon className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <p className="text-muted-foreground">データの読み込みに失敗しました</p>
+            <p className="text-muted-foreground">{t('analytics.loadError')}</p>
           </div>
         </div>
       </AppLayout>
@@ -52,10 +54,10 @@ function AnalyticsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              分析
+              {t('analytics.title')}
             </h1>
             <p className="text-muted-foreground mt-1">
-              生産性と進捗を分析・改善しましょう
+              {t('analytics.subtitle')}
             </p>
           </div>
         </div>
@@ -65,27 +67,27 @@ function AnalyticsPage() {
             {/* 統計カード */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <StatsCard
-                title="TODO完了率"
+                title={t('analytics.todoCompletionRate')}
                 value={`${dashboardData.todoStats.completionRate}%`}
                 subtitle={`${dashboardData.todoStats.completedTodos} / ${dashboardData.todoStats.totalTodos} 件`}
                 icon={<CheckCircleIcon className="h-8 w-8" />}
               />
               <StatsCard
-                title="本日のイベント"
+                title={t('analytics.todayEvents')}
                 value={dashboardData.eventStats.todayEvents}
-                subtitle={`今後: ${dashboardData.eventStats.upcomingEvents}件`}
+                subtitle={t('analytics.upcomingEvents', { count: dashboardData.eventStats.upcomingEvents })}
                 icon={<CalendarIcon className="h-8 w-8" />}
               />
               <StatsCard
-                title="今週のノート"
+                title={t('analytics.weeklyNotes')}
                 value={dashboardData.noteStats.notesThisWeek}
-                subtitle={`総数: ${dashboardData.noteStats.totalNotes}件`}
+                subtitle={t('analytics.totalNotes', { count: dashboardData.noteStats.totalNotes })}
                 icon={<DocumentTextIcon className="h-8 w-8" />}
               />
               <StatsCard
-                title="期限切れTODO"
+                title={t('analytics.overdueTodos')}
                 value={dashboardData.todoStats.overdueCount}
-                subtitle={dashboardData.todoStats.overdueCount > 0 ? '要対応' : 'なし'}
+                subtitle={dashboardData.todoStats.overdueCount > 0 ? t('analytics.requiresAction') : t('analytics.none')}
                 icon={<ExclamationTriangleIcon className="h-8 w-8" />}
                 className={dashboardData.todoStats.overdueCount > 0 ? 'border-red-500' : ''}
               />

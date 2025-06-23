@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { AuthGuard } from '@/components/auth';
 import { AppLayout } from '@/components/layout';
 import { Button, Modal } from '@/components/ui';
@@ -12,6 +13,7 @@ import { format, addMonths, subMonths } from 'date-fns';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 
 function CalendarPage() {
+  const t = useTranslations();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
@@ -26,12 +28,12 @@ function CalendarPage() {
   const handleCreateEvent = (data: CreateCalendarEventDto) => {
     createMutation.mutate(data, {
       onSuccess: () => {
-        showSuccess('イベントを作成しました');
+        showSuccess(t('calendar.eventCreated'));
         setIsEventFormOpen(false);
         setSelectedDate(null);
       },
       onError: (error) => {
-        showError(error instanceof Error ? error.message : 'イベントの作成に失敗しました');
+        showError(error instanceof Error ? error.message : t('calendar.createFailed'));
       },
     });
   };
@@ -40,12 +42,12 @@ function CalendarPage() {
     if (selectedEvent) {
       updateMutation.mutate({ id: selectedEvent.id, data }, {
         onSuccess: () => {
-          showSuccess('イベントを更新しました');
+          showSuccess(t('calendar.eventUpdated'));
           setIsEventFormOpen(false);
           setSelectedEvent(null);
         },
         onError: (error) => {
-          showError(error instanceof Error ? error.message : 'イベントの更新に失敗しました');
+          showError(error instanceof Error ? error.message : t('calendar.updateFailed'));
         },
       });
     }
@@ -55,11 +57,11 @@ function CalendarPage() {
     if (eventToDelete) {
       deleteMutation.mutate(eventToDelete.id, {
         onSuccess: () => {
-          showSuccess('イベントを削除しました');
+          showSuccess(t('calendar.eventDeleted'));
           setEventToDelete(null);
         },
         onError: (error) => {
-          showError(error instanceof Error ? error.message : 'イベントの削除に失敗しました');
+          showError(error instanceof Error ? error.message : t('calendar.deleteFailed'));
         },
       });
     }
@@ -101,7 +103,7 @@ function CalendarPage() {
     return (
       <AppLayout>
         <div className="min-h-[400px] flex items-center justify-center">
-          <div className="text-lg text-muted-foreground">カレンダーを読み込み中...</div>
+          <div className="text-lg text-muted-foreground">{t('common.loading')}</div>
         </div>
       </AppLayout>
     );
@@ -114,15 +116,15 @@ function CalendarPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              カレンダー
+              {t('calendar.title')}
             </h1>
             <p className="text-muted-foreground mt-1">
-              スケジュールとイベントを管理しましょう
+              {t('calendar.subtitle')}
             </p>
           </div>
           <Button onClick={handleNewEvent} className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
             <Plus className="w-5 h-5 mr-2" />
-            新しいイベント
+            {t('calendar.newEvent')}
           </Button>
         </div>
 
@@ -152,7 +154,7 @@ function CalendarPage() {
             variant="secondary"
             onClick={() => setCurrentDate(new Date())}
           >
-            今日
+            {t('calendar.today')}
           </Button>
         </div>
 
@@ -182,10 +184,9 @@ function CalendarPage() {
         {eventToDelete && (
           <Modal open={true} onClose={() => setEventToDelete(null)}>
             <div className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-foreground">イベントを削除</h2>
+              <h2 className="text-xl font-semibold text-foreground">{t('calendar.deleteEvent')}</h2>
               <p className="text-muted-foreground">
-                「{eventToDelete.title}」を削除してもよろしいですか？
-                この操作は取り消せません。
+                {t('calendar.confirmDelete', { title: eventToDelete.title })}
               </p>
               <div className="flex gap-3 justify-end">
                 <Button
@@ -193,14 +194,14 @@ function CalendarPage() {
                   onClick={() => setEventToDelete(null)}
                   disabled={deleteMutation.isPending}
                 >
-                  キャンセル
+                  {t('common.cancel')}
                 </Button>
                 <Button
                   variant="danger"
                   onClick={handleDeleteEvent}
                   disabled={deleteMutation.isPending}
                 >
-                  {deleteMutation.isPending ? '削除中...' : '削除'}
+                  {deleteMutation.isPending ? t('common.deleting') : t('common.delete')}
                 </Button>
               </div>
             </div>
