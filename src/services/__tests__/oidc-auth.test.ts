@@ -149,7 +149,7 @@ describe('OIDCAuthService', () => {
   });
 
   describe('getUserInfo', () => {
-    it('should get user info', async () => {
+    it('should get user info from localStorage first', async () => {
       const mockUser = {
         id: '123',
         email: 'test@example.com',
@@ -158,11 +158,54 @@ describe('OIDCAuthService', () => {
         updatedAt: '2023-01-01',
       };
 
+      localStorageMock.getItem.mockImplementation((key) => {
+        if (key === 'user') return JSON.stringify(mockUser);
+        return null;
+      });
+
+      const result = await OIDCAuthService.getUserInfo();
+
+      expect(localStorageMock.getItem).toHaveBeenCalledWith('user');
+      expect(result).toEqual(mockUser);
+      expect(mockedApiClient.get).not.toHaveBeenCalled();
+    });
+
+    it('should fallback to API if no stored user', async () => {
+      const mockUser = {
+        id: '123',
+        email: 'test@example.com',
+        username: 'testuser',
+        createdAt: '2023-01-01',
+        updatedAt: '2023-01-01',
+      };
+
+      localStorageMock.getItem.mockReturnValue(null);
       mockedApiClient.get.mockResolvedValueOnce({ data: mockUser });
 
       const result = await OIDCAuthService.getUserInfo();
 
-      expect(mockedApiClient.get).toHaveBeenCalledWith('/oauth2/userinfo');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/auth/me');
+      expect(result).toEqual(mockUser);
+    });
+
+    it('should handle invalid JSON in localStorage', async () => {
+      const mockUser = {
+        id: '123',
+        email: 'test@example.com',
+        username: 'testuser',
+        createdAt: '2023-01-01',
+        updatedAt: '2023-01-01',
+      };
+
+      localStorageMock.getItem.mockImplementation((key) => {
+        if (key === 'user') return 'invalid-json';
+        return null;
+      });
+      mockedApiClient.get.mockResolvedValueOnce({ data: mockUser });
+
+      const result = await OIDCAuthService.getUserInfo();
+
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/auth/me');
       expect(result).toEqual(mockUser);
     });
   });
@@ -176,6 +219,7 @@ describe('OIDCAuthService', () => {
       expect(mockedApiClient.post).toHaveBeenCalledWith('/auth/logout');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('accessToken');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('refreshToken');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('user');
       expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
       expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
     });
@@ -188,6 +232,7 @@ describe('OIDCAuthService', () => {
 
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('accessToken');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('refreshToken');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('user');
       expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
       expect(sessionStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
     });

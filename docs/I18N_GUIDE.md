@@ -1,38 +1,38 @@
-# 国際化(i18n)実装ガイド
+# Internationalization (i18n) Implementation Guide
 
-## 概要
-Personal Hubアプリケーションは`next-intl`を使用して日本語と英語をサポートしています。
+## Overview
+Personal Hub application supports Japanese and English using `next-intl`.
 
-## 技術仕様
-- **ライブラリ**: next-intl v4.1.0
-- **対応言語**: 日本語(ja)、英語(en)
-- **デフォルト言語**: 日本語
-- **言語設定保存**: Cookie (`locale`)
+## Technical Specifications
+- **Library**: next-intl v4.1.0
+- **Supported Languages**: Japanese (ja), English (en)
+- **Default Language**: Japanese
+- **Language Setting Storage**: Cookie (`locale`)
 
-## アーキテクチャ
+## Architecture
 
-### ファイル構成
+### File Structure
 ```
 src/
 ├── i18n/
-│   ├── config.ts          # 言語設定
-│   └── request.ts         # next-intl設定
+│   ├── config.ts          # Language configuration
+│   └── request.ts         # next-intl configuration
 ├── contexts/
-│   └── LocaleContext.tsx  # 言語切り替えContext
+│   └── LocaleContext.tsx  # Language switching Context
 ├── components/ui/
-│   └── LanguageSwitcher.tsx # 言語切り替えコンポーネント
+│   └── LanguageSwitcher.tsx # Language switcher component
 └── messages/
-    ├── ja.json           # 日本語翻訳
-    └── en.json           # 英語翻訳
+    ├── ja.json           # Japanese translations
+    └── en.json           # English translations
 ```
 
-### 設定ファイル
-- `next.config.ts`: next-intlプラグインの設定
-- `src/app/layout.tsx`: 言語プロバイダーの設定
+### Configuration Files
+- `next.config.ts`: next-intl plugin configuration
+- `src/app/layout.tsx`: Language provider configuration
 
-## 使用方法
+## Usage
 
-### 翻訳の使用
+### Using Translations
 ```tsx
 import { useTranslations } from 'next-intl';
 
@@ -48,7 +48,7 @@ function MyComponent() {
 }
 ```
 
-### 言語切り替え
+### Language Switching
 ```tsx
 import { useLocale } from '@/contexts/LocaleContext';
 
@@ -67,161 +67,161 @@ function LanguageButton() {
 }
 ```
 
-## 翻訳キー構造
+## Translation Key Structure
 
-### 共通キー (`common`)
+### Common Keys (`common`)
 ```json
 {
   "common": {
-    "loading": "読み込み中...",
-    "save": "保存",
-    "cancel": "キャンセル",
-    "delete": "削除"
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete"
   }
 }
 ```
 
-### 認証関連 (`auth`)
+### Authentication Related (`auth`)
 ```json
 {
   "auth": {
-    "login": "ログイン",
-    "register": "新規登録",
-    "email": "メールアドレス",
-    "password": "パスワード"
+    "login": "Login",
+    "register": "Sign Up",
+    "email": "Email Address",
+    "password": "Password"
   }
 }
 ```
 
-### TODO関連 (`todo`)
+### TODO Related (`todo`)
 ```json
 {
   "todo": {
     "title": "TODO",
-    "addTodo": "TODOを追加",
-    "noTodos": "TODOがありません",
-    "completed": "完了"
+    "addTodo": "Add TODO",
+    "noTodos": "No TODOs",
+    "completed": "Completed"
   }
 }
 ```
 
-### カレンダー関連 (`calendar`)
+### Calendar Related (`calendar`)
 ```json
 {
   "calendar": {
-    "title": "カレンダー",
-    "addEvent": "イベントを追加",
-    "noEvents": "イベントがありません"
+    "title": "Calendar",
+    "addEvent": "Add Event",
+    "noEvents": "No Events"
   }
 }
 ```
 
-### メモ関連 (`notes`)
+### Notes Related (`notes`)
 ```json
 {
   "notes": {
-    "title": "メモ",
-    "addNote": "メモを追加",
-    "noNotes": "メモがありません"
+    "title": "Notes",
+    "addNote": "Add Note",
+    "noNotes": "No Notes"
   }
 }
 ```
 
-### エラーメッセージ (`errors`)
+### Error Messages (`errors`)
 ```json
 {
   "errors": {
-    "general": "エラーが発生しました",
-    "network": "ネットワークエラーが発生しました",
-    "validation": "入力内容を確認してください"
+    "general": "An error occurred",
+    "network": "Network error occurred",
+    "validation": "Please check your input"
   }
 }
 ```
 
-## 新しい翻訳の追加
+## Adding New Translations
 
-### 1. 翻訳ファイルの更新
-両方のファイルに同じキーを追加：
+### 1. Update Translation Files
+Add the same key to both files:
 - `messages/ja.json`
 - `messages/en.json`
 
-### 2. 使用例
+### 2. Usage Example
 ```tsx
-// 新しいキーを追加（例：analytics機能）
+// Add new key (example: analytics feature)
 {
   "analytics": {
-    "title": "分析",
-    "description": "統計情報とレポート",
-    "productivity": "生産性",
-    "trends": "トレンド"
+    "title": "Analytics",
+    "description": "Statistics and Reports",
+    "productivity": "Productivity",
+    "trends": "Trends"
   }
 }
 
-// コンポーネントで使用
+// Use in component
 const t = useTranslations('analytics');
 <h1>{t('title')}</h1>
 ```
 
-## ベストプラクティス
+## Best Practices
 
-### 1. キーの命名規則
-- 機能別に階層化: `auth.login`, `todo.addTodo`
-- 具体的で明確な名前を使用
-- 動詞 + 目的語の形式: `addTodo`, `deleteTodo`
+### 1. Key Naming Conventions
+- Organize hierarchically by feature: `auth.login`, `todo.addTodo`
+- Use specific and clear names
+- Use verb + object format: `addTodo`, `deleteTodo`
 
-### 2. 翻訳の品質
-- 自然な表現を使用
-- UIコンテキストを考慮
-- 一貫したトーン・アンド・マナー
+### 2. Translation Quality
+- Use natural expressions
+- Consider UI context
+- Maintain consistent tone and manner
 
-### 3. 開発時の注意点
-- 翻訳キーは両言語で必ず定義
-- タイポに注意（実行時エラーの原因）
-- 長いテキストは適切に改行
+### 3. Development Considerations
+- Always define translation keys in both languages
+- Be careful of typos (causes runtime errors)
+- Break long texts appropriately
 
-## 言語切り替えの動作
+## Language Switching Behavior
 
-### Cookie保存
-- 言語設定は`locale` Cookieに保存
-- 有効期限: 1年
-- パス: `/`（全体で共有）
+### Cookie Storage
+- Language setting stored in `locale` Cookie
+- Expiration: 1 year
+- Path: `/` (shared across entire app)
 
-### 言語変更時の動作
-1. `setLocale()`呼び出し
-2. Cookieに新しい言語を保存
-3. ページリロード（新しい言語で表示）
+### Behavior on Language Change
+1. Call `setLocale()`
+2. Save new language to Cookie
+3. Page reload (display in new language)
 
-## トラブルシューティング
+## Troubleshooting
 
-### よくある問題
+### Common Issues
 
-#### 翻訳が表示されない
-- 翻訳キーの確認
-- 両言語ファイルでキーが定義されているか確認
-- タイポチェック
+#### Translations Not Displaying
+- Check translation keys
+- Verify keys are defined in both language files
+- Check for typos
 
-#### 言語切り替えが機能しない
-- `LocaleProvider`が正しく設定されているか確認
-- Cookieの設定確認
-- ブラウザのCookieが有効か確認
+#### Language Switching Not Working
+- Verify `LocaleProvider` is configured correctly
+- Check Cookie settings
+- Verify browser has Cookies enabled
 
-#### ビルドエラー
-- 翻訳ファイルのJSONシンタックス確認
-- next-intl設定の確認
+#### Build Errors
+- Check JSON syntax in translation files
+- Verify next-intl configuration
 
-## 今後の拡張
+## Future Extensions
 
-### 新しい言語の追加
-1. `src/i18n/config.ts`の`locales`配列に追加
-2. 新しい言語ファイル`messages/{locale}.json`作成
-3. `LanguageSwitcher.tsx`に言語選択肢追加
+### Adding New Languages
+1. Add to `locales` array in `src/i18n/config.ts`
+2. Create new language file `messages/{locale}.json`
+3. Add language option to `LanguageSwitcher.tsx`
 
-### 高度な機能
-- 複数形対応（next-intlのICU message format使用）
-- 日付・数値のローカライゼーション
-- RTL言語サポート
+### Advanced Features
+- Pluralization support (using next-intl's ICU message format)
+- Date and number localization
+- RTL language support
 
-## 関連リンク
-- [next-intl公式ドキュメント](https://next-intl-docs.vercel.app/)
-- [Next.js国際化](https://nextjs.org/docs/app/building-your-application/routing/internationalization)
+## Related Links
+- [next-intl Official Documentation](https://next-intl-docs.vercel.app/)
+- [Next.js Internationalization](https://nextjs.org/docs/app/building-your-application/routing/internationalization)
 - [ICU Message Format](https://unicode-org.github.io/icu/userguide/format_parse/messages/)

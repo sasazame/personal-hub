@@ -1,232 +1,242 @@
-# Claude Code 協働開発ガイドライン
+# Claude Code Development Guidelines
 
-## プロジェクト概要
-Personal Hub - 個人生産性向上アプリケーション
-- **技術スタック**: Next.js 15+ (App Router), React 19, TypeScript, Tailwind CSS
-- **状態管理**: TanStack Query + React Hook Form
-- **テスト**: Jest, React Testing Library, Playwright
-- **主要機能**: TODO管理（✅完成）、カレンダー（✅完成）、メモ（✅完成）、統合ダッシュボード（✅完成）
-- **開発予定**: 分析機能、PWA対応、外部連携
-- **目的**: 日常業務の一元管理と生産性向上
+## Project Overview
+Personal Hub - Personal Productivity Enhancement Application
+- **Tech Stack**: Next.js 15+ (App Router), React 19, TypeScript, Tailwind CSS
+- **State Management**: TanStack Query + React Hook Form
+- **Authentication**: OpenID Connect (OIDC) with JWT tokens
+- **Testing**: Jest, React Testing Library, Playwright
+- **Core Features**: TODO Management (✅ Complete), Calendar (✅ Complete), Notes (✅ Complete), Integrated Dashboard (✅ Complete)
+- **Planned**: Analytics, PWA Support, External Integrations
+- **Purpose**: Centralized daily task management and productivity enhancement
 
-## 開発フロー（重要）
+## Development Flow (Important)
 ```bash
-# 1. 新機能開発時はfeatブランチを作成
+# 1. Create feat branch for new features
 git checkout -b feat/feature-name
 
-# 2. 実装・テスト・コミット（CIと同等のチェック必須）
+# 2. Implement, test, commit (CI-equivalent checks required)
 npm run type-check && npm run lint && npm test && npm run build
-git add . && git commit -m "feat: 機能の説明"
+git add . && git commit -m "feat: feature description"
 
-# 3. ローカルでE2Eテスト実行（CI無効化のため必須）
-npm run test:e2e  # 最低限 npm run test:e2e:smoke は必須
+# 3. Run E2E tests locally (required due to CI disabled)
+npm run test:e2e  # At minimum npm run test:e2e:smoke is required
 
-# 4. GitHubにプッシュしてPRを作成（CI自動実行）
+# 4. Push to GitHub and create PR (CI runs automatically)
 git push origin feat/feature-name
-gh pr create --title "機能タイトル" --body "詳細説明" --assignee sasazame
+gh pr create --title "Feature Title" --body "Detailed description" --assignee sasazame
 ```
 
-## CI/CD パイプライン ✅
-- **自動実行**: PR作成時・push時
-- **必須チェック**: type-check, lint, test, build
-- **テスト**: Jest + React Testing Library + Playwright
-- **E2Eテスト**: ⚠️ CI環境で一時無効化中（[Issue #24](https://github.com/sasazame/personal-hub/issues/24)）
-- **デプロイ**: mainブランチ → Vercel自動デプロイ
+## CI/CD Pipeline ✅
+- **Auto-run**: On PR creation and push
+- **Required Checks**: type-check, lint, test, build
+- **Testing**: Jest + React Testing Library + Playwright
+- **E2E Tests**: ⚠️ Temporarily disabled in CI ([Issue #24](https://github.com/sasazame/personal-hub/issues/24))
+- **Deployment**: main branch → Vercel auto-deploy
 
-## コーディング規約
+## Coding Standards
 
 ### TypeScript
-- `strict: true`、`any`禁止（`unknown`+型ガードを使用）
-- const assertion使用（Enumの代わり）
-- React.FC使用禁止、1ファイル1エクスポート
-- Props命名は明確に（`onTodoClick`等）
+- `strict: true`, no `any` (use `unknown` + type guards)
+- Use const assertions (instead of Enums)
+- No React.FC, one export per file
+- Clear prop naming (`onTodoClick`, etc.)
 
 ### React/Next.js
-- Server Components優先、`'use client'`は最小限
-- カスタムフック: `use`プレフィックス
-- ファイル名: PascalCase（`TodoItem.tsx`）
+- Server Components first, minimal `'use client'`
+- Custom hooks: `use` prefix
+- Filenames: PascalCase (`TodoItem.tsx`)
 
 ### Tailwind CSS
-- モバイルファースト、`dark:`対応
-- デザイントークン活用
-- `cn()`ユーティリティで整理
+- Mobile-first, `dark:` support
+- Use design tokens
+- Organize with `cn()` utility
 
-## デザインシステム
+## Design System
 
-### プレミアム認証画面デザイン
-**実装概要**:
-- **背景**: アニメーション付きグラデーション（blue/indigo→slate）+ ブロブアニメーション
-- **ガラスモーフィズム**: `bg-white/10 backdrop-blur-xl border-white/20`
-- **フローティングラベル**: `FloatingInput`コンポーネント
-- **ブランドアイデンティティ**: Sparklesアイコン + ブルー系グラデーションロゴ
-- **パスワード強度**: リアルタイム表示 + 5段階評価システム
+### Premium Authentication Screen Design
+**Implementation Overview**:
+- **Background**: Animated gradient (blue/indigo→slate) + blob animations
+- **Glassmorphism**: `bg-white/10 backdrop-blur-xl border-white/20`
+- **Floating Labels**: `FloatingInput` component
+- **Brand Identity**: Sparkles icon + blue gradient logo
+- **Password Strength**: Real-time display + 5-level rating system
 
-**コンポーネント**:
-- `FloatingInput`: ガラス効果＋フローティングラベル入力欄
-- `PasswordStrength`: 強度インジケーター（Very Weak→Strong）
-- プレミアムボタン: ブルー系グラデーション＋ホバー効果＋スケール変換
+**Components**:
+- `FloatingInput`: Glass effect + floating label input
+- `PasswordStrength`: Strength indicator (Very Weak→Strong)
+- Premium button: Blue gradient + hover effects + scale transform
 
-**アニメーション**:
-- `animate-blob`: 7秒無限ループ、ブルー系ブロブ移動
-- `bg-grid-pattern`: 格子パターン背景
-- スムーズトランジション: 0.3秒duration
-- フローティング削除: ユーザビリティ向上
+**Animations**:
+- `animate-blob`: 7s infinite loop, blue blob movement
+- `bg-grid-pattern`: Grid pattern background
+- Smooth transitions: 0.3s duration
+- Floating removed: Improved usability
 
-**アクセシビリティ**:
-- 適切なaria-label設定
-- フォーカスリング対応
-- スクリーンリーダー対応（sr-only）
-- キーボードナビゲーション完全対応
+**Accessibility**:
+- Proper aria-label settings
+- Focus ring support
+- Screen reader support (sr-only)
+- Full keyboard navigation
 
-## プロジェクト構造
+## Authentication Architecture
+
+### OIDC Implementation
+- **Token Storage**: JWT tokens in localStorage
+- **Automatic Refresh**: Tokens refreshed 1 minute before expiration
+- **User Info**: Cached in localStorage to avoid 403 errors on user endpoints
+- **OAuth Providers**: Support for Google, GitHub
+- **Session Management**: Secure with automatic cleanup on logout
+
+## Project Structure
 ```
 src/
 ├── app/                    # App Router pages
-│   ├── dashboard/         # ダッシュボード（✅完成）
-│   ├── todos/             # TODO管理（✅完成）
-│   ├── calendar/          # カレンダー（✅完成）
-│   ├── notes/             # メモ機能（✅完成）
-│   └── analytics/         # 分析機能（開発予定）
+│   ├── dashboard/         # Dashboard (✅ Complete)
+│   ├── todos/             # TODO management (✅ Complete)
+│   ├── calendar/          # Calendar (✅ Complete)
+│   ├── notes/             # Notes feature (✅ Complete)
+│   └── analytics/         # Analytics (Planned)
 ├── components/
-│   ├── ui/                # 基本UIコンポーネント
-│   ├── todos/             # TODO関連コンポーネント（✅完成）
-│   ├── calendar/          # カレンダー関連（✅完成）
-│   ├── notes/             # メモ関連（✅完成）
-│   ├── auth/              # 認証関連
-│   └── layout/            # レイアウト
-├── hooks/                 # カスタムフック（✅包括的実装）
-├── lib/                   # 外部ライブラリ設定
-├── services/              # API通信・モックサービス（✅完成）
-├── types/                 # 型定義（✅完成）
-└── utils/                 # ユーティリティ
+│   ├── ui/                # Basic UI components
+│   ├── todos/             # TODO-related components (✅ Complete)
+│   ├── calendar/          # Calendar-related (✅ Complete)
+│   ├── notes/             # Notes-related (✅ Complete)
+│   ├── auth/              # Authentication-related
+│   └── layout/            # Layout
+├── hooks/                 # Custom hooks (✅ Comprehensive)
+├── lib/                   # External library configs
+├── services/              # API communication & mock services (✅ Complete)
+├── types/                 # Type definitions (✅ Complete)
+└── utils/                 # Utilities
 ```
 
-## コミット規約
+## Commit Convention
 ```
 <type>(<scope>): <subject>
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
-**タイプ**: feat, fix, docs, style, refactor, perf, test, chore
+**Types**: feat, fix, docs, style, refactor, perf, test, chore
 
-## テスト方針
-- **単体**: Jest + RTL（ユーティリティ、フック）
-- **統合**: RTL（ユーザーインタラクション）
-- **E2E**: Playwright（クリティカルパス）
-- **設定**: Jest除外設定（Playwright: `*.spec.ts`）
-- **品質**: AAA パターン、ユーザー視点、型安全性重視
+## Testing Strategy
+- **Unit**: Jest + RTL (utilities, hooks)
+- **Integration**: RTL (user interactions)
+- **E2E**: Playwright (critical paths)
+- **Config**: Jest exclusions (Playwright: `*.spec.ts`)
+- **Quality**: AAA pattern, user perspective, type safety focus
 
-### テスト出力のクリーン化（重要）
-**コンソール出力は最小限に保つ**ことを徹底する：
-- **本番コード**: デバッグ用の`console.log`は必ず削除
-- **テストコード**: 期待される警告は`jest.setup.js`で抑制
-- **モック戻り値**: `undefined`ではなく`{}`や適切な値を返す
-- **理由**: CI/CDログの可読性向上、真の問題の発見を容易にする
+### Clean Test Output (Important)
+**Keep console output minimal**:
+- **Production code**: Always remove debug `console.log`
+- **Test code**: Suppress expected warnings in `jest.setup.js`
+- **Mock returns**: Return `{}` or appropriate values, not `undefined`
+- **Reason**: Improves CI/CD log readability, easier to find real issues
 
 ```javascript
-// ❌ 悪い例
-console.log('Debug:', data); // 本番コードに残してはいけない
-mockResolvedValue(undefined); // TanStack Queryの警告が出る
+// ❌ Bad example
+console.log('Debug:', data); // Don't leave in production code
+mockResolvedValue(undefined); // Causes TanStack Query warnings
 
-// ✅ 良い例  
-mockResolvedValue({}); // 空オブジェクトを返す
-// jest.setup.jsで期待される警告を抑制
+// ✅ Good example  
+mockResolvedValue({}); // Return empty object
+// Suppress expected warnings in jest.setup.js
 ```
 
-## API連携
-- バックエンドURL: `http://localhost:8080/api/v1` (personal-hub-backend)
-- TanStack Query使用
-- エラーハンドリング: Error Boundary + トースト
+## API Integration
+- Backend URL: `http://localhost:8080/api/v1` (personal-hub-backend)
+- Uses TanStack Query
+- Error handling: Error Boundary + toast notifications
 
-## 重要な実装パターン
-1. **Server Components**: デフォルト、データフェッチ
-2. **Client Components**: インタラクション必要時のみ
-3. **状態管理**: TanStack Query（サーバー状態）+ useState（ローカル状態）
-4. **フォーム**: React Hook Form + Zod
-5. **エラー**: Error Boundary + 適切なフォールバック
+## Important Implementation Patterns
+1. **Server Components**: Default for data fetching
+2. **Client Components**: Only when interaction needed
+3. **State Management**: TanStack Query (server state) + useState (local state)
+4. **Forms**: React Hook Form + Zod
+5. **Errors**: Error Boundary + appropriate fallbacks
 
-## Claude Codeへの依頼テンプレート
+## Claude Code Request Template
 ```markdown
-## 実装したい機能
-[UI/UX要件を具体的に記載]
+## Feature to Implement
+[Specific UI/UX requirements]
 
-## 現在の状況
-[関連コンポーネント、既存実装]
+## Current Situation
+[Related components, existing implementation]
 
-## 期待する結果
-[画面の動作、ユーザー体験]
+## Expected Result
+[Screen behavior, user experience]
 
-## デザイン要件
-[レスポンシブ、アクセシビリティ要件]
+## Design Requirements
+[Responsive, accessibility requirements]
 ```
 
-## 開発時チェックリスト
-- [ ] featブランチで作業
-- [ ] TypeScript型安全性（`any`禁止）
-- [ ] Server/Client Components適切な分離
-- [ ] レスポンシブデザイン
-- [ ] アクセシビリティ（a11y）
-- [ ] エラーハンドリング
-- [ ] テスト作成（実際の動作に合わせる）
-- [ ] **CI同等チェック**: `type-check && lint && test && build`
-- [ ] 全テスト成功確認
-- [ ] **ローカルE2Eテスト実行**（必須）: `npm run test:e2e`
-- [ ] PR作成（assignee: sasazame）、[PR要件](./docs/PR_REQUIREMENTS.md)確認
+## Development Checklist
+- [ ] Work on feat branch
+- [ ] TypeScript type safety (no `any`)
+- [ ] Proper Server/Client Components separation
+- [ ] Responsive design
+- [ ] Accessibility (a11y)
+- [ ] Error handling
+- [ ] Create tests (match actual behavior)
+- [ ] **CI-equivalent check**: `type-check && lint && test && build`
+- [ ] Confirm all tests pass
+- [ ] **Run local E2E tests** (required): `npm run test:e2e`
+- [ ] Create PR (assignee: sasazame), check [PR Requirements](./docs/PR_REQUIREMENTS.md)
 
-## 開発コマンド
+## Development Commands
 ```bash
-npm run dev          # 開発サーバー（Turbopack）
-npm run build        # プロダクションビルド
-npm run type-check   # TypeScript型チェック
-npm run lint         # ESLint実行
-npm test             # Jest単体テスト
-npm run test:e2e     # Playwright E2Eテスト
+npm run dev          # Development server (Turbopack)
+npm run build        # Production build
+npm run type-check   # TypeScript type check
+npm run lint         # ESLint
+npm test             # Jest unit tests
+npm run test:e2e     # Playwright E2E tests
 
-# CI同等チェック（必須）
+# CI-equivalent check (required)
 npm run type-check && npm run lint && npm test && npm run build
 ```
 
-## 環境・設定
+## Environment & Configuration
 - Node.js 18+, npm 9+
-- バックエンド連携: localhost:8080
-- 主要パッケージ: package.jsonを参照
+- Backend integration: localhost:8080
+- Main packages: see package.json
 
-## CI/CDトラブルシューティング
-### よくある問題と解決法
-1. **Jest + Playwright競合**
-   - `jest.config.js`で`testPathIgnorePatterns: ['*.spec.ts']`
-   - E2Eテストは`npm run test:e2e`で個別実行
+## CI/CD Troubleshooting
+### Common Issues & Solutions
+1. **Jest + Playwright Conflict**
+   - `jest.config.js`: `testPathIgnorePatterns: ['*.spec.ts']`
+   - E2E tests run separately: `npm run test:e2e`
 
-2. **TypeScript型エラー**
-   - `any`禁止→`unknown`+型ガード使用
-   - CVA: `defaultVariants`のundefined対応
+2. **TypeScript Type Errors**
+   - No `any` → use `unknown` + type guards
+   - CVA: Handle undefined `defaultVariants`
 
-3. **テスト失敗パターン**
-   - UIテスト: 実際のCSS出力に合わせる
-   - モーダルテスト: DOM構造での特定方法
-   - 非同期テスト: `waitFor`+適切なセレクタ
+3. **Test Failure Patterns**
+   - UI tests: Match actual CSS output
+   - Modal tests: DOM structure identification
+   - Async tests: `waitFor` + proper selectors
 
-4. **E2Eテスト問題** ⚠️
-   - CI環境で一時無効化中（[Issue #24](https://github.com/sasazame/personal-hub/issues/24)）
-   - ローカルでのE2Eテスト実行が必須
-   - バックエンド起動確認: `http://localhost:8080`
+4. **E2E Test Issues** ⚠️
+   - Temporarily disabled in CI ([Issue #24](https://github.com/sasazame/personal-hub/issues/24))
+   - Local E2E test execution is mandatory
+   - Verify backend is running: `http://localhost:8080`
 
-### 修正手順
+### Fix Procedure
 ```bash
-# 1. ローカルでCI同等テスト
+# 1. Run CI-equivalent tests locally
 npm run type-check && npm run lint && npm test && npm run build
 
-# 2. E2Eテスト実行（必須）
-npm run test:e2e  # または npm run test:e2e:smoke
+# 2. Run E2E tests (required)
+npm run test:e2e  # or npm run test:e2e:smoke
 
-# 3. エラーが出たら原因特定
-npm test -- --verbose  # 詳細テスト結果
-npm run lint -- --debug  # ESLint詳細
+# 3. Debug errors if any
+npm test -- --verbose  # Detailed test results
+npm run lint -- --debug  # ESLint details
 
-# 4. 修正後、再度テスト実行
-# 5. 全パス確認後にpush
+# 4. After fixes, run tests again
+# 5. Push only after all tests pass
 ```
 
-このファイルはClaude Codeが効率的に作業するための簡潔なガイドライン。
-詳細な設計情報は`README.md`および`docs/`フォルダーを参照。
+This file provides concise guidelines for efficient Claude Code collaboration.
+For detailed design information, refer to `README.md` and the `docs/` folder.

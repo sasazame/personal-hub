@@ -1,31 +1,31 @@
-# コンポーネント設計書
+# Component Design Document
 
-## 概要
-Next.js 15 (App Router) + React 19を使用したPersonal Hub（統合アプリケーション）のコンポーネント設計
+## Overview
+Component design for Personal Hub (integrated application) using Next.js 15 (App Router) + React 19
 
-## 設計原則
+## Design Principles
 
 ### 1. Server Components First
-- **デフォルト**: Server Components
-- **Client Components**: ユーザーインタラクションが必要な場合のみ
-- **境界の明確化**: `'use client'`は最小単位で適用
+- **Default**: Server Components
+- **Client Components**: Only when user interaction is required
+- **Clear boundaries**: Apply `'use client'` at minimal units
 
-### 2. コンポーネント分類
+### 2. Component Classification
 ```
 components/
-├── ui/                 # 基本UIコンポーネント（再利用性重視）
-├── todos/              # TODO機能コンポーネント
-├── calendar/           # カレンダー機能コンポーネント
-├── notes/              # メモ機能コンポーネント
-├── dashboard/          # ダッシュボード機能コンポーネント
-├── auth/               # 認証関連コンポーネント
-└── layout/             # レイアウトコンポーネント
+├── ui/                 # Basic UI components (focus on reusability)
+├── todos/              # TODO feature components
+├── calendar/           # Calendar feature components
+├── notes/              # Notes feature components
+├── dashboard/          # Dashboard feature components
+├── auth/               # Authentication-related components
+└── layout/             # Layout components
 ```
 
-## コンポーネント階層
+## Component Hierarchy
 
-### 1. UI Components（ui/）
-**特徴**: 再利用可能、スタイルのみ、ビジネスロジック無し
+### 1. UI Components (ui/)
+**Characteristics**: Reusable, styling only, no business logic
 
 #### Button
 ```typescript
@@ -61,23 +61,23 @@ interface SelectProps<T> {
 }
 ```
 
-### 2. Feature Components（機能別フォルダ）
-**特徴**: ビジネスロジック含む、特定機能に特化
+### 2. Feature Components (Feature-specific folders)
+**Characteristics**: Contains business logic, specialized for specific features
 
-#### TodoList（Server Component）
+#### TodoList (Server Component)
 ```typescript
 interface TodoListProps {
   initialTodos?: Todo[];
   status?: TodoStatus;
 }
 
-// 責務：
-// - TODOリストの表示
-// - 初期データの提供（SSR）
-// - 子コンポーネントへのデータ受け渡し
+// Responsibilities:
+// - Display TODO list
+// - Provide initial data (SSR)
+// - Pass data to child components
 ```
 
-#### TodoItem（Client Component）
+#### TodoItem (Client Component)
 ```typescript
 interface TodoItemProps {
   todo: Todo;
@@ -85,36 +85,36 @@ interface TodoItemProps {
   onDelete?: (id: string) => void;
 }
 
-// 責務：
-// - 個別TODOの表示
-// - ステータス変更、編集、削除のアクション
-// - 楽観的更新のUI反映
+// Responsibilities:
+// - Display individual TODO
+// - Handle status change, edit, delete actions
+// - Reflect optimistic updates in UI
 ```
 
-#### TodoForm（Client Component）
+#### TodoForm (Client Component)
 ```typescript
 interface TodoFormProps {
-  todo?: Todo; // 編集時のみ
+  todo?: Todo; // Only for editing
   onSubmit: (todo: CreateTodoRequest | UpdateTodoRequest) => void;
   onCancel?: () => void;
 }
 
-// 責務：
-// - TODO作成・編集フォーム
-// - バリデーション（React Hook Form + Zod）
-// - 送信処理
+// Responsibilities:
+// - TODO creation/editing form
+// - Validation (React Hook Form + Zod)
+// - Handle submission
 ```
 
-## 状態管理パターン
+## State Management Patterns
 
-### 1. Server State（TanStack Query）
+### 1. Server State (TanStack Query)
 ```typescript
-// カスタムフック例
+// Custom hook example
 export function useTodos(status?: TodoStatus) {
   return useQuery({
     queryKey: ['todos', status],
     queryFn: () => todoApi.getList({ status }),
-    staleTime: 1000 * 60 * 5, // 5分
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
 
@@ -126,7 +126,7 @@ export function useCreateTodo() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['todos'] });
     },
-    // 楽観的更新
+    // Optimistic update
     onMutate: async (newTodo) => {
       await queryClient.cancelQueries({ queryKey: ['todos'] });
       const previousTodos = queryClient.getQueryData(['todos']);
@@ -140,34 +140,34 @@ export function useCreateTodo() {
 }
 ```
 
-### 2. Local State（useState/useReducer）
+### 2. Local State (useState/useReducer)
 ```typescript
-// フォーム状態
+// Form state
 const [isEditing, setIsEditing] = useState(false);
 const [selectedTodos, setSelectedTodos] = useState<string[]>([]);
 
-// UI状態
+// UI state
 const [isModalOpen, setIsModalOpen] = useState(false);
 const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 ```
 
-## データフロー
+## Data Flow
 
-### 1. データ取得フロー
+### 1. Data Fetching Flow
 ```
 Server Component → API Call → Initial Data
        ↓
 Client Component → TanStack Query → Cache → UI Update
 ```
 
-### 2. データ更新フロー
+### 2. Data Update Flow
 ```
 User Action → Form Validation → Mutation
      ↓              ↓             ↓
 UI Update ← Optimistic Update ← API Call
 ```
 
-## コンポーネント実装パターン
+## Component Implementation Patterns
 
 ### 1. Server Component
 ```typescript
@@ -176,12 +176,12 @@ import { TodoList } from '@/components/todos/TodoList';
 import { todoApi } from '@/services/todo';
 
 export default async function TodoPage() {
-  // サーバーサイドでデータ取得
+  // Server-side data fetching
   const initialTodos = await todoApi.getList();
   
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">TODOリスト</h1>
+      <h1 className="text-2xl font-bold mb-6">TODO List</h1>
       <TodoList initialTodos={initialTodos} />
     </div>
   );
@@ -212,18 +212,18 @@ export function TodoList({ initialTodos }: TodoListProps) {
       await createTodo.mutateAsync(data);
       setIsFormOpen(false);
     } catch (error) {
-      // エラーハンドリング
+      // Error handling
     }
   };
   
   return (
     <div>
-      {/* TODOリスト表示 */}
+      {/* TODO list display */}
       {todos?.map(todo => (
         <TodoItem key={todo.id} todo={todo} />
       ))}
       
-      {/* フォーム */}
+      {/* Form */}
       {isFormOpen && (
         <TodoForm 
           onSubmit={handleCreate}
@@ -235,7 +235,7 @@ export function TodoList({ initialTodos }: TodoListProps) {
 }
 ```
 
-## エラーハンドリング
+## Error Handling
 
 ### 1. Error Boundary
 ```typescript
@@ -251,51 +251,51 @@ export default function Error({
 }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <h2 className="text-xl font-semibold mb-4">エラーが発生しました</h2>
+      <h2 className="text-xl font-semibold mb-4">An error occurred</h2>
       <button
         onClick={reset}
         className="px-4 py-2 bg-blue-500 text-white rounded"
       >
-        再試行
+        Retry
       </button>
     </div>
   );
 }
 ```
 
-### 2. API エラーハンドリング
+### 2. API Error Handling
 ```typescript
-// TanStack Query のエラーハンドリング
+// TanStack Query error handling
 export function useTodos() {
   return useQuery({
     queryKey: ['todos'],
     queryFn: todoApi.getList,
     retry: (failureCount, error) => {
-      // 401/403は再試行しない
+      // Don't retry for 401/403
       if (error instanceof ApiError && [401, 403].includes(error.status)) {
         return false;
       }
       return failureCount < 3;
     },
     onError: (error) => {
-      toast.error(`TODOの取得に失敗しました: ${error.message}`);
+      toast.error(`Failed to fetch TODOs: ${error.message}`);
     },
   });
 }
 ```
 
-## アクセシビリティ
+## Accessibility
 
-### 1. セマンティックHTML
+### 1. Semantic HTML
 ```typescript
-// 適切なHTML要素を使用
+// Use appropriate HTML elements
 <main>
-  <h1>TODOリスト</h1>
-  <section aria-label="TODO作成">
+  <h1>TODO List</h1>
+  <section aria-label="TODO Creation">
     <form>
       <fieldset>
-        <legend>新しいTODO</legend>
-        <label htmlFor="title">タイトル</label>
+        <legend>New TODO</legend>
+        <label htmlFor="title">Title</label>
         <input id="title" type="text" required />
       </fieldset>
     </form>
@@ -303,9 +303,9 @@ export function useTodos() {
 </main>
 ```
 
-### 2. キーボードナビゲーション
+### 2. Keyboard Navigation
 ```typescript
-// フォーカス管理
+// Focus management
 const handleKeyDown = (e: KeyboardEvent) => {
   if (e.key === 'Escape') {
     closeModal();
@@ -316,14 +316,14 @@ const handleKeyDown = (e: KeyboardEvent) => {
 };
 ```
 
-## パフォーマンス最適化
+## Performance Optimization
 
-### 1. コード分割
+### 1. Code Splitting
 ```typescript
-// 動的インポート
+// Dynamic import
 const TodoForm = lazy(() => import('./TodoForm'));
 
-// 条件付きロード
+// Conditional loading
 {isFormOpen && (
   <Suspense fallback={<FormSkeleton />}>
     <TodoForm />
@@ -331,11 +331,11 @@ const TodoForm = lazy(() => import('./TodoForm'));
 )}
 ```
 
-### 2. メモ化
+### 2. Memoization
 ```typescript
 // React.memo
 export const TodoItem = memo(function TodoItem({ todo }: TodoItemProps) {
-  // コンポーネント実装
+  // Component implementation
 });
 
 // useMemo

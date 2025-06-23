@@ -36,6 +36,14 @@ jest.mock('@/services/oidc-auth', () => ({
   OIDCAuthService: mockOIDCAuthService,
 }));
 
+// Mock api-client
+jest.mock('@/lib/api-client', () => ({
+  __esModule: true,
+  default: jest.fn(),
+  clearAuthTokens: jest.fn(),
+  cleanupExpiredTokens: jest.fn(),
+}));
+
 // Mock localStorage
 const localStorageMock = {
   getItem: jest.fn(),
@@ -46,6 +54,14 @@ const localStorageMock = {
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
+
+// Mock atob for JWT decoding
+global.atob = (str: string) => {
+  if (!str) {
+    throw new TypeError('The first argument must be of type string or an instance of Buffer, ArrayBuffer, or Array or an Array-like Object. Received undefined');
+  }
+  return Buffer.from(str, 'base64').toString('ascii');
+};
 
 // authAPI is mocked but not used as we're using OIDC service now
 const mockedOIDCAuthService = mockOIDCAuthService;
@@ -147,6 +163,21 @@ describe('AuthContext', () => {
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
+      // Wait for initial load
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      // Mock localStorage to return a valid JWT token after login
+      localStorageMock.getItem.mockImplementation((key) => {
+        if (key === 'accessToken') {
+          // Return a valid JWT token with future expiration
+          const payload = { exp: Math.floor(Date.now() / 1000) + 3600 };
+          return 'header.' + btoa(JSON.stringify(payload)) + '.signature';
+        }
+        return null;
+      });
+
       await act(async () => {
         await result.current.login('test@example.com', 'password');
       });
@@ -162,6 +193,11 @@ describe('AuthContext', () => {
       mockedOIDCAuthService.login.mockRejectedValue(new AuthAPIError(errorMessage));
 
       const { result } = renderHook(() => useAuth(), { wrapper });
+
+      // Wait for initial load
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       await act(async () => {
         try {
@@ -219,6 +255,21 @@ describe('AuthContext', () => {
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
+      // Wait for initial load
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      // Mock localStorage to return a valid JWT token after register
+      localStorageMock.getItem.mockImplementation((key) => {
+        if (key === 'accessToken') {
+          // Return a valid JWT token with future expiration
+          const payload = { exp: Math.floor(Date.now() / 1000) + 3600 };
+          return 'header.' + btoa(JSON.stringify(payload)) + '.signature';
+        }
+        return null;
+      });
+
       await act(async () => {
         await result.current.register('testuser', 'test@example.com', 'password');
       });
@@ -236,6 +287,11 @@ describe('AuthContext', () => {
       mockedOIDCAuthService.register.mockRejectedValue(new AuthAPIError(errorMessage));
 
       const { result } = renderHook(() => useAuth(), { wrapper });
+
+      // Wait for initial load
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       await act(async () => {
         try {
@@ -314,6 +370,11 @@ describe('AuthContext', () => {
       mockedOIDCAuthService.login.mockRejectedValue(new Error('Login failed'));
 
       const { result } = renderHook(() => useAuth(), { wrapper });
+
+      // Wait for initial load
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       await act(async () => {
         try {

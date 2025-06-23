@@ -1,52 +1,52 @@
-# テストのベストプラクティス
+# Testing Best Practices
 
-## 概要
-このドキュメントは、Personal Hubプロジェクトにおけるテストのベストプラクティスをまとめたものです。クリーンで保守性の高いテストコードを維持するためのガイドラインです。
+## Overview
+This document summarizes testing best practices for the Personal Hub project. It serves as a guideline for maintaining clean and maintainable test code.
 
-## 1. テスト出力のクリーン化
+## 1. Clean Test Output
 
-### なぜ重要か
-- **CI/CDの可読性**: ノイズが少ないログは、実際の問題を素早く特定できる
-- **デバッグ効率**: 関係ない出力に埋もれず、真の問題に集中できる  
-- **プロフェッショナリズム**: 整理されたテスト出力は品質への配慮を示す
-- **チーム開発**: 他の開発者がテスト結果を理解しやすい
+### Why It's Important
+- **CI/CD Readability**: Low-noise logs enable quick identification of actual problems
+- **Debugging Efficiency**: Focus on real issues without getting buried in irrelevant output
+- **Professionalism**: Clean test output demonstrates attention to quality
+- **Team Development**: Other developers can easily understand test results
 
-### 実装ガイドライン
+### Implementation Guidelines
 
-#### 1.1 本番コードでの console.log
+#### 1.1 console.log in Production Code
 ```javascript
-// ❌ 悪い例
+// ❌ Bad example
 const handleClick = () => {
-  console.log('Button clicked', data); // デバッグログを残さない
-  // 処理
+  console.log('Button clicked', data); // Don't leave debug logs
+  // processing
 };
 
-// ✅ 良い例
+// ✅ Good example
 const handleClick = () => {
-  // 処理のみ
+  // processing only
 };
 ```
 
-#### 1.2 テストでのモック戻り値
+#### 1.2 Mock Return Values in Tests
 ```javascript
-// ❌ 悪い例
-mockResolvedValue(undefined); // TanStack Queryが警告を出す
+// ❌ Bad example
+mockResolvedValue(undefined); // TanStack Query will emit warnings
 
-// ✅ 良い例
-mockResolvedValue({}); // 空オブジェクトを返す
-mockResolvedValue(null); // または明示的にnull
-mockResolvedValue({ success: true }); // または適切な値
+// ✅ Good example
+mockResolvedValue({}); // Return empty object
+mockResolvedValue(null); // Or explicitly return null
+mockResolvedValue({ success: true }); // Or return appropriate value
 ```
 
-#### 1.3 期待される警告の抑制
-`jest.setup.js`で、テスト中に期待される警告を抑制：
+#### 1.3 Suppress Expected Warnings
+In `jest.setup.js`, suppress warnings expected during tests:
 
 ```javascript
 // jest.setup.js
 const originalConsoleError = console.error;
 
 console.error = (...args) => {
-  // React act() 警告を抑制
+  // Suppress React act() warnings
   if (
     typeof args[0] === 'string' && 
     args[0].includes('was not wrapped in act(...)')
@@ -57,114 +57,114 @@ console.error = (...args) => {
 };
 ```
 
-## 2. テストの書き方
+## 2. How to Write Tests
 
-### 2.1 AAA パターン
+### 2.1 AAA Pattern
 ```javascript
 it('should update todo status', async () => {
-  // Arrange（準備）
+  // Arrange (Setup)
   const todo = { id: 1, status: 'TODO' };
   mockApi.updateTodo.mockResolvedValue({ ...todo, status: 'DONE' });
   
-  // Act（実行）
+  // Act (Execute)
   const result = await updateTodoStatus(todo.id, 'DONE');
   
-  // Assert（検証）
+  // Assert (Verify)
   expect(result.status).toBe('DONE');
 });
 ```
 
-### 2.2 ユーザー視点のテスト
+### 2.2 User-Centric Testing
 ```javascript
-// ❌ 実装詳細をテスト
+// ❌ Test implementation details
 expect(component.state.isLoading).toBe(true);
 
-// ✅ ユーザーが見るものをテスト
-expect(screen.getByText('読み込み中...')).toBeInTheDocument();
+// ✅ Test what users see
+expect(screen.getByText('Loading...')).toBeInTheDocument();
 ```
 
-### 2.3 セレクタの優先順位
-1. **役割とアクセシビリティ**: `getByRole`, `getByLabelText`
-2. **テキスト内容**: `getByText`, `getByPlaceholderText`
-3. **テストID**: `getByTestId`（最終手段）
+### 2.3 Selector Priority
+1. **Role and Accessibility**: `getByRole`, `getByLabelText`
+2. **Text Content**: `getByText`, `getByPlaceholderText`
+3. **Test ID**: `getByTestId` (last resort)
 
 ```javascript
-// ✅ 推奨
-screen.getByRole('button', { name: '保存' });
-screen.getByLabelText('タイトル *');
+// ✅ Recommended
+screen.getByRole('button', { name: 'Save' });
+screen.getByLabelText('Title *');
 
-// ⚠️ 避ける
+// ⚠️ Avoid
 screen.getByTestId('save-button');
 ```
 
-## 3. 非同期処理のテスト
+## 3. Testing Async Operations
 
-### 3.1 waitFor の使用
+### 3.1 Using waitFor
 ```javascript
-// ✅ 良い例
+// ✅ Good example
 await waitFor(() => {
-  expect(screen.getByText('保存しました')).toBeInTheDocument();
+  expect(screen.getByText('Saved')).toBeInTheDocument();
 });
 
-// ❌ 悪い例
+// ❌ Bad example
 setTimeout(() => {
-  expect(screen.getByText('保存しました')).toBeInTheDocument();
+  expect(screen.getByText('Saved')).toBeInTheDocument();
 }, 1000);
 ```
 
-### 3.2 act() 警告の対処
+### 3.2 Handling act() Warnings
 ```javascript
-// ✅ 良い例
+// ✅ Good example
 await act(async () => {
   await userEvent.click(button);
 });
 
-// コンポーネント内の非同期更新を待つ
+// Wait for async updates in component
 await waitFor(() => {
   expect(mockFn).toHaveBeenCalled();
 });
 ```
 
-## 4. モックの管理
+## 4. Mock Management
 
-### 4.1 モックの配置
+### 4.1 Mock Placement
 ```javascript
-// グローバルモック: jest.setup.js
+// Global mocks: jest.setup.js
 jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: jest.fn() })
 }));
 
-// ファイル固有モック: 各テストファイルの先頭
+// File-specific mocks: top of each test file
 jest.mock('@/lib/api', () => ({
   todoApi: { getAll: jest.fn() }
 }));
 ```
 
-### 4.2 モックのリセット
+### 4.2 Mock Reset
 ```javascript
 beforeEach(() => {
-  jest.clearAllMocks(); // 呼び出し履歴をクリア
+  jest.clearAllMocks(); // Clear call history
 });
 
 afterEach(() => {
-  jest.restoreAllMocks(); // spy を元に戻す
+  jest.restoreAllMocks(); // Restore spies
 });
 ```
 
-## 5. i18n（国際化）のテスト
+## 5. i18n (Internationalization) Testing
 
-### 5.1 インラインモック
+### 5.1 Inline Mock
 ```javascript
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string, params?: Record<string, string>) => {
     const translations: Record<string, string> = {
-      'button.save': '保存',
-      'message.welcome': 'ようこそ、{name}さん'
+      'button.save': 'Save',
+      'message.welcome': 'Welcome, {name}'
     };
     
     let result = translations[key] || key;
     
-    // パラメータ置換
+    // Parameter substitution
     if (params) {
       Object.entries(params).forEach(([param, value]) => {
         result = result.replace(`{${param}}`, value);
@@ -176,11 +176,11 @@ jest.mock('next-intl', () => ({
 }));
 ```
 
-## 6. パフォーマンスの考慮
+## 6. Performance Considerations
 
-### 6.1 不要な再レンダリングを避ける
+### 6.1 Avoid Unnecessary Re-renders
 ```javascript
-// カスタムレンダラーで必要なプロバイダーのみラップ
+// Custom renderer with only necessary providers
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(
     <QueryClientProvider client={queryClient}>
@@ -190,22 +190,22 @@ const renderWithProviders = (ui: React.ReactElement) => {
 };
 ```
 
-### 6.2 重いセットアップの共有
+### 6.2 Share Heavy Setup
 ```javascript
-// 一度だけ実行
+// Execute only once
 beforeAll(async () => {
-  // 重い初期化処理
+  // Heavy initialization
 });
 
-// 各テストで再利用
+// Reuse in each test
 describe('TodoList', () => {
-  // テストケース
+  // Test cases
 });
 ```
 
-## 7. CI/CD での考慮事項
+## 7. CI/CD Considerations
 
-### 7.1 並列実行
+### 7.1 Parallel Execution
 ```json
 // package.json
 {
@@ -215,7 +215,7 @@ describe('TodoList', () => {
 }
 ```
 
-### 7.2 カバレッジレポート
+### 7.2 Coverage Reports
 ```javascript
 // jest.config.js
 module.exports = {
@@ -236,27 +236,27 @@ module.exports = {
 };
 ```
 
-## 8. トラブルシューティング
+## 8. Troubleshooting
 
-### 8.1 よくある問題と解決法
+### 8.1 Common Issues and Solutions
 
-#### "Query data cannot be undefined" 警告
+#### "Query data cannot be undefined" Warning
 ```javascript
-// 問題
+// Problem
 mockResolvedValue(undefined);
 
-// 解決
+// Solution
 mockResolvedValue({});
 mockResolvedValue([]);
 ```
 
-#### React act() 警告
+#### React act() Warning
 ```javascript
-// 問題
+// Problem
 fireEvent.click(button);
 expect(something).toBe(true);
 
-// 解決
+// Solution
 await act(async () => {
   fireEvent.click(button);
 });
@@ -265,21 +265,21 @@ await waitFor(() => {
 });
 ```
 
-#### セレクタが複数要素にマッチ
+#### Selector Matches Multiple Elements
 ```javascript
-// 問題
-screen.getByText(/title/i); // 複数マッチ
+// Problem
+screen.getByText(/title/i); // Multiple matches
 
-// 解決
-screen.getByLabelText('Title *'); // より具体的に
+// Solution
+screen.getByLabelText('Title *'); // More specific
 screen.getByRole('heading', { name: 'Title' });
 ```
 
-## まとめ
-これらのベストプラクティスに従うことで：
-- テスト実行時の出力がクリーンになる
-- CI/CDでの問題特定が容易になる
-- テストの保守性が向上する
-- チーム全体の生産性が向上する
+## Summary
+By following these best practices:
+- Test output becomes clean
+- Problem identification in CI/CD becomes easier
+- Test maintainability improves
+- Overall team productivity increases
 
-常に「ユーザーが体験すること」をテストし、実装の詳細ではなく振る舞いに焦点を当てることを心がけましょう。
+Always focus on testing "what users experience" and concentrate on behavior rather than implementation details.
