@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/cn';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { 
   Home, 
   CheckSquare, 
@@ -25,7 +25,7 @@ interface NavItem {
 export function Sidebar() {
   const t = useTranslations();
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useLocalStorage('sidebar-collapsed', false);
 
   const navItems: NavItem[] = [
     {

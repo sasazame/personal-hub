@@ -139,6 +139,7 @@ describe('CalendarGrid', () => {
     
     const blueEvent = screen.getByText('Test Event');
     expect(blueEvent).toHaveClass('bg-blue-500/20');
+
     expect(blueEvent).toHaveClass('text-blue-700');
     expect(blueEvent).toHaveClass('border-blue-500/30');
     
