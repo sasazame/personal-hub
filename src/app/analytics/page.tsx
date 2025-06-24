@@ -69,7 +69,7 @@ function AnalyticsPage() {
               <StatsCard
                 title={t('analytics.todoCompletionRate')}
                 value={`${dashboardData.todoStats.completionRate}%`}
-                subtitle={`${dashboardData.todoStats.completedTodos} / ${dashboardData.todoStats.totalTodos} 件`}
+                subtitle={`${dashboardData.todoStats.completedTodos} / ${dashboardData.todoStats.totalTodos}`}
                 icon={<CheckCircleIcon className="h-8 w-8" />}
               />
               <StatsCard

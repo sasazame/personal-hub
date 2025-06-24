@@ -381,6 +381,24 @@
       "inProgress": "In Progress",
       "completed": "Completed",
       "cancelled": "Cancelled"
+    },
+    "productivityTrend": "Productivity Trend (Last 7 Days)",
+    "weeklyScore": "Weekly Score:",
+    "scoreUnit": "pts",
+    "chartLabels": {
+      "todoCompletions": "TODO Completions",
+      "events": "Events",
+      "noteCreations": "Note Creations",
+      "completed": "Completed",
+      "created": "Created"
+    },
+    "todoActivity": "TODO Activity (Last 30 Days)",
+    "averageCompletionTime": "Average completion time: {days} days",
+    "priorityDistribution": "Priority Distribution",
+    "priorities": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
     }
   },
   "theme": {

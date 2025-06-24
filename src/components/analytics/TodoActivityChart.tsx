@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui';
 import type { TodoActivity } from '@/types/analytics';
 
@@ -17,23 +18,25 @@ interface TodoActivityChartProps {
 }
 
 export function TodoActivityChart({ data }: TodoActivityChartProps) {
+  const t = useTranslations();
+  
   // データを統合
   const chartData = data.dailyCompletions.map((item, index) => ({
     date: new Date(item.date).toLocaleDateString('ja-JP', {
       month: 'short',
       day: 'numeric',
     }),
-    完了: item.count,
-    作成: data.dailyCreations[index]?.count || 0,
+    [t('analytics.chartLabels.completed')]: item.count,
+    [t('analytics.chartLabels.created')]: data.dailyCreations[index]?.count || 0,
   }));
 
   return (
     <Card className="col-span-2">
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">TODOアクティビティ（過去30日間）</h3>
+          <h3 className="text-lg font-semibold">{t('analytics.todoActivity')}</h3>
           <div className="text-sm text-muted-foreground">
-            平均完了時間: {data.averageCompletionTimeInDays.toFixed(1)}日
+            {t('analytics.averageCompletionTime', { days: data.averageCompletionTimeInDays.toFixed(1) })}
           </div>
         </div>
         <ResponsiveContainer width="100%" height={300}>
@@ -44,7 +47,7 @@ export function TodoActivityChart({ data }: TodoActivityChartProps) {
             <Tooltip />
             <Area
               type="monotone"
-              dataKey="作成"
+              dataKey={t('analytics.chartLabels.created')}
               stackId="1"
               stroke="#3B82F6"
               fill="#3B82F6"
@@ -52,7 +55,7 @@ export function TodoActivityChart({ data }: TodoActivityChartProps) {
             />
             <Area
               type="monotone"
-              dataKey="完了"
+              dataKey={t('analytics.chartLabels.completed')}
               stackId="2"
               stroke="#10B981"
               fill="#10B981"

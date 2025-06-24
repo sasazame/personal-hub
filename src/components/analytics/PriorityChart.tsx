@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui';
 import type { PriorityDistribution } from '@/types/analytics';
 
@@ -16,11 +17,6 @@ interface PriorityChartProps {
   data: PriorityDistribution;
 }
 
-const PRIORITY_LABELS = {
-  HIGH: '高',
-  MEDIUM: '中',
-  LOW: '低',
-};
 
 const PRIORITY_COLORS = {
   HIGH: '#EF4444',
@@ -29,8 +25,23 @@ const PRIORITY_COLORS = {
 };
 
 export function PriorityChart({ data }: PriorityChartProps) {
+  const t = useTranslations();
+  
+  const getPriorityLabel = (priority: string): string => {
+    switch (priority) {
+      case 'HIGH':
+        return t('analytics.priorities.high');
+      case 'MEDIUM':
+        return t('analytics.priorities.medium');
+      case 'LOW':
+        return t('analytics.priorities.low');
+      default:
+        return priority;
+    }
+  };
+  
   const chartData = Object.entries(data).map(([key, value]) => ({
-    priority: PRIORITY_LABELS[key as keyof typeof PRIORITY_LABELS],
+    priority: getPriorityLabel(key),
     count: value,
     color: PRIORITY_COLORS[key as keyof typeof PRIORITY_COLORS],
   }));
@@ -38,7 +49,7 @@ export function PriorityChart({ data }: PriorityChartProps) {
   return (
     <Card>
       <div className="p-6">
-        <h3 className="text-lg font-semibold mb-4">優先度別TODO分布</h3>
+        <h3 className="text-lg font-semibold mb-4">{t('analytics.priorityDistribution')}</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />

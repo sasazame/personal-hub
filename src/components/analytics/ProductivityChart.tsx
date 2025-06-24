@@ -10,6 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui';
 import type { ProductivityStats } from '@/types/analytics';
 
@@ -18,28 +19,30 @@ interface ProductivityChartProps {
 }
 
 export function ProductivityChart({ data }: ProductivityChartProps) {
+  const t = useTranslations();
+  
   // データを統合して日付でグループ化
   const chartData = data.dailyTodoCompletions.map((item, index) => ({
     date: new Date(item.date).toLocaleDateString('ja-JP', {
       month: 'short',
       day: 'numeric',
     }),
-    TODO完了: item.count,
-    イベント: data.dailyEventCounts[index]?.count || 0,
-    ノート作成: data.dailyNoteCreations[index]?.count || 0,
+    [t('analytics.chartLabels.todoCompletions')]: item.count,
+    [t('analytics.chartLabels.events')]: data.dailyEventCounts[index]?.count || 0,
+    [t('analytics.chartLabels.noteCreations')]: data.dailyNoteCreations[index]?.count || 0,
   }));
 
   return (
     <Card className="col-span-2">
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">生産性トレンド（過去7日間）</h3>
+          <h3 className="text-lg font-semibold">{t('analytics.productivityTrend')}</h3>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">
-              週間スコア:
+              {t('analytics.weeklyScore')}
             </span>
             <span className="text-lg font-bold text-primary">
-              {data.weeklyProductivityScore}点
+              {data.weeklyProductivityScore}{t('analytics.scoreUnit')}
             </span>
           </div>
         </div>
@@ -52,19 +55,19 @@ export function ProductivityChart({ data }: ProductivityChartProps) {
             <Legend />
             <Line
               type="monotone"
-              dataKey="TODO完了"
+              dataKey={t('analytics.chartLabels.todoCompletions')}
               stroke="#10B981"
               strokeWidth={2}
             />
             <Line
               type="monotone"
-              dataKey="イベント"
+              dataKey={t('analytics.chartLabels.events')}
               stroke="#3B82F6"
               strokeWidth={2}
             />
             <Line
               type="monotone"
-              dataKey="ノート作成"
+              dataKey={t('analytics.chartLabels.noteCreations')}
               stroke="#F59E0B"
               strokeWidth={2}
             />
