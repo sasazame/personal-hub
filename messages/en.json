@@ -22,9 +22,9 @@
     "deleting": "Deleting..."
   },
   "app": {
-    "title": "TODO App",
-    "description": "A simple TODO management application",
-    "subtitle": "Organize your tasks efficiently"
+    "title": "Personal Hub",
+    "description": "A comprehensive productivity platform for personal organization",
+    "subtitle": "Manage tasks, calendar, notes, and analytics in one place"
   },
   "nav": {
     "home": "Home",
