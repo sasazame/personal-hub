@@ -3,6 +3,16 @@ import userEvent from '@testing-library/user-event';
 import { EventForm } from '../EventForm';
 import { CalendarEvent } from '@/types/calendar';
 
+// Mock Google integration hooks
+jest.mock('@/hooks/useGoogleIntegration', () => ({
+  useGoogleAuth: () => ({
+    hasIntegration: false,
+    initiateAuth: jest.fn(),
+    revokeIntegration: jest.fn(),
+    isRevoking: false,
+  }),
+}));
+
 // Mock next-intl
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {

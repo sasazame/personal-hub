@@ -7,6 +7,8 @@ import { z } from 'zod';
 import { useTranslations } from 'next-intl';
 import { CalendarEvent, CreateCalendarEventDto } from '@/types/calendar';
 import { Button, Input, TextArea, Modal } from '@/components/ui';
+import { Switch } from '@/components/ui/switch';
+import { useGoogleAuth } from '@/hooks/useGoogleIntegration';
 import { format } from 'date-fns';
 
 // Schema and type will be created inside component to access translations
@@ -25,6 +27,7 @@ interface EventFormProps {
 
 export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSubmitting, onDelete }: EventFormProps) {
   const t = useTranslations();
+  const { hasIntegration } = useGoogleAuth();
   const [selectedColor, setSelectedColor] = useState(event?.color || 'blue');
   
   const eventSchema = z.object({
@@ -37,6 +40,7 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
     color: z.string().optional(),
     reminders: z.array(z.any()).optional(),
     recurrence: z.any().optional(),
+    syncToGoogle: z.boolean().optional(),
   });
   
   type EventFormData = z.infer<typeof eventSchema>;
@@ -68,6 +72,7 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
       color: event.color || 'blue',
       reminders: event.reminders || [],
       recurrence: event.recurrence,
+      syncToGoogle: event.syncToGoogle ?? true,
     } : {
       title: '',
       description: '',
@@ -78,6 +83,7 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
       color: 'blue',
       reminders: [],
       recurrence: undefined,
+      syncToGoogle: true,
     }
   });
 
@@ -240,6 +246,29 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
             </p>
           )}
         </div>
+
+        {hasIntegration && (
+          <div className="flex items-center justify-between rounded-lg border p-4 bg-muted/50">
+            <div className="flex items-center gap-3">
+              <div className="text-blue-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                  <line x1="16" x2="16" y1="2" y2="6"/>
+                  <line x1="8" x2="8" y1="2" y2="6"/>
+                  <line x1="3" x2="21" y1="10" y2="10"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-medium">{t('calendar.syncToGoogle')}</p>
+                <p className="text-xs text-muted-foreground">{t('calendar.syncToGoogleDescription')}</p>
+              </div>
+            </div>
+            <Switch
+              {...register('syncToGoogle')}
+              defaultChecked={watch('syncToGoogle')}
+            />
+          </div>
+        )}
 
         <div className="flex gap-3 justify-between pt-4 border-t border-border">
           {event && onDelete && (
