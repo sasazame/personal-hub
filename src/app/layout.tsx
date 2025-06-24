@@ -21,8 +21,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TODO App",
-  description: "A simple TODO application",
+  title: "Personal Hub",
+  description: "A comprehensive productivity platform for personal organization",
 };
 
 export default async function RootLayout({
