@@ -21,6 +21,14 @@ export default function GoogleCallbackPage() {
       const error = searchParams.get('error');
       const errorDescription = searchParams.get('error_description');
 
+      console.log('[Google Callback] Params:', { 
+        hasCode: !!code, 
+        hasState: !!state, 
+        error, 
+        errorDescription,
+        storedState: sessionStorage.getItem('oauth_state')
+      });
+
       if (error) {
         setStatus('error');
         setErrorMessage(errorDescription || error);
@@ -42,7 +50,6 @@ export default function GoogleCallbackPage() {
         
         // Redirect back to calendar or the page they came from
         const returnUrl = sessionStorage.getItem('google_auth_return_url') || '/calendar';
-        sessionStorage.removeItem('google_auth_return_url');
         
         setTimeout(() => {
           router.push(returnUrl);
@@ -52,6 +59,9 @@ export default function GoogleCallbackPage() {
         const message = err instanceof Error ? err.message : 'Failed to complete Google authorization';
         setErrorMessage(message);
         showError(message);
+        
+        // Log detailed error for debugging
+        console.error('[Google Callback] Error details:', err);
       }
     };
 

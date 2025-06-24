@@ -37,49 +37,39 @@ export class GoogleIntegrationService {
     // Store current page to return after auth
     sessionStorage.setItem('google_auth_return_url', window.location.pathname);
     
-    // Use the existing OIDC auth service to initiate Google OAuth
-    // The backend will handle the Google-specific scopes
-    const { OIDCAuthService } = await import('./oidc-auth');
-    
-    // Check if we need to use the simple OAuth flow or the extended one
     try {
       console.log('[Google Auth] Initiating Google OAuth flow...');
       
-      // Try to get Google-specific authorization URL from backend
-      const response = await apiClient.get('/auth/oidc/google/authorize', {
-        params: {
-          scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/gmail.readonly',
-          redirect_url: window.location.origin + '/auth/google-callback',
-        }
-      });
+      // Get authorization URL from backend (no parameters needed)
+      const response = await apiClient.get('/auth/oidc/google/authorize');
       
-      console.log('[Google Auth] Received authorization URL from backend');
+      console.log('[Google Auth] Received authorization URL from backend:', response.data);
       
       const { authorizationUrl, state } = response.data;
       
-      // Store state for callback verification
-      sessionStorage.setItem('google_oauth_state', state);
-      sessionStorage.setItem('google_oauth_provider', 'google');
+      if (!authorizationUrl || !state) {
+        throw new Error('Invalid response from authorization endpoint');
+      }
+      
+      // Store backend-generated state for callback verification
+      sessionStorage.setItem('oauth_state', state);
+      
+      console.log('[Google Auth] Redirecting to Google authorization URL...');
       
       // Redirect to Google authorization URL
       window.location.href = authorizationUrl;
     } catch (error) {
-      // If the backend doesn't support the extended scope endpoint,
-      // fall back to using the standard OAuth flow
-      console.warn('Extended Google OAuth endpoint not available, using standard flow');
-      const { OIDCAuthService } = await import('./oidc-auth');
+      console.error('[Google Auth] Failed to initiate Google OAuth:', error);
       
-      // Store a flag to indicate we want Google integration after login
-      sessionStorage.setItem('pending_google_integration', 'true');
-      
-      if (!OIDCAuthService.isAuthenticated()) {
-        // If not authenticated, initiate regular Google login
-        await OIDCAuthService.initiateOAuth('google');
-      } else {
-        // If already authenticated but the extended endpoint is not available,
-        // show an error message
-        throw new Error('Google Calendar integration requires backend support for extended OAuth scopes');
+      // If the endpoint returns 404, show appropriate error
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { status: number } };
+        if (axiosError.response?.status === 404) {
+          throw new Error('Google OAuth integration is not available. Please contact support.');
+        }
       }
+      
+      throw new Error('Failed to initiate Google authentication. Please try again.');
     }
   }
   
@@ -87,45 +77,60 @@ export class GoogleIntegrationService {
    * Handle Google OAuth callback with extended scopes
    */
   static async handleGoogleAuthCallback(code: string, state: string): Promise<boolean> {
-    // Validate state - check both possible state keys
-    const storedState = sessionStorage.getItem('google_oauth_state') || sessionStorage.getItem('oauth_state');
-    if (!storedState || state !== storedState) {
-      throw new Error('Invalid state parameter');
-    }
+    console.log('[Google Auth] Handling OAuth callback...');
     
-    const codeVerifier = sessionStorage.getItem('code_verifier');
-    if (!codeVerifier) {
-      throw new Error('No code verifier found');
+    // Validate state
+    const storedState = sessionStorage.getItem('oauth_state');
+    if (!storedState || state !== storedState) {
+      console.error('[Google Auth] State mismatch:', { received: state, stored: storedState });
+      throw new Error('Invalid state parameter - potential CSRF attack');
     }
     
     try {
-      // Exchange code for tokens using existing OIDC endpoint
-      const response = await apiClient.post('/oidc/token', {
-        grant_type: 'authorization_code',
+      console.log('[Google Auth] Sending callback to backend...');
+      
+      // Send code and state to backend callback endpoint
+      const response = await apiClient.post('/auth/oidc/google/callback', {
         code: code,
-        redirect_uri: window.location.origin + '/auth/callback',
-        client_id: 'personal-hub-frontend',
-        code_verifier: codeVerifier,
+        state: state
       });
       
-      const { access_token, refresh_token } = response.data;
+      console.log('[Google Auth] Callback response:', response.data);
       
-      // Store Google-specific tokens separately for Google API access
-      localStorage.setItem('google_access_token', access_token);
-      if (refresh_token) {
-        localStorage.setItem('google_refresh_token', refresh_token);
+      const { token, user } = response.data;
+      
+      if (!token) {
+        throw new Error('No token received from authentication');
+      }
+      
+      // Store the token (the backend already validates Google access)
+      localStorage.setItem('google_access_token', token);
+      
+      // Store user info if provided
+      if (user) {
+        localStorage.setItem('google_user', JSON.stringify(user));
       }
       
       // Clean up temporary storage
       sessionStorage.removeItem('oauth_state');
-      sessionStorage.removeItem('google_oauth_state');
-      sessionStorage.removeItem('code_verifier');
-      sessionStorage.removeItem('oauth_provider');
-      sessionStorage.removeItem('google_oauth_provider');
+      sessionStorage.removeItem('google_auth_return_url');
+      
+      console.log('[Google Auth] Authentication successful');
       
       return true;
     } catch (error) {
-      console.error('Google auth callback failed:', error);
+      console.error('[Google Auth] Callback failed:', error);
+      
+      // Clean up on error
+      sessionStorage.removeItem('oauth_state');
+      
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { status: number; data?: { message?: string } } };
+        if (axiosError.response?.data?.message) {
+          throw new Error(axiosError.response.data.message);
+        }
+      }
+      
       throw error;
     }
   }
@@ -200,7 +205,26 @@ export class GoogleIntegrationService {
    * Check if user has Google integration enabled
    */
   static hasGoogleIntegration(): boolean {
-    return !!localStorage.getItem('google_access_token');
+    // Check if we have a Google access token
+    const hasToken = !!localStorage.getItem('google_access_token');
+    
+    // Also check if the token is still valid (basic check)
+    if (hasToken) {
+      try {
+        const user = localStorage.getItem('google_user');
+        if (user) {
+          JSON.parse(user); // Validate JSON
+        }
+        return true;
+      } catch {
+        // Invalid data, clean up
+        localStorage.removeItem('google_access_token');
+        localStorage.removeItem('google_user');
+        return false;
+      }
+    }
+    
+    return false;
   }
   
   /**
@@ -210,37 +234,20 @@ export class GoogleIntegrationService {
     try {
       // Call backend to revoke tokens
       await apiClient.post('/calendar/sync/revoke');
+    } catch (error) {
+      console.error('[Google Auth] Failed to revoke on backend:', error);
+      // Continue with local cleanup even if backend fails
     } finally {
-      // Always clear local tokens
+      // Always clear local tokens and data
       localStorage.removeItem('google_access_token');
       localStorage.removeItem('google_refresh_token');
+      localStorage.removeItem('google_user');
+      
+      // Clear any session data
+      sessionStorage.removeItem('oauth_state');
+      sessionStorage.removeItem('google_auth_return_url');
+      
+      console.log('[Google Auth] Local Google integration data cleared');
     }
-  }
-  
-  // PKCE helpers
-  private static generateCodeVerifier(): string {
-    const array = new Uint8Array(32);
-    crypto.getRandomValues(array);
-    return this.base64URLEncode(array);
-  }
-  
-  private static async generateCodeChallenge(verifier: string): Promise<string> {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(verifier);
-    const digest = await crypto.subtle.digest('SHA-256', data);
-    return this.base64URLEncode(new Uint8Array(digest));
-  }
-  
-  private static generateRandomState(): string {
-    const array = new Uint8Array(16);
-    crypto.getRandomValues(array);
-    return this.base64URLEncode(array);
-  }
-  
-  private static base64URLEncode(buffer: Uint8Array): string {
-    return btoa(String.fromCharCode(...buffer))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=/g, '');
   }
 }
