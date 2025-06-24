@@ -41,14 +41,9 @@ export class GoogleIntegrationService {
     // The backend will handle the Google-specific scopes
     const { OIDCAuthService } = await import('./oidc-auth');
     
-    // First, check if user is already authenticated
-    if (!OIDCAuthService.isAuthenticated()) {
-      // If not authenticated, initiate regular Google login
-      await OIDCAuthService.initiateOAuth('google');
-    } else {
-      // If already authenticated, we need to request additional scopes
-      // For now, we'll use the same OAuth flow
-      // In production, you might want to implement incremental authorization
+    // Check if we need to use the simple OAuth flow or the extended one
+    try {
+      // Try to get Google-specific authorization URL from backend
       const response = await apiClient.get('/auth/oidc/google/authorize', {
         params: {
           scope: 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/gmail.readonly',
@@ -64,6 +59,23 @@ export class GoogleIntegrationService {
       
       // Redirect to Google authorization URL
       window.location.href = authorizationUrl;
+    } catch (error) {
+      // If the backend doesn't support the extended scope endpoint,
+      // fall back to using the standard OAuth flow
+      console.warn('Extended Google OAuth endpoint not available, using standard flow');
+      const { OIDCAuthService } = await import('./oidc-auth');
+      
+      // Store a flag to indicate we want Google integration after login
+      sessionStorage.setItem('pending_google_integration', 'true');
+      
+      if (!OIDCAuthService.isAuthenticated()) {
+        // If not authenticated, initiate regular Google login
+        await OIDCAuthService.initiateOAuth('google');
+      } else {
+        // If already authenticated but the extended endpoint is not available,
+        // show an error message
+        throw new Error('Google Calendar integration requires backend support for extended OAuth scopes');
+      }
     }
   }
   
@@ -71,9 +83,9 @@ export class GoogleIntegrationService {
    * Handle Google OAuth callback with extended scopes
    */
   static async handleGoogleAuthCallback(code: string, state: string): Promise<boolean> {
-    // Validate state
-    const storedState = sessionStorage.getItem('oauth_state');
-    if (state !== storedState) {
+    // Validate state - check both possible state keys
+    const storedState = sessionStorage.getItem('google_oauth_state') || sessionStorage.getItem('oauth_state');
+    if (!storedState || state !== storedState) {
       throw new Error('Invalid state parameter');
     }
     
@@ -102,8 +114,10 @@ export class GoogleIntegrationService {
       
       // Clean up temporary storage
       sessionStorage.removeItem('oauth_state');
+      sessionStorage.removeItem('google_oauth_state');
       sessionStorage.removeItem('code_verifier');
       sessionStorage.removeItem('oauth_provider');
+      sessionStorage.removeItem('google_oauth_provider');
       
       return true;
     } catch (error) {

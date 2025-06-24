@@ -276,7 +276,10 @@
       "orange": "オレンジ"
     },
     "location": "場所",
-    "locationPlaceholder": "場所を入力してください"
+    "locationPlaceholder": "場所を入力してください",
+    "googleSettings": "Google設定",
+    "syncToGoogle": "Googleカレンダーに同期",
+    "syncToGoogleDescription": "このイベントをGoogleカレンダーに同期します"
   },
   "notes": {
     "title": "メモ",

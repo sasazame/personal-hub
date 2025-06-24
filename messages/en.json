@@ -276,7 +276,10 @@
       "orange": "Orange"
     },
     "location": "Location",
-    "locationPlaceholder": "Enter location"
+    "locationPlaceholder": "Enter location",
+    "googleSettings": "Google Settings",
+    "syncToGoogle": "Sync to Google Calendar",
+    "syncToGoogleDescription": "Sync this event to Google Calendar"
   },
   "notes": {
     "title": "Notes",
