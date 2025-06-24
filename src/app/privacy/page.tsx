@@ -4,9 +4,11 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, Shield } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function PrivacyPage() {
   const t = useTranslations();
+  usePageTitle('Privacy Policy - Personal Hub');
   const currentDate = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',

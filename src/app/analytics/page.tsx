@@ -17,9 +17,11 @@ import {
   DocumentTextIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 function AnalyticsPage() {
   const t = useTranslations();
+  usePageTitle('Analytics - Personal Hub');
   const { dashboardData, todoActivity, isLoading, dashboardError, todoActivityError } = useAnalytics();
 
   if (isLoading) {
