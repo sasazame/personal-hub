@@ -15,6 +15,7 @@ import { userApi } from '@/services/user';
 import { useAuth } from '@/hooks/useAuth';
 import { UpdateUserDto, ChangePasswordDto } from '@/types/user';
 import { ArrowLeft } from 'lucide-react';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import Link from 'next/link';
 
 const updateProfileSchema = z.object({
@@ -41,6 +42,7 @@ type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 
 function ProfilePage() {
   const t = useTranslations();
+  usePageTitle('Profile - Personal Hub');
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user, logout } = useAuth();

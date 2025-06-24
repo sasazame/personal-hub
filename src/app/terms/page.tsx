@@ -4,9 +4,11 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ArrowLeft, Calendar } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function TermsPage() {
   const t = useTranslations();
+  usePageTitle('Terms of Service - Personal Hub');
   const currentDate = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',

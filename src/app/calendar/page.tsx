@@ -8,12 +8,14 @@ import { Button, Modal } from '@/components/ui';
 import { CalendarGrid, EventForm } from '@/components/calendar';
 import { useCalendarEvents, useCreateCalendarEvent, useUpdateCalendarEvent, useDeleteCalendarEvent } from '@/hooks/useCalendar';
 import { CalendarEvent, CreateCalendarEventDto, UpdateCalendarEventDto } from '@/types/calendar';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { showSuccess, showError } from '@/components/ui/toast';
 import { format, addMonths, subMonths } from 'date-fns';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 
 function CalendarPage() {
   const t = useTranslations();
+  usePageTitle('Calendar - Personal Hub');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);

@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { useTodaysEvents } from '@/hooks/useCalendar';
 import { useRecentNotes } from '@/hooks/useNotes';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { todoApi } from '@/lib/api';
 import { format } from 'date-fns';
 import { 
@@ -21,6 +22,7 @@ import {
 
 function DashboardPage() {
   const t = useTranslations();
+  usePageTitle('Dashboard - Personal Hub');
 
   // Fetch real data
   const { data: todosResponse, error: todosError } = useQuery({

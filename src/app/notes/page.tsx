@@ -8,11 +8,13 @@ import { Button, Input, Modal } from '@/components/ui';
 import { NoteList, NoteForm, NoteViewer } from '@/components/notes';
 import { useNotes, useCreateNote, useUpdateNote, useDeleteNote, useNoteTags } from '@/hooks/useNotes';
 import { Note, CreateNoteDto, UpdateNoteDto, NoteFilters } from '@/types/note';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { showSuccess, showError } from '@/components/ui/toast';
 import { Plus, Search } from 'lucide-react';
 
 function NotesPage() {
   const t = useTranslations();
+  usePageTitle('Notes - Personal Hub');
   const [filters] = useState<NoteFilters>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);

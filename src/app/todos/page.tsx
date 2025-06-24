@@ -12,10 +12,12 @@ import { AppLayout } from '@/components/layout';
 import { todoApi } from '@/lib/api';
 import { Todo, CreateTodoDto, UpdateTodoDto, TodoStatus } from '@/types/todo';
 import { showSuccess, showError } from '@/components/ui/toast';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { Modal, Button } from '@/components/ui';
 
 function TodoApp() {
   const t = useTranslations();
+  usePageTitle('TODOs - Personal Hub');
   const queryClient = useQueryClient();
   const [isAddingTodo, setIsAddingTodo] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
