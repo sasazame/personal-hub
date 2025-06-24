@@ -12,6 +12,8 @@ interface CalendarGridProps {
 }
 
 export function CalendarGrid({ currentDate, events, onDateClick, onEventClick }: CalendarGridProps) {
+  // Ensure events is always an array
+  const safeEvents = Array.isArray(events) ? events : [];
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const startDate = new Date(monthStart);
@@ -23,9 +25,9 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick }:
   const days = eachDayOfInterval({ start: startDate, end: endDate });
 
   const getEventsForDay = (date: Date) => {
-    return events.filter(event => {
-      const eventStart = new Date(event.startDate);
-      const eventEnd = new Date(event.endDate);
+    return safeEvents.filter(event => {
+      const eventStart = new Date(event.startDateTime);
+      const eventEnd = new Date(event.endDateTime);
       
       if (event.allDay) {
         return isSameDay(date, eventStart) || 

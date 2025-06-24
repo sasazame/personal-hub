@@ -3,7 +3,7 @@
 import { Note } from '@/types/note';
 import { Button, Modal } from '@/components/ui';
 import { format } from 'date-fns';
-import { Edit, Trash2, Pin, Tag, Calendar, Clock } from 'lucide-react';
+import { Edit, Trash2, Tag, Calendar, Clock } from 'lucide-react';
 
 interface NoteViewerProps {
   note: Note | null;
@@ -11,10 +11,10 @@ interface NoteViewerProps {
   onClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
-  onTogglePin: () => void;
+  onTogglePin?: () => void; // Made optional since pin is not supported
 }
 
-export function NoteViewer({ note, isOpen, onClose, onEdit, onDelete, onTogglePin }: NoteViewerProps) {
+export function NoteViewer({ note, isOpen, onClose, onEdit, onDelete }: NoteViewerProps) {
   if (!note) return null;
 
   return (
@@ -23,33 +23,13 @@ export function NoteViewer({ note, isOpen, onClose, onEdit, onDelete, onTogglePi
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <h1 className="text-2xl font-bold text-foreground">
-                {note.title}
-              </h1>
-              {note.isPinned && (
-                <Pin className="w-5 h-5 text-yellow-500 fill-current" />
-              )}
-            </div>
-            
-            {note.category && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-                {note.category}
-              </span>
-            )}
+            <h1 className="text-2xl font-bold text-foreground mb-1">
+              {note.title}
+            </h1>
           </div>
 
           {/* Actions */}
           <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={onTogglePin}
-              className={note.isPinned ? 'text-yellow-600' : ''}
-            >
-              <Pin className="w-4 h-4" />
-            </Button>
-            
             <Button
               variant="secondary"
               size="sm"
@@ -93,12 +73,14 @@ export function NoteViewer({ note, isOpen, onClose, onEdit, onDelete, onTogglePi
         {/* Metadata */}
         <div className="pt-4 border-t border-border">
           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4" />
-              <span>作成: {format(new Date(note.createdAt), 'yyyy年M月d日 HH:mm')}</span>
-            </div>
+            {note.createdAt && (
+              <div className="flex items-center gap-1">
+                <Calendar className="w-4 h-4" />
+                <span>作成: {format(new Date(note.createdAt), 'yyyy年M月d日 HH:mm')}</span>
+              </div>
+            )}
             
-            {note.updatedAt !== note.createdAt && (
+            {note.updatedAt && note.updatedAt !== note.createdAt && (
               <div className="flex items-center gap-1">
                 <Clock className="w-4 h-4" />
                 <span>更新: {format(new Date(note.updatedAt), 'yyyy年M月d日 HH:mm')}</span>

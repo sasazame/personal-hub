@@ -1,31 +1,52 @@
+export interface Reminder {
+  type: 'EMAIL' | 'POPUP';
+  minutesBefore: number;
+}
+
+export interface RecurrenceRule {
+  frequency: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
+  interval: number;
+  endDate?: string;
+  count?: number;
+}
+
 export interface CalendarEvent {
-  id: number;
+  id?: number;
   title: string;
   description?: string;
-  startDate: string; // ISO string
-  endDate: string;   // ISO string
+  startDateTime: string; // ISO 8601
+  endDateTime: string;   // ISO 8601
+  location?: string;
   allDay: boolean;
-  color: string;
-  createdAt: string;
-  updatedAt: string;
+  reminders?: Reminder[];
+  color?: string;
+  recurrence?: RecurrenceRule;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CreateCalendarEventDto {
   title: string;
   description?: string;
-  startDate: string;
-  endDate: string;
+  startDateTime: string;
+  endDateTime: string;
+  location?: string;
   allDay: boolean;
-  color: string;
+  reminders?: Reminder[];
+  color?: string;
+  recurrence?: RecurrenceRule;
 }
 
 export interface UpdateCalendarEventDto {
   title?: string;
   description?: string;
-  startDate?: string;
-  endDate?: string;
+  startDateTime?: string;
+  endDateTime?: string;
+  location?: string;
   allDay?: boolean;
+  reminders?: Reminder[];
   color?: string;
+  recurrence?: RecurrenceRule;
 }
 
 export type CalendarView = 'month' | 'week' | 'day';

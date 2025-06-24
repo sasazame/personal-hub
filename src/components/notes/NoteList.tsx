@@ -3,19 +3,18 @@
 import { Note } from '@/types/note';
 import { Card } from '@/components/ui';
 import { format } from 'date-fns';
-import { Pin, Edit, Trash2, Tag } from 'lucide-react';
-import { cn } from '@/lib/cn';
+import { Edit, Trash2, Tag } from 'lucide-react';
 
 interface NoteListProps {
   notes: Note[];
   onNoteClick: (note: Note) => void;
   onEditNote: (note: Note) => void;
   onDeleteNote: (note: Note) => void;
-  onTogglePin: (note: Note) => void;
+  onTogglePin?: (note: Note) => void; // Made optional since pin is not supported
 }
 
-export function NoteList({ notes, onNoteClick, onEditNote, onDeleteNote, onTogglePin }: NoteListProps) {
-  if (notes.length === 0) {
+export function NoteList({ notes, onNoteClick, onEditNote, onDeleteNote }: NoteListProps) {
+  if (!notes || !Array.isArray(notes) || notes.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="text-muted-foreground text-lg">ノートがありません</div>
@@ -26,11 +25,9 @@ export function NoteList({ notes, onNoteClick, onEditNote, onDeleteNote, onToggl
     );
   }
 
-  // Sort notes - pinned first, then by updated date
+  // Sort notes by updated date
   const sortedNotes = [...notes].sort((a, b) => {
-    if (a.isPinned && !b.isPinned) return -1;
-    if (!a.isPinned && b.isPinned) return 1;
-    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    return new Date(b.updatedAt || b.createdAt || '').getTime() - new Date(a.updatedAt || a.createdAt || '').getTime();
   });
 
   const truncateContent = (content: string, maxLength: number = 150) => {
@@ -43,16 +40,9 @@ export function NoteList({ notes, onNoteClick, onEditNote, onDeleteNote, onToggl
       {sortedNotes.map((note) => (
         <Card 
           key={note.id} 
-          className={cn(
-            "p-4 cursor-pointer hover:shadow-lg transition-all group relative",
-            note.isPinned && "ring-2 ring-yellow-200 dark:ring-yellow-800"
-          )}
+          className="p-4 cursor-pointer hover:shadow-lg transition-all group relative"
           onClick={() => onNoteClick(note)}
         >
-          {/* Pin indicator */}
-          {note.isPinned && (
-            <Pin className="absolute top-2 right-2 w-4 h-4 text-yellow-500 fill-current" />
-          )}
 
           {/* Header */}
           <div className="flex items-start justify-between mb-3">
@@ -62,20 +52,6 @@ export function NoteList({ notes, onNoteClick, onEditNote, onDeleteNote, onToggl
             
             {/* Actions */}
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onTogglePin(note);
-                }}
-                className={cn(
-                  "p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors",
-                  note.isPinned ? "text-yellow-500" : "text-gray-400"
-                )}
-                title={note.isPinned ? "ピンを外す" : "ピン留め"}
-              >
-                <Pin className="w-4 h-4" />
-              </button>
-              
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -105,14 +81,6 @@ export function NoteList({ notes, onNoteClick, onEditNote, onDeleteNote, onToggl
             {truncateContent(note.content)}
           </div>
 
-          {/* Category */}
-          {note.category && (
-            <div className="mb-2">
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-                {note.category}
-              </span>
-            </div>
-          )}
 
           {/* Tags */}
           {note.tags.length > 0 && (
@@ -136,8 +104,8 @@ export function NoteList({ notes, onNoteClick, onEditNote, onDeleteNote, onToggl
 
           {/* Footer */}
           <div className="text-xs text-muted-foreground">
-            <div>作成: {format(new Date(note.createdAt), 'yyyy/MM/dd')}</div>
-            {note.updatedAt !== note.createdAt && (
+            {note.createdAt && <div>作成: {format(new Date(note.createdAt), 'yyyy/MM/dd')}</div>}
+            {note.updatedAt && note.updatedAt !== note.createdAt && (
               <div>更新: {format(new Date(note.updatedAt), 'yyyy/MM/dd HH:mm')}</div>
             )}
           </div>

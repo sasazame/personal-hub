@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { useTranslations } from 'next-intl';
 import { Note, CreateNoteDto } from '@/types/note';
 import { Button, Input, TextArea, Modal } from '@/components/ui';
-import { X, Plus, Pin } from 'lucide-react';
+import { X, Plus } from 'lucide-react';
 
 // Schema and type will be created inside component to access translations
 
@@ -29,27 +29,14 @@ export function NoteForm({ isOpen, onClose, onSubmit, note, isSubmitting }: Note
   const noteSchema = z.object({
     title: z.string().min(1, t('notes.titleRequired')),
     content: z.string().min(1, t('notes.contentRequired')),
-    category: z.string().optional(),
-    isPinned: z.boolean().optional(),
   });
   
   type NoteFormData = z.infer<typeof noteSchema>;
-  
-  const categoryOptions = [
-    { value: 'work', label: t('notes.categories.work') },
-    { value: 'personal', label: t('notes.categories.personal') },
-    { value: 'ideas', label: t('notes.categories.ideas') },
-    { value: 'learning', label: t('notes.categories.learning') },
-    { value: 'project', label: t('notes.categories.project') },
-    { value: 'memo', label: t('notes.categories.memo') },
-    { value: 'other', label: t('notes.categories.other') }
-  ];
   
   const {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
     setValue,
     reset,
   } = useForm<NoteFormData>({
@@ -57,25 +44,17 @@ export function NoteForm({ isOpen, onClose, onSubmit, note, isSubmitting }: Note
     defaultValues: note ? {
       title: note.title,
       content: note.content,
-      category: note.category || '',
-      isPinned: note.isPinned,
     } : {
       title: '',
       content: '',
-      category: '',
-      isPinned: false,
     }
   });
-
-  const isPinned = watch('isPinned');
 
   // Reset form when note changes
   useEffect(() => {
     if (note) {
       setValue('title', note.title);
       setValue('content', note.content);
-      setValue('category', note.category || '');
-      setValue('isPinned', note.isPinned);
       setTags(note.tags);
     } else {
       reset();
@@ -87,7 +66,6 @@ export function NoteForm({ isOpen, onClose, onSubmit, note, isSubmitting }: Note
     onSubmit({
       ...data,
       tags,
-      isPinned: data.isPinned || false,
     });
     handleClose();
   };
@@ -122,56 +100,22 @@ export function NoteForm({ isOpen, onClose, onSubmit, note, isSubmitting }: Note
     <Modal open={isOpen} onClose={handleClose} size="lg">
       <div className="p-6">
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-foreground">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground mb-4">
             {note ? t('notes.editNote') : t('notes.addNote')}
           </h2>
-          
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setValue('isPinned', !isPinned)}
-              className={`p-2 rounded-lg transition-colors ${
-                isPinned 
-                  ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-400' 
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-400'
-              }`}
-              title={isPinned ? t('notes.unpin') : t('notes.pin')}
-            >
-              <Pin className="w-4 h-4" />
-            </button>
-          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-foreground mb-2">
-              {t('notes.noteTitle')} *
-            </label>
-            <Input
-              {...register('title')}
-              label=""
-              placeholder={t('notes.noteTitlePlaceholder')}
-              error={errors.title?.message}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              {t('notes.category')}
-            </label>
-            <select
-              {...register('category')}
-              className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">{t('notes.noCategory')}</option>
-              {categoryOptions.map((category) => (
-                <option key={category.value} value={category.value}>
-                  {category.label}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-2">
+            {t('notes.noteTitle')} *
+          </label>
+          <Input
+            {...register('title')}
+            label=""
+            placeholder={t('notes.noteTitlePlaceholder')}
+            error={errors.title?.message}
+          />
         </div>
 
         <div>

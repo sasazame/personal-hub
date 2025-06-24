@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -30,10 +30,13 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
   const eventSchema = z.object({
     title: z.string().min(1, t('calendar.titleRequired')),
     description: z.string().optional(),
-    startDate: z.string().min(1, t('calendar.startDateRequired')),
-    endDate: z.string().min(1, t('calendar.endDateRequired')),
+    startDateTime: z.string().min(1, t('calendar.startDateRequired')),
+    endDateTime: z.string().min(1, t('calendar.endDateRequired')),
+    location: z.string().optional(),
     allDay: z.boolean(),
-    color: z.string().min(1, t('calendar.colorRequired')),
+    color: z.string().optional(),
+    reminders: z.array(z.any()).optional(),
+    recurrence: z.any().optional(),
   });
   
   type EventFormData = z.infer<typeof eventSchema>;
@@ -58,24 +61,66 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
     defaultValues: event ? {
       title: event.title,
       description: event.description || '',
-      startDate: format(new Date(event.startDate), "yyyy-MM-dd'T'HH:mm"),
-      endDate: format(new Date(event.endDate), "yyyy-MM-dd'T'HH:mm"),
+      startDateTime: format(new Date(event.startDateTime), "yyyy-MM-dd'T'HH:mm"),
+      endDateTime: format(new Date(event.endDateTime), "yyyy-MM-dd'T'HH:mm"),
+      location: event.location || '',
       allDay: event.allDay,
-      color: event.color,
+      color: event.color || 'blue',
+      reminders: event.reminders || [],
+      recurrence: event.recurrence,
     } : {
       title: '',
       description: '',
-      startDate: defaultDate ? format(defaultDate, "yyyy-MM-dd'T'09:00") : '',
-      endDate: defaultDate ? format(defaultDate, "yyyy-MM-dd'T'10:00") : '',
+      startDateTime: defaultDate ? format(defaultDate, "yyyy-MM-dd'T'09:00") : format(new Date(), "yyyy-MM-dd'T'09:00"),
+      endDateTime: defaultDate ? format(defaultDate, "yyyy-MM-dd'T'10:00") : format(new Date(), "yyyy-MM-dd'T'10:00"),
+      location: '',
       allDay: false,
       color: 'blue',
+      reminders: [],
+      recurrence: undefined,
     }
   });
 
   const allDay = watch('allDay');
 
+  // Update form when defaultDate changes
+  useEffect(() => {
+    if (defaultDate && !event) {
+      setValue('startDateTime', format(defaultDate, "yyyy-MM-dd'T'09:00"));
+      setValue('endDateTime', format(defaultDate, "yyyy-MM-dd'T'10:00"));
+    }
+  }, [defaultDate, event, setValue]);
+
   const handleFormSubmit = (data: EventFormData) => {
-    onSubmit(data);
+    // Convert datetime-local format to ISO 8601 format
+    const formatDateTime = (dateTimeLocal: string, allDay: boolean) => {
+      if (!dateTimeLocal) return '';
+      
+      if (allDay) {
+        // For all-day events, use date only and set to start of day
+        const dateOnly = dateTimeLocal.split('T')[0];
+        return `${dateOnly}T00:00:00`;
+      } else {
+        // For timed events, convert datetime-local to ISO 8601
+        // datetime-local format: YYYY-MM-DDTHH:mm
+        // We need to treat this as local time and convert properly
+        const date = new Date(dateTimeLocal);
+        return date.toISOString();
+      }
+    };
+
+    const formattedData = {
+      ...data,
+      startDateTime: formatDateTime(data.startDateTime, data.allDay),
+      endDateTime: formatDateTime(data.endDateTime, data.allDay),
+      // Ensure required fields have default values
+      reminders: data.reminders || [],
+      recurrence: data.recurrence || undefined,
+      location: data.location || undefined,
+      description: data.description || undefined,
+    };
+
+    onSubmit(formattedData);
     reset();
     onClose();
   };
@@ -119,6 +164,17 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
           />
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-2">
+            {t('calendar.location')}
+          </label>
+          <Input
+            {...register('location')}
+            label=""
+            placeholder={t('calendar.locationPlaceholder')}
+          />
+        </div>
+
         <div className="flex items-center gap-4">
           <label className="flex items-center gap-2">
             <input
@@ -137,9 +193,9 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
             </label>
             <Input
               type={allDay ? 'date' : 'datetime-local'}
-              {...register('startDate')}
+              {...register('startDateTime')}
               label=""
-              error={errors.startDate?.message}
+              error={errors.startDateTime?.message}
             />
           </div>
 
@@ -149,9 +205,9 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
             </label>
             <Input
               type={allDay ? 'date' : 'datetime-local'}
-              {...register('endDate')}
+              {...register('endDateTime')}
               label=""
-              error={errors.endDate?.message}
+              error={errors.endDateTime?.message}
             />
           </div>
         </div>

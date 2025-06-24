@@ -5,7 +5,7 @@ import { calendarService } from '@/services/calendar';
 export function useCalendarEvents(year: number, month: number) {
   return useQuery({
     queryKey: ['calendar', 'events', year, month],
-    queryFn: () => calendarService.getEvents(year, month),
+    queryFn: () => calendarService.getMonthEvents(year, month),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
