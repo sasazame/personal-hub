@@ -17,8 +17,8 @@ const mockEvents: CalendarEvent[] = [
   {
     id: 1,
     title: 'Test Event',
-    startDate: new Date(2025, 5, 15, 9, 0).toISOString(),
-    endDate: new Date(2025, 5, 15, 10, 0).toISOString(),
+    startDateTime: new Date(2025, 5, 15, 9, 0).toISOString(),
+    endDateTime: new Date(2025, 5, 15, 10, 0).toISOString(),
     allDay: false,
     color: 'blue',
     createdAt: new Date().toISOString(),
@@ -27,8 +27,8 @@ const mockEvents: CalendarEvent[] = [
   {
     id: 2,
     title: 'All Day Event',
-    startDate: new Date(2025, 5, 20).toISOString(),
-    endDate: new Date(2025, 5, 20).toISOString(),
+    startDateTime: new Date(2025, 5, 20).toISOString(),
+    endDateTime: new Date(2025, 5, 20).toISOString(),
     allDay: true,
     color: 'green',
     createdAt: new Date().toISOString(),
@@ -108,8 +108,8 @@ describe('CalendarGrid', () => {
       {
         id: 3,
         title: 'Event 3',
-        startDate: new Date(2025, 5, 15, 11, 0).toISOString(),
-        endDate: new Date(2025, 5, 15, 12, 0).toISOString(),
+        startDateTime: new Date(2025, 5, 15, 11, 0).toISOString(),
+        endDateTime: new Date(2025, 5, 15, 12, 0).toISOString(),
         allDay: false,
         color: 'red',
         createdAt: new Date().toISOString(),
@@ -118,8 +118,8 @@ describe('CalendarGrid', () => {
       {
         id: 4,
         title: 'Event 4',
-        startDate: new Date(2025, 5, 15, 13, 0).toISOString(),
-        endDate: new Date(2025, 5, 15, 14, 0).toISOString(),
+        startDateTime: new Date(2025, 5, 15, 13, 0).toISOString(),
+        endDateTime: new Date(2025, 5, 15, 14, 0).toISOString(),
         allDay: false,
         color: 'purple',
         createdAt: new Date().toISOString(),

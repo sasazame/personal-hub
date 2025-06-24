@@ -6,10 +6,10 @@ import { AuthGuard } from '@/components/auth';
 import { AppLayout } from '@/components/layout';
 import { Button, Input, Modal } from '@/components/ui';
 import { NoteList, NoteForm, NoteViewer } from '@/components/notes';
-import { useNotes, useCreateNote, useUpdateNote, useDeleteNote, useToggleNotePin, useNoteCategories } from '@/hooks/useNotes';
+import { useNotes, useCreateNote, useUpdateNote, useDeleteNote, useNoteTags } from '@/hooks/useNotes';
 import { Note, CreateNoteDto, UpdateNoteDto, NoteFilters } from '@/types/note';
 import { showSuccess, showError } from '@/components/ui/toast';
-import { Plus, Search, Pin } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 
 function NotesPage() {
   const t = useTranslations();
@@ -19,22 +19,19 @@ function NotesPage() {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [viewingNote, setViewingNote] = useState<Note | null>(null);
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
-  const [showPinnedOnly, setShowPinnedOnly] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedTag, setSelectedTag] = useState<string>('');
 
   const currentFilters = {
     ...filters,
     search: searchQuery,
-    category: selectedCategory || undefined,
-    isPinned: showPinnedOnly || undefined,
+    tags: selectedTag ? [selectedTag] : undefined,
   };
 
-  const { data: notes = [], isLoading } = useNotes(currentFilters);
-  const { data: categories = [] } = useNoteCategories();
+  const { data: notes = [], isLoading, error } = useNotes(currentFilters);
+  const { data: tags = [] } = useNoteTags();
   const createMutation = useCreateNote();
   const updateMutation = useUpdateNote();
   const deleteMutation = useDeleteNote();
-  const togglePinMutation = useToggleNotePin();
 
   const handleCreateNote = (data: CreateNoteDto) => {
     createMutation.mutate(data, {
@@ -49,7 +46,7 @@ function NotesPage() {
   };
 
   const handleUpdateNote = (data: UpdateNoteDto) => {
-    if (selectedNote) {
+    if (selectedNote && selectedNote.id) {
       updateMutation.mutate({ id: selectedNote.id, data }, {
         onSuccess: () => {
           showSuccess(t('notes.noteUpdated'));
@@ -65,7 +62,7 @@ function NotesPage() {
   };
 
   const handleDeleteNote = () => {
-    if (noteToDelete) {
+    if (noteToDelete && noteToDelete.id) {
       deleteMutation.mutate(noteToDelete.id, {
         onSuccess: () => {
           showSuccess(t('notes.noteDeleted'));
@@ -79,15 +76,9 @@ function NotesPage() {
     }
   };
 
-  const handleTogglePin = (note: Note) => {
-    togglePinMutation.mutate(note.id, {
-      onSuccess: () => {
-        showSuccess(note.isPinned ? t('notes.unpinned') : t('notes.pinned'));
-      },
-      onError: (error) => {
-        showError(error instanceof Error ? error.message : t('notes.pinToggleFailed'));
-      },
-    });
+  const handleTogglePin = () => {
+    // Pin functionality not supported in backend
+    showError(t('notes.pinNotSupported'));
   };
 
   const handleNewNote = () => {
@@ -123,6 +114,16 @@ function NotesPage() {
       <AppLayout>
         <div className="min-h-[400px] flex items-center justify-center">
           <div className="text-lg text-muted-foreground">{t('common.loading')}</div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppLayout>
+        <div className="min-h-[400px] flex items-center justify-center">
+          <div className="text-lg text-red-500">Error loading notes: {error.message}</div>
         </div>
       </AppLayout>
     );
@@ -166,37 +167,26 @@ function NotesPage() {
             </div>
           </div>
 
-          {/* Category Filter */}
+          {/* Tag Filter */}
           <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            value={selectedTag}
+            onChange={(e) => setSelectedTag(e.target.value)}
             className="px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="">{t('notes.allCategories')}</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
+            <option value="">{t('notes.allTags')}</option>
+            {tags.map((tag: string) => (
+              <option key={tag} value={tag}>
+                {tag}
               </option>
             ))}
           </select>
-
-          {/* Pin Filter */}
-          <Button
-            variant={showPinnedOnly ? "primary" : "secondary"}
-            onClick={() => setShowPinnedOnly(!showPinnedOnly)}
-            size="sm"
-          >
-            <Pin className="w-4 h-4 mr-1" />
-            {t('notes.pinnedOnly')}
-          </Button>
         </div>
 
         {/* Stats */}
         <div className="text-sm text-muted-foreground">
           {t('notes.countNotes', { count: notes.length })}
           {searchQuery && ` (${t('notes.searchResults', { query: searchQuery })})`}
-          {selectedCategory && ` (${t('notes.categoryFilter', { category: selectedCategory })})`}
-          {showPinnedOnly && ` (${t('notes.pinnedOnly')})`}
+          {selectedTag && ` (${t('notes.tagFilter', { tag: selectedTag })})`}
         </div>
 
         {/* Note List */}
@@ -227,7 +217,7 @@ function NotesPage() {
           onClose={handleCloseViewer}
           onEdit={() => viewingNote && handleEditNote(viewingNote)}
           onDelete={() => viewingNote && setNoteToDelete(viewingNote)}
-          onTogglePin={() => viewingNote && handleTogglePin(viewingNote)}
+          onTogglePin={() => handleTogglePin()}
         />
 
         {/* Delete Confirmation Modal */}

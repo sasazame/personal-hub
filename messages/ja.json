@@ -18,7 +18,8 @@
     "download": "ダウンロード",
     "upload": "アップロード",
     "language": "言語",
-    "theme": "テーマ"
+    "theme": "テーマ",
+    "deleting": "削除中..."
   },
   "app": {
     "title": "TODOアプリ",
@@ -273,7 +274,9 @@
       "red": "レッド",
       "purple": "パープル",
       "orange": "オレンジ"
-    }
+    },
+    "location": "場所",
+    "locationPlaceholder": "場所を入力してください"
   },
   "notes": {
     "title": "メモ",
@@ -285,7 +288,6 @@
     "noteContent": "内容",
     "category": "カテゴリ",
     "tags": "タグ",
-    "pinned": "ピン留め",
     "noNotes": "メモがありません",
     "titleRequired": "タイトルは必須です",
     "contentRequired": "内容は必須です",
@@ -315,6 +317,9 @@
     "countNotes": "{count, plural, =0 {メモなし} other {#件のメモ}}",
     "searchResults": "'{query}'の検索結果",
     "categoryFilter": "カテゴリ: {category}",
+    "tagFilter": "タグ: {tag}",
+    "allTags": "すべてのタグ",
+    "pinNotSupported": "ピン機能はサポートされていません",
     "confirmDelete": "'{title}'を削除してもよろしいですか？",
     "categories": {
       "work": "仕事",

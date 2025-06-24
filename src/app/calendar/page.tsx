@@ -6,7 +6,7 @@ import { AuthGuard } from '@/components/auth';
 import { AppLayout } from '@/components/layout';
 import { Button, Modal } from '@/components/ui';
 import { CalendarGrid, EventForm } from '@/components/calendar';
-import { useAllCalendarEvents, useCreateCalendarEvent, useUpdateCalendarEvent, useDeleteCalendarEvent } from '@/hooks/useCalendar';
+import { useCalendarEvents, useCreateCalendarEvent, useUpdateCalendarEvent, useDeleteCalendarEvent } from '@/hooks/useCalendar';
 import { CalendarEvent, CreateCalendarEventDto, UpdateCalendarEventDto } from '@/types/calendar';
 import { showSuccess, showError } from '@/components/ui/toast';
 import { format, addMonths, subMonths } from 'date-fns';
@@ -20,7 +20,7 @@ function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [eventToDelete, setEventToDelete] = useState<CalendarEvent | null>(null);
 
-  const { data: events = [], isLoading } = useAllCalendarEvents();
+  const { data: events = [], isLoading, error } = useCalendarEvents(currentDate.getFullYear(), currentDate.getMonth() + 1);
   const createMutation = useCreateCalendarEvent();
   const updateMutation = useUpdateCalendarEvent();
   const deleteMutation = useDeleteCalendarEvent();
@@ -39,7 +39,7 @@ function CalendarPage() {
   };
 
   const handleUpdateEvent = (data: UpdateCalendarEventDto) => {
-    if (selectedEvent) {
+    if (selectedEvent && selectedEvent.id) {
       updateMutation.mutate({ id: selectedEvent.id, data }, {
         onSuccess: () => {
           showSuccess(t('calendar.eventUpdated'));
@@ -54,7 +54,7 @@ function CalendarPage() {
   };
 
   const handleDeleteEvent = () => {
-    if (eventToDelete) {
+    if (eventToDelete && eventToDelete.id) {
       deleteMutation.mutate(eventToDelete.id, {
         onSuccess: () => {
           showSuccess(t('calendar.eventDeleted'));
@@ -104,6 +104,28 @@ function CalendarPage() {
       <AppLayout>
         <div className="min-h-[400px] flex items-center justify-center">
           <div className="text-lg text-muted-foreground">{t('common.loading')}</div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppLayout>
+        <div className="min-h-[400px] flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-lg text-red-500 mb-2">カレンダーデータの読み込みに失敗しました</div>
+            <div className="text-sm text-muted-foreground">
+              サーバーエラー: {error.message}
+            </div>
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="mt-4"
+              variant="secondary"
+            >
+              再読み込み
+            </Button>
+          </div>
         </div>
       </AppLayout>
     );

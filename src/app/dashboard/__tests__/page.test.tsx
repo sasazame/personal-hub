@@ -64,8 +64,8 @@ jest.mock('@/hooks/useCalendar', () => ({
       {
         id: 1,
         title: 'チームミーティング',
-        startDate: new Date().toISOString(),
-        endDate: new Date().toISOString(),
+        startDateTime: new Date().toISOString(),
+        endDateTime: new Date().toISOString(),
         allDay: false,
         color: 'blue',
       },
@@ -81,7 +81,6 @@ jest.mock('@/hooks/useNotes', () => ({
         id: 1,
         title: 'プロジェクトメモ',
         content: 'テストメモ',
-        isPinned: false,
         tags: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

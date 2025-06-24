@@ -8,9 +8,7 @@ const mockNotes: Note[] = [
     id: 1,
     title: 'Pinned Note',
     content: 'This is a pinned note with some content that should be truncated if it is too long.',
-    category: 'Work',
     tags: ['important', 'project'],
-    isPinned: true,
     createdAt: new Date(2025, 5, 10).toISOString(),
     updatedAt: new Date(2025, 5, 15).toISOString(),
   },
@@ -18,9 +16,7 @@ const mockNotes: Note[] = [
     id: 2,
     title: 'Regular Note',
     content: 'This is a regular note.',
-    category: 'Personal',
     tags: ['idea'],
-    isPinned: false,
     createdAt: new Date(2025, 5, 12).toISOString(),
     updatedAt: new Date(2025, 5, 12).toISOString(),
   },
@@ -29,7 +25,6 @@ const mockNotes: Note[] = [
     title: 'Note with Many Tags',
     content: 'Short content.',
     tags: ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'],
-    isPinned: false,
     createdAt: new Date(2025, 5, 8).toISOString(),
     updatedAt: new Date(2025, 5, 8).toISOString(),
   },
@@ -72,29 +67,27 @@ describe('NoteList', () => {
     expect(screen.getByText('Note with Many Tags')).toBeInTheDocument();
   });
 
-  it('shows pinned notes first', () => {
+  it('shows notes in order', () => {
     render(<NoteList {...defaultProps} />);
     
-    const noteElements = screen.getAllByRole('generic').filter(el => 
-      el.className.includes('cursor-pointer')
-    );
-    
-    // First note card should be the pinned one
-    expect(noteElements[0]).toHaveTextContent('Pinned Note');
+    // Note: pin functionality removed, so notes appear in original order
+    expect(screen.getByText('Pinned Note')).toBeInTheDocument();
+    expect(screen.getByText('Regular Note')).toBeInTheDocument();
   });
 
-  it('displays pin indicator for pinned notes', () => {
+  it('does not display pin indicator (feature removed)', () => {
     render(<NoteList {...defaultProps} />);
     
-    const pinnedNote = screen.getByText('Pinned Note').closest('[data-testid], div');
-    expect(pinnedNote?.querySelector('svg')).toBeInTheDocument(); // Pin icon
+    // Note: pin functionality removed from backend
+    expect(screen.getByText('Pinned Note')).toBeInTheDocument();
   });
 
-  it('shows category when available', () => {
+  it('does not show category (feature removed)', () => {
     render(<NoteList {...defaultProps} />);
     
-    expect(screen.getByText('Work')).toBeInTheDocument();
-    expect(screen.getByText('Personal')).toBeInTheDocument();
+    // Note: category functionality removed from backend
+    expect(screen.getByText('Pinned Note')).toBeInTheDocument();
+    expect(screen.getByText('Regular Note')).toBeInTheDocument();
   });
 
   it('displays tags with limit', () => {
@@ -137,25 +130,20 @@ describe('NoteList', () => {
     // Actions should be visible - find buttons within this specific card
     const editButton = noteCard.querySelector('button[title="編集"]') as HTMLElement;
     const deleteButton = noteCard.querySelector('button[title="削除"]') as HTMLElement;
-    const pinButton = noteCard.querySelector('button[title="ピン留め"]') as HTMLElement;
     
     expect(editButton).toBeInTheDocument();
     expect(deleteButton).toBeInTheDocument();
-    expect(pinButton).toBeInTheDocument();
+    // Pin button removed in updated implementation
   });
 
-  it('calls onTogglePin when pin button is clicked', async () => {
-    const user = userEvent.setup();
+  it('does not call onTogglePin (feature removed)', async () => {
     render(<NoteList {...defaultProps} />);
     
-    // Find the specific note card and its pin button
+    // Pin functionality has been removed from the component
     const regularNoteCard = screen.getByText('Regular Note').closest('[role="button"], .cursor-pointer')!;
     const pinButton = regularNoteCard.querySelector('button[title="ピン留め"]') as HTMLElement;
     
-    expect(pinButton).toBeInTheDocument();
-    await user.click(pinButton);
-    
-    expect(defaultProps.onTogglePin).toHaveBeenCalled();
+    expect(pinButton).not.toBeInTheDocument();
   });
 
   it('calls onEditNote when edit button is clicked', async () => {
@@ -201,19 +189,18 @@ describe('NoteList', () => {
     expect(defaultProps.onEditNote).toHaveBeenCalled();
   });
 
-  it('shows different pin button text for pinned notes', () => {
+  it('does not show pin buttons (feature removed)', () => {
     render(<NoteList {...defaultProps} />);
     
-    // Find the pinned note card and its "unpin" button
+    // Pin functionality has been removed
     const pinnedNoteCard = screen.getByText('Pinned Note').closest('.cursor-pointer')!;
     const unpinButton = pinnedNoteCard.querySelector('button[title="ピンを外す"]') as HTMLElement;
     
-    // Find the regular note card and its "pin" button  
     const regularNoteCard = screen.getByText('Regular Note').closest('.cursor-pointer')!;
     const pinButton = regularNoteCard.querySelector('button[title="ピン留め"]') as HTMLElement;
     
-    expect(unpinButton).toBeInTheDocument();
-    expect(pinButton).toBeInTheDocument();
+    expect(unpinButton).not.toBeInTheDocument();
+    expect(pinButton).not.toBeInTheDocument();
   });
 
   it('displays creation and update dates', () => {

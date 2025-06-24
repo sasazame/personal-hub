@@ -9,7 +9,6 @@ import { ToastProvider } from "@/components/ui/toast";
 import { MSWInit } from "./msw-init";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
-import { AuthDebugger } from '@/components/debug/AuthDebugger';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,7 +47,6 @@ export default async function RootLayout({
                 <AuthProvider>
                   {children}
                   <ToastProvider />
-                  <AuthDebugger />
                 </AuthProvider>
               </QueryProvider>
             </ThemeProvider>

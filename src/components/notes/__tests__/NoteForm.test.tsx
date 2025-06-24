@@ -43,9 +43,7 @@ const mockNote: Note = {
   id: 1,
   title: 'Test Note',
   content: 'Test content',
-  category: 'work',
   tags: ['test', 'example'],
-  isPinned: true,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
@@ -67,7 +65,6 @@ describe('NoteForm', () => {
     
     expect(screen.getByPlaceholderText('ノートのタイトル')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('ノートの内容を入力してください...')).toBeInTheDocument();
-    expect(screen.getByText('カテゴリ')).toBeInTheDocument();
     expect(screen.getByText('タグ')).toBeInTheDocument();
   });
 
@@ -90,7 +87,7 @@ describe('NoteForm', () => {
     
     expect(screen.getByDisplayValue('Test Note')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Test content')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('仕事')).toBeInTheDocument();
+    // Note: removed category field check as it's no longer supported
   });
 
   it('displays existing tags in edit mode', () => {
@@ -128,7 +125,6 @@ describe('NoteForm', () => {
           title: 'New Note',
           content: 'Note content',
           tags: [],
-          isPinned: false,
         })
       );
     });
@@ -171,17 +167,19 @@ describe('NoteForm', () => {
     });
   });
 
-  it('shows pin button', () => {
+  it('does not show pin button (feature removed)', () => {
     render(<NoteForm {...defaultProps} />);
     
-    expect(screen.getByTitle('ピン留め')).toBeInTheDocument();
+    // Pin functionality has been removed
+    expect(screen.queryByTitle('ピン留め')).not.toBeInTheDocument();
   });
 
-  it('displays category dropdown', () => {
+  it('does not display category dropdown (feature removed)', () => {
     render(<NoteForm {...defaultProps} />);
     
-    expect(screen.getByText('カテゴリ')).toBeInTheDocument();
-    expect(screen.getByText('カテゴリなし')).toBeInTheDocument();
+    // Category functionality has been removed
+    expect(screen.queryByText('カテゴリ')).not.toBeInTheDocument();
+    expect(screen.queryByText('カテゴリなし')).not.toBeInTheDocument();
   });
 
   it('calls onClose when cancel button is clicked', async () => {

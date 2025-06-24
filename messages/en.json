@@ -18,7 +18,8 @@
     "download": "Download",
     "upload": "Upload",
     "language": "Language",
-    "theme": "Theme"
+    "theme": "Theme",
+    "deleting": "Deleting..."
   },
   "app": {
     "title": "TODO App",
@@ -273,7 +274,9 @@
       "red": "Red",
       "purple": "Purple",
       "orange": "Orange"
-    }
+    },
+    "location": "Location",
+    "locationPlaceholder": "Enter location"
   },
   "notes": {
     "title": "Notes",
@@ -285,7 +288,6 @@
     "noteContent": "Content",
     "category": "Category",
     "tags": "Tags",
-    "pinned": "Pinned",
     "noNotes": "No notes",
     "titleRequired": "Title is required",
     "contentRequired": "Content is required",
@@ -315,6 +317,9 @@
     "countNotes": "{count, plural, =0 {No notes} =1 {1 note} other {# notes}}",
     "searchResults": "Search results for '{query}'",
     "categoryFilter": "Category: {category}",
+    "tagFilter": "Tag: {tag}",
+    "allTags": "All Tags",
+    "pinNotSupported": "Pin feature is not supported",
     "confirmDelete": "Are you sure you want to delete '{title}'?",
     "categories": {
       "work": "Work",

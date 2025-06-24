@@ -4,8 +4,29 @@ import { notesService } from '@/services/notes';
 
 export function useNotes(filters?: NoteFilters) {
   return useQuery({
-    queryKey: ['notes', filters],
-    queryFn: () => notesService.getNotes(filters),
+    queryKey: ['notes', 'all', filters],
+    queryFn: async () => {
+      // Handle search and tags filters
+      if (filters?.search) {
+        return notesService.searchNotes(filters.search);
+      }
+      
+      if (filters?.tags && filters.tags.length > 0) {
+        // For simplicity, search by first tag
+        return notesService.getNotesByTag(filters.tags[0]);
+      }
+      
+      // Default: get all notes
+      return notesService.getAllNotes();
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+}
+
+export function useNotesPaginated(page = 0, size = 10) {
+  return useQuery({
+    queryKey: ['notes', 'paginated', page, size],
+    queryFn: () => notesService.getNotes(page, size),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
@@ -27,9 +48,10 @@ export function useRecentNotes(limit?: number) {
 }
 
 export function useNoteCategories() {
+  // Return empty array as categories are not supported in backend
   return useQuery({
     queryKey: ['notes', 'categories'],
-    queryFn: () => notesService.getCategories(),
+    queryFn: () => Promise.resolve([]),
     staleTime: 1000 * 60 * 10, // 10 minutes
   });
 }
@@ -85,17 +107,15 @@ export function useDeleteNote() {
   });
 }
 
+// Remove toggle pin functionality as it's not supported in backend
 export function useToggleNotePin() {
-  const queryClient = useQueryClient();
-  
   return useMutation({
-    mutationFn: (id: number) => notesService.togglePin(id),
-    onSuccess: (updatedNote) => {
-      // Update the specific note in cache
-      queryClient.setQueryData(['note', updatedNote.id], updatedNote);
-      
-      // Invalidate notes queries
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
+    mutationFn: () => {
+      // No-op mutation since backend doesn't support pinning
+      return Promise.resolve();
+    },
+    onSuccess: () => {
+      // Do nothing
     },
   });
 }

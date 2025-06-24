@@ -14,7 +14,7 @@ import { calendarService } from '@/services/calendar';
 // Mock the calendar service
 jest.mock('@/services/calendar', () => ({
   calendarService: {
-    getEvents: jest.fn(),
+    getMonthEvents: jest.fn(),
     getAllEvents: jest.fn(),
     getTodaysEvents: jest.fn(),
     createEvent: jest.fn(),
@@ -45,8 +45,8 @@ const createWrapper = () => {
 const mockEvent = {
   id: 1,
   title: 'Test Event',
-  startDate: new Date().toISOString(),
-  endDate: new Date().toISOString(),
+  startDateTime: new Date().toISOString(),
+  endDateTime: new Date().toISOString(),
   allDay: false,
   color: 'blue',
   createdAt: new Date().toISOString(),
@@ -60,7 +60,7 @@ describe('useCalendar hooks', () => {
 
   describe('useCalendarEvents', () => {
     it('fetches events for specific month', async () => {
-      (calendarService.getEvents as jest.Mock).mockResolvedValue([mockEvent]);
+      (calendarService.getMonthEvents as jest.Mock).mockResolvedValue([mockEvent]);
 
       const { result } = renderHook(
         () => useCalendarEvents(2025, 5),
@@ -71,12 +71,12 @@ describe('useCalendar hooks', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(calendarService.getEvents).toHaveBeenCalledWith(2025, 5);
+      expect(calendarService.getMonthEvents).toHaveBeenCalledWith(2025, 5);
       expect(result.current.data).toEqual([mockEvent]);
     });
 
     it('handles loading state', () => {
-      (calendarService.getEvents as jest.Mock).mockImplementation(
+      (calendarService.getMonthEvents as jest.Mock).mockImplementation(
         () => new Promise(() => {}) // Never resolves
       );
 
@@ -136,8 +136,8 @@ describe('useCalendar hooks', () => {
 
       const createData = {
         title: 'New Event',
-        startDate: new Date().toISOString(),
-        endDate: new Date().toISOString(),
+        startDateTime: new Date().toISOString(),
+        endDateTime: new Date().toISOString(),
         allDay: false,
         color: 'blue',
       };
@@ -162,8 +162,8 @@ describe('useCalendar hooks', () => {
 
       const createData = {
         title: 'New Event',
-        startDate: new Date().toISOString(),
-        endDate: new Date().toISOString(),
+        startDateTime: new Date().toISOString(),
+        endDateTime: new Date().toISOString(),
         allDay: false,
         color: 'blue',
       };
@@ -263,8 +263,8 @@ describe('useCalendar hooks', () => {
 
       const createData = {
         title: 'New Event',
-        startDate: new Date().toISOString(),
-        endDate: new Date().toISOString(),
+        startDateTime: new Date().toISOString(),
+        endDateTime: new Date().toISOString(),
         allDay: false,
         color: 'blue',
       };

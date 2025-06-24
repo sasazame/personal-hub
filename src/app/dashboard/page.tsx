@@ -170,7 +170,7 @@ function DashboardPage() {
                     <div className="flex-1">
                       <div className="font-medium text-sm">{event.title}</div>
                       <div className="text-xs text-muted-foreground">
-                        {event.allDay ? t('dashboard.allDay') : format(new Date(event.startDate), 'HH:mm')}
+                        {event.allDay ? t('dashboard.allDay') : format(new Date(event.startDateTime), 'HH:mm')}
                       </div>
                     </div>
                   </div>
@@ -199,7 +199,7 @@ function DashboardPage() {
                     <div className="flex-1 min-w-0">
                       <div className="font-medium text-sm truncate">{note.title}</div>
                       <div className="text-xs text-muted-foreground">
-                        {format(new Date(note.updatedAt), 'M/d HH:mm')}
+                        {note.updatedAt ? format(new Date(note.updatedAt), 'M/d HH:mm') : ''}
                       </div>
                     </div>
                   </div>

@@ -1,13 +1,26 @@
 import apiClient from '@/lib/api-client';
-import { Note, CreateNoteDto, UpdateNoteDto, NoteFilters } from '@/types/note';
+import { Note, CreateNoteDto, UpdateNoteDto, NotePage } from '@/types/note';
 
 // Use the unified apiClient instance that includes OIDC support and proper token management
 const api = apiClient;
 
 export const notesService = {
-  async getNotes(filters?: NoteFilters): Promise<Note[]> {
-    const response = await api.get<Note[]>('/notes', { params: filters });
+  // Get notes with pagination
+  async getNotes(page = 0, size = 10, sort = 'updatedAt,desc'): Promise<NotePage> {
+    const response = await api.get<NotePage>('/notes', { 
+      params: { 
+        page: page.toString(),
+        size: size.toString(),
+        sort: sort
+      } 
+    });
     return response.data;
+  },
+
+  // Get all notes as array (for compatibility)
+  async getAllNotes(): Promise<Note[]> {
+    const response = await this.getNotes(0, 1000);
+    return response.content;
   },
 
   async getNote(id: number): Promise<Note | null> {
@@ -40,26 +53,34 @@ export const notesService = {
     await api.delete(`/notes/${id}`);
   },
 
-  async togglePin(id: number): Promise<Note> {
-    const response = await api.post<Note>(`/notes/${id}/toggle-pin`);
+  // Search notes
+  async searchNotes(query: string): Promise<Note[]> {
+    const response = await api.get<Note[]>('/notes/search', { 
+      params: { query } 
+    });
     return response.data;
   },
 
-  // Get all unique categories
-  async getCategories(): Promise<string[]> {
-    const response = await api.get<string[]>('/notes/categories');
+  // Get notes by tag
+  async getNotesByTag(tag: string): Promise<Note[]> {
+    const response = await api.get<Note[]>(`/notes/tag/${encodeURIComponent(tag)}`);
     return response.data;
   },
 
   // Get all unique tags
   async getTags(): Promise<string[]> {
-    const response = await api.get<string[]>('/notes/tags');
-    return response.data;
+    // Extract tags from all notes since backend doesn't have dedicated endpoint
+    const allNotes = await this.getAllNotes();
+    const tagSet = new Set<string>();
+    allNotes.forEach(note => {
+      note.tags.forEach(tag => tagSet.add(tag));
+    });
+    return Array.from(tagSet).sort();
   },
 
   // Get recently updated notes
   async getRecentNotes(limit: number = 5): Promise<Note[]> {
-    const response = await api.get<Note[]>('/notes/recent', { params: { limit } });
-    return response.data;
+    const response = await this.getNotes(0, limit, 'updatedAt,desc');
+    return response.content;
   },
 };

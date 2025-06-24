@@ -1,43 +1,45 @@
 export interface Note {
-  id: number;
+  id?: number;
   title: string;
   content: string;
-  category?: string;
   tags: string[];
-  isPinned: boolean;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string; // ISO 8601 format
+  updatedAt?: string; // ISO 8601 format
 }
 
 export interface CreateNoteDto {
   title: string;
   content: string;
-  category?: string;
-  tags: string[];
-  isPinned?: boolean;
+  tags?: string[];
 }
 
 export interface UpdateNoteDto {
-  title?: string;
-  content?: string;
-  category?: string;
+  title: string;
+  content: string;
   tags?: string[];
-  isPinned?: boolean;
 }
 
-export interface NoteCategory {
-  id: string;
-  name: string;
-  color: string;
-  count: number;
+export interface NotePage {
+  content: Note[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+    sort: {
+      sorted: boolean;
+      direction: string;
+      properties: string[];
+    };
+  };
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
 }
 
-export type NoteSortBy = 'createdAt' | 'updatedAt' | 'title' | 'category';
+export type NoteSortBy = 'createdAt' | 'updatedAt' | 'title';
 export type NoteSortOrder = 'asc' | 'desc';
 
 export interface NoteFilters {
-  category?: string;
   tags?: string[];
   search?: string;
-  isPinned?: boolean;
 }
