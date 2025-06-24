@@ -22,9 +22,9 @@
     "deleting": "削除中..."
   },
   "app": {
-    "title": "TODOアプリ",
-    "description": "シンプルなTODO管理アプリケーション",
-    "subtitle": "タスクを効率的に整理する"
+    "title": "Personal Hub",
+    "description": "個人の生産性を向上させる総合的なプラットフォーム",
+    "subtitle": "タスク、カレンダー、メモ、分析を一元管理"
   },
   "nav": {
     "home": "ホーム",
