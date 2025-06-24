@@ -138,10 +138,10 @@ describe('CalendarGrid', () => {
     render(<CalendarGrid {...defaultProps} />);
     
     const blueEvent = screen.getByText('Test Event');
-    expect(blueEvent).toHaveClass('bg-blue-100');
+    expect(blueEvent).toHaveClass('bg-blue-500/20');
     
     const greenEvent = screen.getByText('All Day Event');
-    expect(greenEvent).toHaveClass('bg-green-100');
+    expect(greenEvent).toHaveClass('bg-green-500/20');
   });
 
   it('prevents event propagation when event is clicked', () => {

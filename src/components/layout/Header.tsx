@@ -5,14 +5,50 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useAuth, useLogout } from '@/hooks/useAuth';
 import { Button, ThemeToggle, LanguageSwitcher } from '@/components/ui';
-import { LogOut, User, Menu, X, Sparkles } from 'lucide-react';
+import { LogOut, User, Menu, X, Sparkles, Home, CheckSquare, Calendar, FileText, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { usePathname } from 'next/navigation';
 
 export function Header() {
   const t = useTranslations();
   const { user, isAuthenticated } = useAuth();
   const { logout, isLoading } = useLogout();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Mobile navigation items
+  const mobileNavItems = [
+    {
+      href: '/dashboard',
+      label: t('nav.dashboard'),
+      icon: <Home className="h-5 w-5" />
+    },
+    {
+      href: '/todos',
+      label: t('nav.todos'),
+      icon: <CheckSquare className="h-5 w-5" />
+    },
+    {
+      href: '/calendar',
+      label: t('nav.calendar'),
+      icon: <Calendar className="h-5 w-5" />
+    },
+    {
+      href: '/notes',
+      label: t('nav.notes'),
+      icon: <FileText className="h-5 w-5" />
+    },
+    {
+      href: '/analytics',
+      label: t('nav.analytics'),
+      icon: <BarChart3 className="h-5 w-5" />
+    },
+  ];
+
+  const isActive = (href: string) => {
+    if (href === '/dashboard') return pathname === '/' || pathname === '/dashboard';
+    return pathname.startsWith(href);
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -98,18 +134,51 @@ export function Header() {
           isMobileMenuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
         )}
       >
-        <nav className="container px-4 mx-auto py-4 space-y-4">
-          <Link
-            href="/profile"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/20 dark:hover:bg-gray-800/20 transition-colors"
-          >
-            <User className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-            <span className="font-medium text-gray-700 dark:text-gray-300">{user.username}</span>
-          </Link>
+        <nav className="container px-4 mx-auto py-4 space-y-2">
+          {/* Main navigation links */}
+          <div className="space-y-1">
+            {mobileNavItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={cn(
+                  "flex items-center space-x-3 p-3 rounded-lg transition-all duration-200",
+                  isActive(item.href)
+                    ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-white/20 dark:hover:bg-gray-800/20"
+                )}
+              >
+                <span className={cn(
+                  "transition-transform duration-200",
+                  isActive(item.href) && "scale-110"
+                )}>
+                  {item.icon}
+                </span>
+                <span className="font-medium">{item.label}</span>
+              </Link>
+            ))}
+          </div>
 
+          {/* User profile section */}
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+            <Link
+              href="/profile"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={cn(
+                "flex items-center space-x-3 p-3 rounded-lg transition-all duration-200",
+                isActive('/profile')
+                  ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-white/20 dark:hover:bg-gray-800/20"
+              )}
+            >
+              <User className="h-5 w-5" />
+              <span className="font-medium">{user.username}</span>
+            </Link>
+          </div>
+
+          {/* Logout and settings */}
           <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-2">
-
             <button
               onClick={() => {
                 handleLogout();
@@ -125,6 +194,7 @@ export function Header() {
             </button>
           </div>
 
+          {/* Theme and language toggles */}
           <div className="flex items-center justify-center space-x-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <LanguageSwitcher />
             <ThemeToggle />
