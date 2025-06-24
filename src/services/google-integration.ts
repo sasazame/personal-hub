@@ -53,8 +53,15 @@ export class GoogleIntegrationService {
       
       // Store backend-generated state for callback verification
       sessionStorage.setItem('oauth_state', state);
+      // Also store provider for compatibility with existing callback handler
+      sessionStorage.setItem('oauth_provider', 'google');
       
       console.log('[Google Auth] Redirecting to Google authorization URL...');
+      
+      // Check if the authorization URL has the correct redirect_uri
+      const url = new URL(authorizationUrl);
+      const redirectUri = url.searchParams.get('redirect_uri');
+      console.log('[Google Auth] Redirect URI in auth URL:', redirectUri);
       
       // Redirect to Google authorization URL
       window.location.href = authorizationUrl;

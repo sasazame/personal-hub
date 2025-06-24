@@ -51,6 +51,21 @@ export async function handleOAuthCallback(
     // Clean up session storage
     sessionStorage.removeItem('oauth_state');
     sessionStorage.removeItem('oauth_provider');
+    
+    // Check if this was a Google OAuth with extended scopes
+    const isGoogleIntegration = provider === 'google' && sessionStorage.getItem('google_auth_return_url');
+    
+    if (isGoogleIntegration) {
+      // Store Google-specific token for calendar/gmail access
+      localStorage.setItem('google_access_token', authResponse.accessToken);
+      
+      // Store user info for Google integration
+      if (authResponse.user) {
+        localStorage.setItem('google_user', JSON.stringify(authResponse.user));
+      }
+      
+      console.log('[Google Auth] Google integration authenticated successfully');
+    }
 
     return { success: true, user: authResponse.user };
 
