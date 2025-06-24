@@ -43,6 +43,8 @@ export class GoogleIntegrationService {
     
     // Check if we need to use the simple OAuth flow or the extended one
     try {
+      console.log('[Google Auth] Initiating Google OAuth flow...');
+      
       // Try to get Google-specific authorization URL from backend
       const response = await apiClient.get('/auth/oidc/google/authorize', {
         params: {
@@ -50,6 +52,8 @@ export class GoogleIntegrationService {
           redirect_url: window.location.origin + '/auth/google-callback',
         }
       });
+      
+      console.log('[Google Auth] Received authorization URL from backend');
       
       const { authorizationUrl, state } = response.data;
       
