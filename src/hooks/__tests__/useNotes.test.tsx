@@ -7,7 +7,7 @@ import {
   useCreateNote,
   useUpdateNote,
   useDeleteNote,
-  useToggleNotePin,
+  useNoteTags,
 } from '../useNotes';
 import { notesService } from '@/services/notes';
 
@@ -19,7 +19,10 @@ jest.mock('@/services/notes', () => ({
     createNote: jest.fn(),
     updateNote: jest.fn(),
     deleteNote: jest.fn(),
-    togglePin: jest.fn(),
+    getTags: jest.fn(),
+    getAllNotes: jest.fn(),
+    searchNotes: jest.fn(),
+    getNotesByTag: jest.fn(),
   },
 }));
 
@@ -151,7 +154,6 @@ describe('useNotes hooks', () => {
         title: 'New Note',
         content: 'New content',
         tags: ['new'],
-        isPinned: false,
       };
 
       result.current.mutate(createData);
@@ -176,7 +178,6 @@ describe('useNotes hooks', () => {
         title: 'New Note',
         content: 'New content',
         tags: ['new'],
-        isPinned: false,
       };
 
       result.current.mutate(createData);
@@ -199,7 +200,7 @@ describe('useNotes hooks', () => {
         { wrapper: createWrapper() }
       );
 
-      const updateData = { title: 'Updated Note' };
+      const updateData = { title: 'Updated Note', content: 'Updated content' };
 
       result.current.mutate({ id: 1, data: updateData });
 
@@ -248,23 +249,22 @@ describe('useNotes hooks', () => {
     });
   });
 
-  describe('useToggleNotePin', () => {
-    it('toggles pin successfully', async () => {
-      const pinnedNote = { ...mockNote, isPinned: true };
-      (notesService.togglePin as jest.Mock).mockResolvedValue(pinnedNote);
+  describe('useNoteTags', () => {
+    it('fetches note tags successfully', async () => {
+      const mockTags = ['test', 'work', 'project'];
+      (notesService.getTags as jest.Mock).mockResolvedValue(mockTags);
 
       const { result } = renderHook(
-        () => useToggleNotePin(),
+        () => useNoteTags(),
         { wrapper: createWrapper() }
       );
-
-      result.current.mutate(1);
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(notesService.togglePin).toHaveBeenCalledWith(1);
+      expect(notesService.getTags).toHaveBeenCalled();
+      expect(result.current.data).toEqual(mockTags);
     });
   });
 
@@ -296,7 +296,6 @@ describe('useNotes hooks', () => {
         title: 'New Note',
         content: 'New content',
         tags: ['new'],
-        isPinned: false,
       };
 
       result.current.mutate(createData);
@@ -333,7 +332,7 @@ describe('useNotes hooks', () => {
         { wrapper }
       );
 
-      result.current.mutate({ id: 1, data: { title: 'Updated Note' } });
+      result.current.mutate({ id: 1, data: { title: 'Updated Note', content: 'Updated content' } });
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);

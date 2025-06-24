@@ -43,9 +43,7 @@ const mockNote: Note = {
   id: 1,
   title: 'Test Note',
   content: 'Test content',
-  category: 'work',
   tags: ['test', 'example'],
-  isPinned: true,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
@@ -90,7 +88,7 @@ describe('NoteForm', () => {
     
     expect(screen.getByDisplayValue('Test Note')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Test content')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('仕事')).toBeInTheDocument();
+    // Note: removed category field check as it's no longer supported
   });
 
   it('displays existing tags in edit mode', () => {
@@ -128,7 +126,6 @@ describe('NoteForm', () => {
           title: 'New Note',
           content: 'Note content',
           tags: [],
-          isPinned: false,
         })
       );
     });

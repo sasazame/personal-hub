@@ -40,7 +40,7 @@ export const calendarService = {
       const endDate = `${year}-${month.toString().padStart(2, '0')}-${lastDay.toString().padStart(2, '0')}`;
       
       return await this.getEventsByDateRange(startDate, endDate);
-    } catch (error) {
+    } catch {
       // Fallback to getAllEvents if range endpoint fails
       try {
         const allEvents = await this.getAllEvents(0, 1000);

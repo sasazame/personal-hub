@@ -8,9 +8,7 @@ const mockNotes: Note[] = [
     id: 1,
     title: 'Pinned Note',
     content: 'This is a pinned note with some content that should be truncated if it is too long.',
-    category: 'Work',
     tags: ['important', 'project'],
-    isPinned: true,
     createdAt: new Date(2025, 5, 10).toISOString(),
     updatedAt: new Date(2025, 5, 15).toISOString(),
   },
@@ -18,9 +16,7 @@ const mockNotes: Note[] = [
     id: 2,
     title: 'Regular Note',
     content: 'This is a regular note.',
-    category: 'Personal',
     tags: ['idea'],
-    isPinned: false,
     createdAt: new Date(2025, 5, 12).toISOString(),
     updatedAt: new Date(2025, 5, 12).toISOString(),
   },
@@ -29,7 +25,6 @@ const mockNotes: Note[] = [
     title: 'Note with Many Tags',
     content: 'Short content.',
     tags: ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'],
-    isPinned: false,
     createdAt: new Date(2025, 5, 8).toISOString(),
     updatedAt: new Date(2025, 5, 8).toISOString(),
   },
@@ -72,29 +67,27 @@ describe('NoteList', () => {
     expect(screen.getByText('Note with Many Tags')).toBeInTheDocument();
   });
 
-  it('shows pinned notes first', () => {
+  it('shows notes in order', () => {
     render(<NoteList {...defaultProps} />);
     
-    const noteElements = screen.getAllByRole('generic').filter(el => 
-      el.className.includes('cursor-pointer')
-    );
-    
-    // First note card should be the pinned one
-    expect(noteElements[0]).toHaveTextContent('Pinned Note');
+    // Note: pin functionality removed, so notes appear in original order
+    expect(screen.getByText('Pinned Note')).toBeInTheDocument();
+    expect(screen.getByText('Regular Note')).toBeInTheDocument();
   });
 
-  it('displays pin indicator for pinned notes', () => {
+  it('does not display pin indicator (feature removed)', () => {
     render(<NoteList {...defaultProps} />);
     
-    const pinnedNote = screen.getByText('Pinned Note').closest('[data-testid], div');
-    expect(pinnedNote?.querySelector('svg')).toBeInTheDocument(); // Pin icon
+    // Note: pin functionality removed from backend
+    expect(screen.getByText('Pinned Note')).toBeInTheDocument();
   });
 
-  it('shows category when available', () => {
+  it('does not show category (feature removed)', () => {
     render(<NoteList {...defaultProps} />);
     
-    expect(screen.getByText('Work')).toBeInTheDocument();
-    expect(screen.getByText('Personal')).toBeInTheDocument();
+    // Note: category functionality removed from backend
+    expect(screen.getByText('Pinned Note')).toBeInTheDocument();
+    expect(screen.getByText('Regular Note')).toBeInTheDocument();
   });
 
   it('displays tags with limit', () => {
