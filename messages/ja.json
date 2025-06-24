@@ -369,7 +369,7 @@
     "loadError": "分析データの読み込みに失敗しました",
     "todoCompletionRate": "TODO完了率",
     "todayEvents": "今日のイベント",
-    "upcomingEvents": "{count, plural, =0 {予定されたイベントはありません} other {#件の予定}",
+    "upcomingEvents": "{count, plural, =0 {予定されたイベントはありません} other {#件の予定}}",
     "weeklyNotes": "今週のメモ",
     "totalNotes": "{count, plural, =0 {メモなし} other {合計#件のメモ}}",
     "overdueTodos": "期限切れTODO",
@@ -381,6 +381,24 @@
       "inProgress": "進行中",
       "completed": "完了",
       "cancelled": "キャンセル"
+    },
+    "productivityTrend": "生産性トレンド（過去7日間）",
+    "weeklyScore": "週間スコア:",
+    "scoreUnit": "点",
+    "chartLabels": {
+      "todoCompletions": "TODO完了",
+      "events": "イベント",
+      "noteCreations": "ノート作成",
+      "completed": "完了",
+      "created": "作成"
+    },
+    "todoActivity": "TODOアクティビティ（過去30日間）",
+    "averageCompletionTime": "平均完了時間: {days}日",
+    "priorityDistribution": "優先度別TODO分布",
+    "priorities": {
+      "high": "高",
+      "medium": "中",
+      "low": "低"
     }
   },
   "theme": {

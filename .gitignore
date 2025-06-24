@@ -32,6 +32,9 @@ before-*.png
 after-*.png
 README-original.md
 
+# local documentation (Claude-generated)
+/localdoc
+
 # debug
 npm-debug.log*
 yarn-debug.log*
