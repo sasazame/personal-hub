@@ -65,7 +65,6 @@ describe('NoteForm', () => {
     
     expect(screen.getByPlaceholderText('ノートのタイトル')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('ノートの内容を入力してください...')).toBeInTheDocument();
-    expect(screen.getByText('カテゴリ')).toBeInTheDocument();
     expect(screen.getByText('タグ')).toBeInTheDocument();
   });
 
@@ -168,17 +167,19 @@ describe('NoteForm', () => {
     });
   });
 
-  it('shows pin button', () => {
+  it('does not show pin button (feature removed)', () => {
     render(<NoteForm {...defaultProps} />);
     
-    expect(screen.getByTitle('ピン留め')).toBeInTheDocument();
+    // Pin functionality has been removed
+    expect(screen.queryByTitle('ピン留め')).not.toBeInTheDocument();
   });
 
-  it('displays category dropdown', () => {
+  it('does not display category dropdown (feature removed)', () => {
     render(<NoteForm {...defaultProps} />);
     
-    expect(screen.getByText('カテゴリ')).toBeInTheDocument();
-    expect(screen.getByText('カテゴリなし')).toBeInTheDocument();
+    // Category functionality has been removed
+    expect(screen.queryByText('カテゴリ')).not.toBeInTheDocument();
+    expect(screen.queryByText('カテゴリなし')).not.toBeInTheDocument();
   });
 
   it('calls onClose when cancel button is clicked', async () => {

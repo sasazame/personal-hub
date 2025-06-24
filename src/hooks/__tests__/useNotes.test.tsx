@@ -63,7 +63,7 @@ describe('useNotes hooks', () => {
 
   describe('useNotes', () => {
     it('fetches notes without filters', async () => {
-      (notesService.getNotes as jest.Mock).mockResolvedValue([mockNote]);
+      (notesService.getAllNotes as jest.Mock).mockResolvedValue([mockNote]);
 
       const { result } = renderHook(
         () => useNotes(),
@@ -74,13 +74,13 @@ describe('useNotes hooks', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(notesService.getNotes).toHaveBeenCalledWith(undefined);
+      expect(notesService.getAllNotes).toHaveBeenCalled();
       expect(result.current.data).toEqual([mockNote]);
     });
 
-    it('fetches notes with filters', async () => {
-      const filters = { category: 'Work', search: 'test' };
-      (notesService.getNotes as jest.Mock).mockResolvedValue([mockNote]);
+    it('fetches notes with search filter', async () => {
+      const filters = { search: 'test' };
+      (notesService.searchNotes as jest.Mock).mockResolvedValue([mockNote]);
 
       const { result } = renderHook(
         () => useNotes(filters),
@@ -91,11 +91,29 @@ describe('useNotes hooks', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(notesService.getNotes).toHaveBeenCalledWith(filters);
+      expect(notesService.searchNotes).toHaveBeenCalledWith('test');
+      expect(result.current.data).toEqual([mockNote]);
+    });
+
+    it('fetches notes with tag filter', async () => {
+      const filters = { tags: ['work'] };
+      (notesService.getNotesByTag as jest.Mock).mockResolvedValue([mockNote]);
+
+      const { result } = renderHook(
+        () => useNotes(filters),
+        { wrapper: createWrapper() }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(notesService.getNotesByTag).toHaveBeenCalledWith('work');
+      expect(result.current.data).toEqual([mockNote]);
     });
 
     it('handles loading state', () => {
-      (notesService.getNotes as jest.Mock).mockImplementation(
+      (notesService.getAllNotes as jest.Mock).mockImplementation(
         () => new Promise(() => {}) // Never resolves
       );
 

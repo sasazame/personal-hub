@@ -130,25 +130,20 @@ describe('NoteList', () => {
     // Actions should be visible - find buttons within this specific card
     const editButton = noteCard.querySelector('button[title="編集"]') as HTMLElement;
     const deleteButton = noteCard.querySelector('button[title="削除"]') as HTMLElement;
-    const pinButton = noteCard.querySelector('button[title="ピン留め"]') as HTMLElement;
     
     expect(editButton).toBeInTheDocument();
     expect(deleteButton).toBeInTheDocument();
-    expect(pinButton).toBeInTheDocument();
+    // Pin button removed in updated implementation
   });
 
-  it('calls onTogglePin when pin button is clicked', async () => {
-    const user = userEvent.setup();
+  it('does not call onTogglePin (feature removed)', async () => {
     render(<NoteList {...defaultProps} />);
     
-    // Find the specific note card and its pin button
+    // Pin functionality has been removed from the component
     const regularNoteCard = screen.getByText('Regular Note').closest('[role="button"], .cursor-pointer')!;
     const pinButton = regularNoteCard.querySelector('button[title="ピン留め"]') as HTMLElement;
     
-    expect(pinButton).toBeInTheDocument();
-    await user.click(pinButton);
-    
-    expect(defaultProps.onTogglePin).toHaveBeenCalled();
+    expect(pinButton).not.toBeInTheDocument();
   });
 
   it('calls onEditNote when edit button is clicked', async () => {
@@ -194,19 +189,18 @@ describe('NoteList', () => {
     expect(defaultProps.onEditNote).toHaveBeenCalled();
   });
 
-  it('shows different pin button text for pinned notes', () => {
+  it('does not show pin buttons (feature removed)', () => {
     render(<NoteList {...defaultProps} />);
     
-    // Find the pinned note card and its "unpin" button
+    // Pin functionality has been removed
     const pinnedNoteCard = screen.getByText('Pinned Note').closest('.cursor-pointer')!;
     const unpinButton = pinnedNoteCard.querySelector('button[title="ピンを外す"]') as HTMLElement;
     
-    // Find the regular note card and its "pin" button  
     const regularNoteCard = screen.getByText('Regular Note').closest('.cursor-pointer')!;
     const pinButton = regularNoteCard.querySelector('button[title="ピン留め"]') as HTMLElement;
     
-    expect(unpinButton).toBeInTheDocument();
-    expect(pinButton).toBeInTheDocument();
+    expect(unpinButton).not.toBeInTheDocument();
+    expect(pinButton).not.toBeInTheDocument();
   });
 
   it('displays creation and update dates', () => {
