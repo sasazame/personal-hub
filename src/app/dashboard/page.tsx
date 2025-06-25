@@ -158,7 +158,7 @@ function DashboardPage() {
               <h2 className="text-xl font-semibold text-foreground">
                 {t('dashboard.todayEvents')}
               </h2>
-              <Link href="/calendar" className="text-green-600 hover:text-green-700 text-sm">
+              <Link href="/calendar" className="text-primary hover:text-primary-700 text-sm font-medium transition-colors">
                 {t('dashboard.viewAll')} →
               </Link>
             </div>
@@ -187,7 +187,7 @@ function DashboardPage() {
               <h2 className="text-xl font-semibold text-foreground">
                 {t('dashboard.recentNotes')}
               </h2>
-              <Link href="/notes" className="text-purple-600 hover:text-purple-700 text-sm">
+              <Link href="/notes" className="text-primary hover:text-primary-700 text-sm font-medium transition-colors">
                 {t('dashboard.viewAllArrow')}
               </Link>
             </div>

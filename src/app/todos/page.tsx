@@ -14,11 +14,12 @@ import { Todo, CreateTodoDto, UpdateTodoDto, TodoStatus } from '@/types/todo';
 import { showSuccess, showError } from '@/components/ui/toast';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { Modal, Button } from '@/components/ui';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Mail } from 'lucide-react';
 
 function TodoApp() {
   const t = useTranslations();
+  const router = useRouter();
   usePageTitle('TODOs - Personal Hub');
   const queryClient = useQueryClient();
   const [isAddingTodo, setIsAddingTodo] = useState(false);
@@ -214,22 +215,24 @@ function TodoApp() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Link
-              href="/todos/gmail"
-              className="inline-flex items-center px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
+            <Button
+              variant="secondary"
+              size="md"
+              leftIcon={<Mail className="w-4 h-4" />}
+              onClick={() => router.push('/todos/gmail')}
             >
-              <Mail className="w-5 h-5 mr-2" />
               Gmail to Task
-            </Link>
-            <button
+            </Button>
+            <Button
+              variant="primary"
+              size="md"
               onClick={() => {
                 setParentIdForNewTodo(null);
                 setIsAddingTodo(true);
               }}
-              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md hover:shadow-lg transition-all"
             >
               {t('todo.addTodo')}
-            </button>
+            </Button>
           </div>
         </div>
         

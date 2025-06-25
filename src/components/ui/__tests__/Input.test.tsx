@@ -52,7 +52,7 @@ describe('Input', () => {
     const user = userEvent.setup();
     render(<Input label="Password" type="password" />);
     
-    const input = screen.getByLabelText(/password/i);
+    const input = screen.getByRole('textbox', { name: /password/i });
     expect(input).toHaveAttribute('type', 'password');
     
     // Find and click the password toggle button

@@ -67,7 +67,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-[1030] w-full">
       {/* Apple-style glassmorphism header */}
-      <div className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-border shadow-sm">
+      <div className="bg-white/90 dark:bg-gray-900/80 backdrop-blur-xl border-b border-border shadow-sm">
         <div className="container px-4 mx-auto">
           <div className="flex h-16 items-center justify-between">
             {/* Logo and brand */}

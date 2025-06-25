@@ -107,7 +107,7 @@ describe('TextArea', () => {
     render(<TextArea label="Focus Test" />);
     
     const textarea = screen.getByLabelText(/focus test/i);
-    expect(textarea).toHaveClass('focus:outline-none', 'focus:ring-2', 'focus:ring-ring');
+    expect(textarea).toHaveClass('focus-visible:outline-none', 'focus-visible:ring-2', 'focus-visible:ring-ring');
   });
 
   it('shows error icon when in error state', () => {

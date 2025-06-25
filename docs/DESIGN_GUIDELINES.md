@@ -32,9 +32,16 @@ Inspired by Apple's human interface guidelines, our design system prioritizes cl
 --color-primary-950: #172554;
 
 /* Accent - Vibrant indigo for special actions */
+--color-accent-50: #eef2ff;
+--color-accent-100: #e0e7ff;
+--color-accent-200: #c7d2fe;
+--color-accent-300: #a5b4fc;
+--color-accent-400: #818cf8;
 --color-accent-500: #6366f1;
 --color-accent-600: #4f46e5;
 --color-accent-700: #4338ca;
+--color-accent-800: #3730a3;
+--color-accent-900: #312e81;
 ```
 
 #### Semantic Colors
@@ -46,18 +53,18 @@ Inspired by Apple's human interface guidelines, our design system prioritizes cl
 #### Background Layers (Light Mode)
 ```css
 --bg-primary: #ffffff;      /* Main background */
---bg-secondary: #f9fafb;    /* Subtle sections */
---bg-tertiary: #f3f4f6;     /* Recessed areas */
+--bg-secondary: #fafbfc;    /* Subtle sections */
+--bg-tertiary: #f5f7fa;     /* Recessed areas */
 --bg-elevated: #ffffff;     /* Cards/modals */
---bg-overlay: rgba(0,0,0,0.5); /* Modal backdrop */
+--bg-overlay: rgba(0,0,0,0.4); /* Modal backdrop */
 ```
 
 #### Background Layers (Dark Mode)
 ```css
---bg-primary: #0f172a;      /* Main background */
---bg-secondary: #1e293b;    /* Subtle sections */
---bg-tertiary: #334155;     /* Recessed areas */
---bg-elevated: #1e293b;     /* Cards/modals */
+--bg-primary: #0a0f1e;      /* Main background */
+--bg-secondary: #101827;    /* Subtle sections */
+--bg-tertiary: #1e293b;     /* Recessed areas */
+--bg-elevated: #1a2234;     /* Cards/modals */
 --bg-overlay: rgba(0,0,0,0.7); /* Modal backdrop */
 ```
 
@@ -144,17 +151,19 @@ Smooth, modern corners:
 #### Primary Button
 - **Background**: Blue gradient (primary-600 to primary-700)
 - **Text**: White, medium weight
-- **Padding**: space-3 vertical, space-5 horizontal
-- **Radius**: radius-md (8px)
+- **Border**: None (clean gradient look)
+- **Padding**: Varies by size (sm: h-8 px-3, md: h-10 px-5, lg: h-12 px-6)
+- **Radius**: Rounded corners (sm: radius-md, md/lg: radius-lg)
 - **Shadow**: shadow-sm default, shadow-md hover
-- **Transform**: scale(0.98) on press
+- **Transform**: translateY(-1px) on hover, translateY(0) on press
 - **Transition**: All properties 200ms ease
 
 #### Secondary Button
-- **Background**: Transparent with border
-- **Border**: 1.5px primary-600
-- **Text**: Primary-600, medium weight
-- **Hover**: Background primary-50
+- **Background**: White (light) or card bg (dark)
+- **Border**: 1px border-color
+- **Text**: Foreground color, medium weight
+- **Shadow**: shadow-sm default, shadow-md hover
+- **Hover**: Transform translateY(-1px)
 
 #### Ghost Button
 - **Background**: Transparent
@@ -181,16 +190,18 @@ Smooth, modern corners:
 
 #### Sidebar
 - **Width**: 256px desktop, full mobile
-- **Background**: Subtle gradient overlay
-- **Items**: 44px height, radius-md
-- **Active**: Primary background with white text
-- **Icons**: 20px, consistent stroke width
+- **Background**: 90% opacity white (light) or 80% opacity dark bg
+- **Items**: 44px height, radius-xl (12px)
+- **Active**: Gradient from primary-100 to accent-100 (light mode)
+- **Icons**: 20px, scale 1.1 when active
+- **Hover**: Neutral-100 background (light) or neutral-800 (dark)
 
 #### Header
 - **Height**: 64px
-- **Background**: Blur effect with semi-transparent bg
+- **Background**: 90% opacity white (light) or 80% opacity dark bg with blur
 - **Shadow**: Subtle bottom shadow
 - **Z-index**: 1030 (fixed)
+- **Logo**: Gradient icon with rounded corners
 
 ### Modals & Overlays
 - **Backdrop**: Dark overlay with blur

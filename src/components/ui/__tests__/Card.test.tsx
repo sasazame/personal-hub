@@ -156,7 +156,7 @@ describe('Card Components', () => {
       
       const footer = screen.getByTestId('footer');
       expect(footer).toBeInTheDocument();
-      expect(footer).toHaveClass('flex', 'items-center', 'pt-0');
+      expect(footer).toHaveClass('flex', 'items-center', 'pt-4');
       expect(footer).toHaveTextContent('Footer content');
     });
 

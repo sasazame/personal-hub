@@ -71,7 +71,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-r border-border shadow-sm transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1) hidden md:block",
+        "fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white/90 dark:bg-gray-900/80 backdrop-blur-xl border-r border-border shadow-sm transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1) hidden md:block",
         isCollapsed ? "w-16" : "w-64"
       )}
     >

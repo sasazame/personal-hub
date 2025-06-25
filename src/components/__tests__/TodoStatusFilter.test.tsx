@@ -40,8 +40,8 @@ describe('TodoStatusFilter', () => {
     const todoButton = screen.getByText('未着手');
     const allButton = screen.getByText('すべて');
     
-    expect(todoButton.closest('button')).toHaveClass('bg-blue-600');
-    expect(allButton.closest('button')).toHaveClass('bg-gray-600');
+    expect(todoButton.closest('button')).toHaveClass('bg-gradient-to-b', 'from-primary-600', 'to-primary-700');
+    expect(allButton.closest('button')).toHaveClass('bg-white');
   });
 
   it('calls onStatusChange when a status is clicked', () => {
@@ -74,7 +74,7 @@ describe('TodoStatusFilter', () => {
     );
 
     let allButton = screen.getByText('すべて');
-    expect(allButton.closest('button')).toHaveClass('bg-blue-600');
+    expect(allButton.closest('button')).toHaveClass('bg-gradient-to-b', 'from-primary-600', 'to-primary-700');
 
     rerender(
       <TodoStatusFilter selectedStatus="DONE" onStatusChange={mockOnStatusChange} />

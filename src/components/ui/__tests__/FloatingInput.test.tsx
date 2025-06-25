@@ -24,12 +24,12 @@ describe('FloatingInput', () => {
     const label = screen.getByText('Email');
     
     // Label should be fixed at top
-    expect(label).toHaveClass('block', 'text-sm', 'font-medium', 'text-white/90');
+    expect(label).toHaveClass('block', 'text-sm', 'font-semibold', 'text-white/90');
     
     fireEvent.focus(input);
     
     // Label position should not change on focus
-    expect(label).toHaveClass('block', 'text-sm', 'font-medium', 'text-white/90');
+    expect(label).toHaveClass('block', 'text-sm', 'font-semibold', 'text-white/90');
   });
 
   it('shows correct placeholder text for email type', () => {
@@ -97,6 +97,6 @@ describe('FloatingInput', () => {
     render(<FloatingInput label="Email" error="Invalid email" />);
     const input = screen.getByLabelText('Email');
     
-    expect(input).toHaveClass('border-red-500/50');
+    expect(input).toHaveClass('border-red-400/50');
   });
 });

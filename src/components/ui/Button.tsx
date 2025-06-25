@@ -7,12 +7,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: 'bg-gradient-to-b from-primary-600 to-primary-700 text-white shadow-sm hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 active:shadow-sm border border-primary-800/20',
+        primary: 'bg-gradient-to-b from-primary-600 to-primary-700 text-white shadow-sm hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 active:shadow-sm',
         secondary: 'bg-white dark:bg-card text-foreground shadow-sm hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 active:shadow-sm border border-border',
         ghost: 'text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-foreground active:scale-[0.98]',
-        danger: 'bg-gradient-to-b from-red-600 to-red-700 text-white shadow-sm hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 active:shadow-sm border border-red-800/20',
+        danger: 'bg-gradient-to-b from-red-600 to-red-700 text-white shadow-sm hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 active:shadow-sm',
         outline: 'border-[1.5px] border-primary-600 bg-transparent text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-950/20 hover:border-primary-700 active:scale-[0.98]',
-        accent: 'bg-gradient-to-b from-accent-600 to-accent-700 text-white shadow-sm hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 active:shadow-sm border border-accent-800/20',
+        accent: 'bg-gradient-to-b from-accent-600 to-accent-700 text-white shadow-sm hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 active:shadow-sm',
       },
       size: {
         sm: 'h-8 px-3 text-sm rounded-md',

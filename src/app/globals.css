@@ -4,15 +4,15 @@
   /* Grid pattern background */
   .bg-grid-pattern {
     background-image: 
-      linear-gradient(to right, rgb(100 116 139 / 0.08) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(100 116 139 / 0.08) 1px, transparent 1px);
+      linear-gradient(to right, rgb(100 116 139 / 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(100 116 139 / 0.06) 1px, transparent 1px);
     background-size: 24px 24px;
   }
   
   .dark .bg-grid-pattern {
     background-image: 
-      linear-gradient(to right, rgb(156 163 175 / 0.12) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(156 163 175 / 0.12) 1px, transparent 1px);
+      linear-gradient(to right, rgb(156 163 175 / 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(156 163 175 / 0.08) 1px, transparent 1px);
     background-size: 20px 20px;
   }
 
@@ -164,8 +164,8 @@
 
   /* Semantic Colors - Light Mode */
   --background: #ffffff;
-  --background-secondary: #f9fafb;
-  --background-tertiary: #f3f4f6;
+  --background-secondary: #fafbfc;
+  --background-tertiary: #f5f7fa;
   --foreground: var(--color-neutral-900);
   --card: #ffffff;
   --card-hover: #fcfcfd;
@@ -184,12 +184,12 @@
   --destructive-foreground: #ffffff;
   --success: var(--color-success-500);
   --success-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.08);
-  --border-strong: rgba(0, 0, 0, 0.12);
-  --input: rgba(0, 0, 0, 0.05);
-  --input-border: rgba(0, 0, 0, 0.1);
+  --border: rgba(0, 0, 0, 0.06);
+  --border-strong: rgba(0, 0, 0, 0.1);
+  --input: rgba(0, 0, 0, 0.02);
+  --input-border: rgba(0, 0, 0, 0.08);
   --ring: var(--color-primary-500);
-  --overlay: rgba(0, 0, 0, 0.5);
+  --overlay: rgba(0, 0, 0, 0.4);
 
   /* Todo Priority Colors */
   --priority-low-bg: var(--color-neutral-100);
