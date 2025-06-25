@@ -104,25 +104,23 @@ export class GoogleIntegrationService {
       
       console.log('[Google Auth] Callback response:', response.data);
       
-      const { token, user } = response.data;
+      const { success, message } = response.data;
       
-      if (!token) {
-        throw new Error('No token received from authentication');
+      if (!success) {
+        throw new Error(message || 'Google authentication failed');
       }
       
-      // Store the token (the backend already validates Google access)
-      localStorage.setItem('google_access_token', token);
-      
-      // Store user info if provided
-      if (user) {
-        localStorage.setItem('google_user', JSON.stringify(user));
-      }
+      // Mark Google integration as enabled
+      // The backend stores the actual Google tokens internally
+      localStorage.setItem('google_integration_enabled', 'true');
       
       // Clean up temporary storage
       sessionStorage.removeItem('oauth_state');
       sessionStorage.removeItem('google_auth_return_url');
+      sessionStorage.removeItem('oauth_provider');
       
       console.log('[Google Auth] Authentication successful');
+      console.log('[Google Auth] Google tokens are managed by backend');
       
       return true;
     } catch (error) {
@@ -212,26 +210,9 @@ export class GoogleIntegrationService {
    * Check if user has Google integration enabled
    */
   static hasGoogleIntegration(): boolean {
-    // Check if we have a Google access token
-    const hasToken = !!localStorage.getItem('google_access_token');
-    
-    // Also check if the token is still valid (basic check)
-    if (hasToken) {
-      try {
-        const user = localStorage.getItem('google_user');
-        if (user) {
-          JSON.parse(user); // Validate JSON
-        }
-        return true;
-      } catch {
-        // Invalid data, clean up
-        localStorage.removeItem('google_access_token');
-        localStorage.removeItem('google_user');
-        return false;
-      }
-    }
-    
-    return false;
+    // Check if Google integration is enabled
+    // We don't store Google tokens in frontend - backend manages them
+    return localStorage.getItem('google_integration_enabled') === 'true';
   }
   
   /**
@@ -239,13 +220,45 @@ export class GoogleIntegrationService {
    */
   static async revokeGoogleIntegration(): Promise<void> {
     try {
-      // Call backend to revoke tokens
-      await apiClient.post('/calendar/sync/revoke');
+      // Get stored tokens if any (for backward compatibility)
+      const accessToken = localStorage.getItem('google_access_token');
+      const refreshToken = localStorage.getItem('google_refresh_token');
+      
+      // Try to revoke refresh token first (it revokes access token too)
+      if (refreshToken) {
+        await apiClient.post('/auth/revoke', 
+          new URLSearchParams({
+            token: refreshToken,
+            token_type_hint: 'refresh_token'
+          }),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          }
+        );
+      } else if (accessToken) {
+        // If no refresh token, try to revoke access token
+        await apiClient.post('/auth/revoke', 
+          new URLSearchParams({
+            token: accessToken,
+            token_type_hint: 'access_token'
+          }),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          }
+        );
+      }
+      
+      console.log('[Google Auth] Successfully revoked Google tokens on backend');
     } catch (error) {
       console.error('[Google Auth] Failed to revoke on backend:', error);
       // Continue with local cleanup even if backend fails
     } finally {
-      // Always clear local tokens and data
+      // Always clear local integration flag and data
+      localStorage.removeItem('google_integration_enabled');
       localStorage.removeItem('google_access_token');
       localStorage.removeItem('google_refresh_token');
       localStorage.removeItem('google_user');

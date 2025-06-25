@@ -56,8 +56,12 @@ export async function handleOAuthCallback(
     const isGoogleIntegration = provider === 'google' && sessionStorage.getItem('google_auth_return_url');
     
     if (isGoogleIntegration) {
-      // Store Google-specific token for calendar/gmail access
-      localStorage.setItem('google_access_token', authResponse.accessToken);
+      // For Google integration, we need to mark this as successfully authenticated
+      // but NOT store the access token as the main app token
+      // The backend should have already stored the Google tokens internally
+      
+      // Mark Google integration as enabled (without storing the actual Google token)
+      localStorage.setItem('google_integration_enabled', 'true');
       
       // Store user info for Google integration
       if (authResponse.user) {
@@ -65,6 +69,7 @@ export async function handleOAuthCallback(
       }
       
       console.log('[Google Auth] Google integration authenticated successfully');
+      console.log('[Google Auth] Note: Google tokens are managed by backend, not stored in frontend');
     }
 
     return { success: true, user: authResponse.user };
