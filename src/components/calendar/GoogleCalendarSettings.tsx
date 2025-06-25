@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useCalendarSyncSettings, useUpdateCalendarSyncSettings, useCalendarSync, useGoogleAuth } from '@/hooks/useGoogleIntegration';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -13,6 +14,7 @@ import { cn } from '@/lib/cn';
 import { format } from 'date-fns';
 
 export function GoogleCalendarSettings() {
+  const t = useTranslations();
   const { hasIntegration, initiateAuth, revokeIntegration, isRevoking } = useGoogleAuth();
   const { data: settings, isLoading: isLoadingSettings } = useCalendarSyncSettings();
   const updateSettings = useUpdateCalendarSyncSettings();
@@ -49,15 +51,15 @@ export function GoogleCalendarSettings() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            Google Calendar Integration
+            {t('calendar.googleIntegration.title')}
           </CardTitle>
           <CardDescription>
-            Connect your Google Calendar to sync events between Personal Hub and Google
+            {t('calendar.googleIntegration.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Button onClick={initiateAuth} className="w-full">
-            Connect Google Calendar
+            {t('calendar.googleIntegration.connect')}
           </Button>
         </CardContent>
       </Card>
@@ -83,10 +85,10 @@ export function GoogleCalendarSettings() {
           <div>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              Google Calendar Integration
+              {t('calendar.googleIntegration.title')}
             </CardTitle>
             <CardDescription>
-              Manage your Google Calendar sync settings
+              {t('calendar.googleIntegration.settingsDescription')}
             </CardDescription>
           </div>
           <Button
@@ -97,7 +99,7 @@ export function GoogleCalendarSettings() {
             className="text-destructive hover:text-destructive"
           >
             <Unlink className="mr-2 h-4 w-4" />
-            Disconnect
+            {t('calendar.googleIntegration.disconnect')}
           </Button>
         </div>
       </CardHeader>
@@ -111,11 +113,11 @@ export function GoogleCalendarSettings() {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Settings className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">Sync Status</span>
+                <span className="text-sm font-medium">{t('calendar.googleIntegration.syncSettings.syncStatus')}</span>
               </div>
               {lastSyncTime && (
                 <span className="text-xs text-muted-foreground">
-                  Last sync: {format(new Date(lastSyncTime), 'MMM d, h:mm a')}
+                  {t('calendar.googleIntegration.syncSettings.lastSync')}: {format(new Date(lastSyncTime), 'MMM d, h:mm a')}
                 </span>
               )}
             </div>
@@ -130,7 +132,7 @@ export function GoogleCalendarSettings() {
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">
-                {syncStatus.syncedEvents} events synced successfully
+                {t('calendar.googleIntegration.status.synced', { count: syncStatus.syncedEvents })}
               </p>
             )}
           </div>
@@ -139,9 +141,9 @@ export function GoogleCalendarSettings() {
         {/* Enable/Disable Sync */}
         <div className="flex items-center justify-between">
           <Label htmlFor="sync-enabled" className="flex flex-col">
-            <span>Enable Calendar Sync</span>
+            <span>{t('calendar.googleIntegration.syncSettings.enable')}</span>
             <span className="text-xs text-muted-foreground font-normal">
-              Sync events between Personal Hub and Google Calendar
+              {t('calendar.googleIntegration.syncSettings.enableDescription')}
             </span>
           </Label>
           <Switch
@@ -155,7 +157,7 @@ export function GoogleCalendarSettings() {
 
         {/* Sync Direction */}
         <div className="space-y-2">
-          <Label>Sync Direction</Label>
+          <Label>{t('calendar.googleIntegration.syncSettings.direction')}</Label>
           <RadioGroup
             value={localSettings.syncDirection}
             onValueChange={(value) => 
@@ -169,19 +171,19 @@ export function GoogleCalendarSettings() {
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="TO_GOOGLE" id="to-google" />
               <Label htmlFor="to-google" className="font-normal cursor-pointer">
-                Personal Hub → Google Calendar
+                {t('calendar.googleIntegration.syncSettings.directionOptions.toGoogle')}
               </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="FROM_GOOGLE" id="from-google" />
               <Label htmlFor="from-google" className="font-normal cursor-pointer">
-                Google Calendar → Personal Hub
+                {t('calendar.googleIntegration.syncSettings.directionOptions.fromGoogle')}
               </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="BIDIRECTIONAL" id="bidirectional" />
               <Label htmlFor="bidirectional" className="font-normal cursor-pointer">
-                Bidirectional sync
+                {t('calendar.googleIntegration.syncSettings.directionOptions.bidirectional')}
               </Label>
             </div>
           </RadioGroup>
@@ -191,9 +193,9 @@ export function GoogleCalendarSettings() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <Label htmlFor="auto-sync" className="flex flex-col">
-              <span>Automatic Sync</span>
+              <span>{t('calendar.googleIntegration.syncSettings.autoSync')}</span>
               <span className="text-xs text-muted-foreground font-normal">
-                Automatically sync at regular intervals
+                {t('calendar.googleIntegration.syncSettings.autoSyncDescription')}
               </span>
             </Label>
             <Switch
@@ -208,7 +210,7 @@ export function GoogleCalendarSettings() {
 
           {localSettings.autoSync && (
             <div className="space-y-2">
-              <Label htmlFor="sync-interval">Sync Interval</Label>
+              <Label htmlFor="sync-interval">{t('calendar.googleIntegration.syncSettings.interval')}</Label>
               <Select
                 value={localSettings.syncInterval.toString()}
                 onValueChange={(value) => 
@@ -220,11 +222,11 @@ export function GoogleCalendarSettings() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="15">Every 15 minutes</SelectItem>
-                  <SelectItem value="30">Every 30 minutes</SelectItem>
-                  <SelectItem value="60">Every hour</SelectItem>
-                  <SelectItem value="120">Every 2 hours</SelectItem>
-                  <SelectItem value="240">Every 4 hours</SelectItem>
+                  <SelectItem value="15">{t('calendar.googleIntegration.syncSettings.intervals.15min')}</SelectItem>
+                  <SelectItem value="30">{t('calendar.googleIntegration.syncSettings.intervals.30min')}</SelectItem>
+                  <SelectItem value="60">{t('calendar.googleIntegration.syncSettings.intervals.hourly')}</SelectItem>
+                  <SelectItem value="120">{t('calendar.googleIntegration.syncSettings.intervals.2hours')}</SelectItem>
+                  <SelectItem value="240">{t('calendar.googleIntegration.syncSettings.intervals.4hours')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -242,12 +244,12 @@ export function GoogleCalendarSettings() {
             {isSyncing ? (
               <>
                 <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                Syncing...
+                {t('calendar.googleIntegration.status.syncing')}
               </>
             ) : (
               <>
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Sync Now
+                {t('calendar.googleIntegration.syncSettings.syncNow')}
               </>
             )}
           </Button>
@@ -256,7 +258,7 @@ export function GoogleCalendarSettings() {
             disabled={updateSettings.isPending}
             className="flex-1"
           >
-            Save Settings
+            {t('calendar.googleIntegration.saveSettings')}
           </Button>
         </div>
       </CardContent>
