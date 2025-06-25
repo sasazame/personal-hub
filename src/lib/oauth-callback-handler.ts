@@ -51,6 +51,26 @@ export async function handleOAuthCallback(
     // Clean up session storage
     sessionStorage.removeItem('oauth_state');
     sessionStorage.removeItem('oauth_provider');
+    
+    // Check if this was a Google OAuth with extended scopes
+    const isGoogleIntegration = provider === 'google' && sessionStorage.getItem('google_auth_return_url');
+    
+    if (isGoogleIntegration) {
+      // For Google integration, we need to mark this as successfully authenticated
+      // but NOT store the access token as the main app token
+      // The backend should have already stored the Google tokens internally
+      
+      // Mark Google integration as enabled (without storing the actual Google token)
+      localStorage.setItem('google_integration_enabled', 'true');
+      
+      // Store user info for Google integration
+      if (authResponse.user) {
+        localStorage.setItem('google_user', JSON.stringify(authResponse.user));
+      }
+      
+      console.log('[Google Auth] Google integration authenticated successfully');
+      console.log('[Google Auth] Note: Google tokens are managed by backend, not stored in frontend');
+    }
 
     return { success: true, user: authResponse.user };
 

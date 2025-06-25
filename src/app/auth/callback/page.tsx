@@ -59,10 +59,21 @@ export default function OAuthCallbackPage() {
 
         if (result && result.success) {
           setStatus('success');
-          // Redirect to dashboard after a short delay
-          setTimeout(() => {
-            router.push('/dashboard');
-          }, 2000);
+          
+          // Check if this was a Google integration callback
+          const googleReturnUrl = sessionStorage.getItem('google_auth_return_url');
+          if (googleReturnUrl) {
+            sessionStorage.removeItem('google_auth_return_url');
+            // Redirect back to where Google integration was initiated
+            setTimeout(() => {
+              router.push(googleReturnUrl);
+            }, 2000);
+          } else {
+            // Normal OAuth flow - redirect to dashboard
+            setTimeout(() => {
+              router.push('/dashboard');
+            }, 2000);
+          }
         } else {
           setError(result?.error || 'Authentication failed');
           setStatus('error');

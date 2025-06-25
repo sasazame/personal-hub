@@ -276,7 +276,93 @@
       "orange": "オレンジ"
     },
     "location": "場所",
-    "locationPlaceholder": "場所を入力してください"
+    "locationPlaceholder": "場所を入力してください",
+    "googleSettings": "Google設定",
+    "syncToGoogle": "Googleカレンダーに同期",
+    "syncToGoogleDescription": "このイベントをGoogleカレンダーに同期します",
+    "googleIntegration": {
+      "title": "Googleカレンダー連携",
+      "description": "GoogleカレンダーとPersonal Hubのイベントを同期させます",
+      "settingsDescription": "Googleカレンダーの同期設定を管理します",
+      "connect": "Googleカレンダーに接続",
+      "disconnect": "接続を解除",
+      "connected": "接続済み",
+      "disconnected": "未接続",
+      "connecting": "接続中...",
+      "disconnecting": "接続解除中...",
+      "saveSettings": "設定を保存",
+      "syncSettings": {
+        "title": "同期設定",
+        "enable": "同期を有効にする",
+        "enableDescription": "Personal HubとGoogleカレンダーのイベントを同期します",
+        "disable": "同期を無効にする",
+        "direction": "同期方向",
+        "directionOptions": {
+          "bidirectional": "双方向同期",
+          "toGoogle": "Personal Hub → Googleカレンダー",
+          "fromGoogle": "Googleカレンダー → Personal Hub"
+        },
+        "biDirectional": "双方向同期",
+        "toGoogle": "Personal Hub → Google",
+        "fromGoogle": "Google → Personal Hub",
+        "autoSync": "自動同期",
+        "autoSyncDescription": "変更を自動的に同期します",
+        "interval": "同期間隔",
+        "syncInterval": "同期間隔",
+        "intervals": {
+          "realtime": "リアルタイム",
+          "5min": "5分ごと",
+          "15min": "15分ごと",
+          "30min": "30分ごと",
+          "hourly": "1時間ごと",
+          "2hours": "2時間ごと",
+          "4hours": "4時間ごと",
+          "daily": "1日ごと"
+        },
+        "lastSync": "最終同期",
+        "lastSyncTime": "最終同期: {time}",
+        "nextSync": "次回同期: {time}",
+        "syncNow": "今すぐ同期",
+        "syncing": "同期中...",
+        "syncStatus": "同期ステータス",
+        "selectCalendars": "同期するカレンダーを選択",
+        "primaryCalendar": "メインカレンダー",
+        "allCalendars": "すべてのカレンダー"
+      },
+      "status": {
+        "synced": "{count}件のイベントが正常に同期されました",
+        "syncedSimple": "同期完了",
+        "syncing": "同期中",
+        "error": "同期エラー",
+        "pending": "同期待機中",
+        "conflict": "競合が発生しました",
+        "outOfSync": "同期が必要です"
+      },
+      "errors": {
+        "connectionFailed": "Googleカレンダーへの接続に失敗しました",
+        "authenticationFailed": "認証に失敗しました。再度ログインしてください",
+        "syncFailed": "同期に失敗しました: {error}",
+        "permissionDenied": "カレンダーへのアクセス権限がありません",
+        "quotaExceeded": "API利用制限を超えました。しばらくしてから再試行してください",
+        "networkError": "ネットワークエラーが発生しました",
+        "invalidCalendar": "無効なカレンダーが選択されました",
+        "conflictResolution": "競合の解決が必要です"
+      },
+      "permissions": {
+        "title": "必要な権限",
+        "calendar": "カレンダーの読み取りと書き込み",
+        "events": "イベントの作成、編集、削除",
+        "reminders": "リマインダーの管理"
+      },
+      "conflictResolution": {
+        "title": "競合の解決",
+        "description": "両方のカレンダーで変更された場合の処理を選択してください",
+        "keepLocal": "Personal Hubの内容を優先",
+        "keepGoogle": "Googleカレンダーの内容を優先",
+        "keepBoth": "両方を保持（重複作成）",
+        "manual": "手動で解決"
+      }
+    }
   },
   "notes": {
     "title": "メモ",

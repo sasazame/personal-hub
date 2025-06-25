@@ -5,13 +5,13 @@ import { useTranslations } from 'next-intl';
 import { AuthGuard } from '@/components/auth';
 import { AppLayout } from '@/components/layout';
 import { Button, Modal } from '@/components/ui';
-import { CalendarGrid, EventForm } from '@/components/calendar';
+import { CalendarGrid, EventForm, GoogleCalendarSettings } from '@/components/calendar';
 import { useCalendarEvents, useCreateCalendarEvent, useUpdateCalendarEvent, useDeleteCalendarEvent } from '@/hooks/useCalendar';
 import { CalendarEvent, CreateCalendarEventDto, UpdateCalendarEventDto } from '@/types/calendar';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { showSuccess, showError } from '@/components/ui/toast';
 import { format, addMonths, subMonths } from 'date-fns';
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Settings } from 'lucide-react';
 
 function CalendarPage() {
   const t = useTranslations();
@@ -21,6 +21,7 @@ function CalendarPage() {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [eventToDelete, setEventToDelete] = useState<CalendarEvent | null>(null);
+  const [showGoogleSettings, setShowGoogleSettings] = useState(false);
 
   const { data: events = [], isLoading, error } = useCalendarEvents(currentDate.getFullYear(), currentDate.getMonth() + 1);
   const createMutation = useCreateCalendarEvent();
@@ -146,11 +147,26 @@ function CalendarPage() {
               {t('calendar.subtitle')}
             </p>
           </div>
-          <Button onClick={handleNewEvent} className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
-            <Plus className="w-5 h-5 mr-2" />
-            {t('calendar.newEvent')}
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline"
+              onClick={() => setShowGoogleSettings(!showGoogleSettings)}
+              className="gap-2"
+            >
+              <Settings className="w-4 h-4" />
+              {t('calendar.googleSettings')}
+            </Button>
+            <Button onClick={handleNewEvent} className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
+              <Plus className="w-5 h-5 mr-2" />
+              {t('calendar.newEvent')}
+            </Button>
+          </div>
         </div>
+
+        {/* Google Calendar Settings */}
+        {showGoogleSettings && (
+          <GoogleCalendarSettings />
+        )}
 
         {/* Calendar Navigation */}
         <div className="flex items-center justify-between">

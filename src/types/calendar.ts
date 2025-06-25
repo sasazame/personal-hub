@@ -21,6 +21,8 @@ export interface CalendarEvent {
   reminders?: Reminder[];
   color?: string;
   recurrence?: RecurrenceRule;
+  googleEventId?: string; // Google Calendar event ID
+  syncToGoogle?: boolean; // Whether to sync this event to Google
   createdAt?: string;
   updatedAt?: string;
 }
@@ -35,6 +37,7 @@ export interface CreateCalendarEventDto {
   reminders?: Reminder[];
   color?: string;
   recurrence?: RecurrenceRule;
+  syncToGoogle?: boolean; // Whether to sync this event to Google
 }
 
 export interface UpdateCalendarEventDto {

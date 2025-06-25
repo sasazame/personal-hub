@@ -276,7 +276,93 @@
       "orange": "Orange"
     },
     "location": "Location",
-    "locationPlaceholder": "Enter location"
+    "locationPlaceholder": "Enter location",
+    "googleSettings": "Google Settings",
+    "syncToGoogle": "Sync to Google Calendar",
+    "syncToGoogleDescription": "Sync this event to Google Calendar",
+    "googleIntegration": {
+      "title": "Google Calendar Integration",
+      "description": "Sync your events between Google Calendar and Personal Hub",
+      "settingsDescription": "Manage your Google Calendar sync settings",
+      "connect": "Connect to Google Calendar",
+      "disconnect": "Disconnect",
+      "connected": "Connected",
+      "disconnected": "Not connected",
+      "connecting": "Connecting...",
+      "disconnecting": "Disconnecting...",
+      "saveSettings": "Save Settings",
+      "syncSettings": {
+        "title": "Sync Settings",
+        "enable": "Enable sync",
+        "enableDescription": "Sync events between Personal Hub and Google Calendar",
+        "disable": "Disable sync",
+        "direction": "Sync direction",
+        "directionOptions": {
+          "bidirectional": "Bidirectional sync",
+          "toGoogle": "Personal Hub → Google Calendar",
+          "fromGoogle": "Google Calendar → Personal Hub"
+        },
+        "biDirectional": "Two-way sync",
+        "toGoogle": "Personal Hub → Google",
+        "fromGoogle": "Google → Personal Hub",
+        "autoSync": "Auto sync",
+        "autoSyncDescription": "Automatically sync changes",
+        "interval": "Sync interval",
+        "syncInterval": "Sync interval",
+        "intervals": {
+          "realtime": "Real-time",
+          "5min": "Every 5 minutes",
+          "15min": "Every 15 minutes",
+          "30min": "Every 30 minutes",
+          "hourly": "Every hour",
+          "2hours": "Every 2 hours",
+          "4hours": "Every 4 hours",
+          "daily": "Daily"
+        },
+        "lastSync": "Last sync",
+        "lastSyncTime": "Last sync: {time}",
+        "nextSync": "Next sync: {time}",
+        "syncNow": "Sync now",
+        "syncing": "Syncing...",
+        "syncStatus": "Sync Status",
+        "selectCalendars": "Select calendars to sync",
+        "primaryCalendar": "Primary calendar",
+        "allCalendars": "All calendars"
+      },
+      "status": {
+        "synced": "{count} events synced successfully",
+        "syncedSimple": "Synced",
+        "syncing": "Syncing",
+        "error": "Sync error",
+        "pending": "Sync pending",
+        "conflict": "Conflict detected",
+        "outOfSync": "Out of sync"
+      },
+      "errors": {
+        "connectionFailed": "Failed to connect to Google Calendar",
+        "authenticationFailed": "Authentication failed. Please sign in again",
+        "syncFailed": "Sync failed: {error}",
+        "permissionDenied": "Permission denied to access calendar",
+        "quotaExceeded": "API quota exceeded. Please try again later",
+        "networkError": "Network error occurred",
+        "invalidCalendar": "Invalid calendar selected",
+        "conflictResolution": "Conflict resolution required"
+      },
+      "permissions": {
+        "title": "Required Permissions",
+        "calendar": "Read and write calendar access",
+        "events": "Create, edit, and delete events",
+        "reminders": "Manage reminders"
+      },
+      "conflictResolution": {
+        "title": "Conflict Resolution",
+        "description": "Choose how to handle events changed in both calendars",
+        "keepLocal": "Keep Personal Hub version",
+        "keepGoogle": "Keep Google Calendar version",
+        "keepBoth": "Keep both (create duplicate)",
+        "manual": "Resolve manually"
+      }
+    }
   },
   "notes": {
     "title": "Notes",

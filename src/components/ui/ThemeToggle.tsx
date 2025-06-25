@@ -14,20 +14,20 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       className={cn(
         'relative inline-flex h-8 w-14 items-center rounded-full',
-        'bg-neutral-200 dark:bg-neutral-700',
+        'bg-gray-200 dark:bg-gray-700',
         'transition-colors duration-300 ease-in-out',
-        'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-        'hover:bg-neutral-300 dark:hover:bg-neutral-600'
+        'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+        'hover:bg-gray-300 dark:hover:bg-gray-600',
+        'border border-gray-300 dark:border-gray-600'
       )}
       aria-label={t('theme.toggle', { mode: theme === 'light' ? t('theme.darkMode') : t('theme.lightMode') })}
     >
       <span
         className={cn(
           'inline-block h-6 w-6 transform rounded-full',
-          'bg-white dark:bg-neutral-900 shadow-lg',
+          'bg-white shadow-md',
           'transition-all duration-300 ease-in-out',
-          'border-2 border-neutral-300 dark:border-neutral-600',
-          theme === 'dark' ? 'translate-x-7 ' : 'translate-x-1'
+          theme === 'dark' ? 'translate-x-7' : 'translate-x-1'
         )}
       >
         <span className="sr-only">
@@ -59,7 +59,7 @@ export function ThemeToggle() {
         className={cn(
           'absolute right-1.5 h-4 w-4',
           'transition-opacity duration-300',
-          'text-slate-500',
+          'text-gray-400',
           theme === 'dark' ? 'opacity-100' : 'opacity-0'
         )}
         fill="currentColor"
