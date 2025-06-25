@@ -8,6 +8,7 @@ import { Button, ThemeToggle, LanguageSwitcher } from '@/components/ui';
 import { LogOut, User, Menu, X, Sparkles, Home, CheckSquare, Calendar, FileText, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { usePathname } from 'next/navigation';
+import { useTheme } from '@/hooks/useTheme';
 
 export function Header() {
   const t = useTranslations();
@@ -15,6 +16,7 @@ export function Header() {
   const { logout, isLoading } = useLogout();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { theme } = useTheme();
 
   // Mobile navigation items
   const mobileNavItems = [
@@ -114,7 +116,7 @@ export function Header() {
             {/* Mobile menu button */}
             <button
               onClick={toggleMobileMenu}
-              className="md:hidden p-2 rounded-lg hover:bg-white/20 dark:hover:bg-gray-800/20 transition-colors"
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               aria-label="Toggle mobile menu"
             >
               {isMobileMenuOpen ? (
@@ -130,7 +132,10 @@ export function Header() {
       {/* Mobile menu */}
       <div
         className={cn(
-          "md:hidden absolute top-16 left-0 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-b border-white/20 dark:border-gray-700/20 transform transition-all duration-300 ease-in-out",
+          "md:hidden absolute top-16 left-0 w-full backdrop-blur-xl transform transition-all duration-300 ease-in-out",
+          theme === 'dark' 
+            ? "bg-gray-900/95 border-b border-gray-700/20" 
+            : "bg-white/95 border-b border-white/20",
           isMobileMenuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
         )}
       >
@@ -145,8 +150,10 @@ export function Header() {
                 className={cn(
                   "flex items-center space-x-3 p-3 rounded-lg transition-all duration-200",
                   isActive(item.href)
-                    ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-white/20 dark:hover:bg-gray-800/20"
+                    ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-600 border border-blue-500/20"
+                    : theme === 'dark'
+                      ? "text-gray-300 hover:bg-gray-800"
+                      : "text-gray-700 hover:bg-gray-100"
                 )}
               >
                 <span className={cn(
@@ -168,12 +175,14 @@ export function Header() {
               className={cn(
                 "flex items-center space-x-3 p-3 rounded-lg transition-all duration-200",
                 isActive('/profile')
-                  ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20"
-                  : "text-gray-700 dark:text-gray-300 hover:bg-white/20 dark:hover:bg-gray-800/20"
+                  ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-600 border border-blue-500/20"
+                  : theme === 'dark'
+                    ? "text-gray-300 hover:bg-gray-800"
+                    : "text-gray-700 hover:bg-gray-100"
               )}
             >
-              <User className="h-5 w-5" />
-              <span className="font-medium">{user.username}</span>
+              <User className={cn("h-5 w-5", theme === 'dark' ? "text-gray-300" : "text-gray-700")} />
+              <span className={cn("font-medium", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>{user.username}</span>
             </Link>
           </div>
 
@@ -185,10 +194,10 @@ export function Header() {
                 setIsMobileMenuOpen(false);
               }}
               disabled={isLoading}
-              className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/20 dark:hover:bg-gray-800/20 transition-colors w-full text-left"
+              className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors w-full text-left"
             >
-              <LogOut className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-              <span className="font-medium text-gray-700 dark:text-gray-300">
+              <LogOut className={cn("h-5 w-5", theme === 'dark' ? "text-gray-300" : "text-gray-700")} />
+              <span className={cn("font-medium", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>
                 {isLoading ? t('header.loggingOut') : t('header.logout')}
               </span>
             </button>
