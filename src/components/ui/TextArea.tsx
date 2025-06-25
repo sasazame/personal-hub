@@ -23,11 +23,14 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     const hasError = Boolean(error);
 
     const textareaClasses = cn(
-      'w-full min-h-[80px] px-3 py-2 border border-input bg-background text-foreground rounded-md',
-      'focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent',
+      'w-full min-h-[80px] px-3.5 py-2.5 border rounded-lg',
+      'bg-input border-input-border text-foreground',
+      'hover:border-border-strong',
+      'focus:border-primary focus:bg-background',
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
       'disabled:cursor-not-allowed disabled:opacity-50',
       'placeholder:text-muted-foreground',
-      'transition-all duration-200',
+      'transition-all duration-200 font-normal',
       // Resize options
       {
         'resize-none': resize === 'none',
@@ -36,12 +39,12 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         'resize': resize === 'both',
       },
       // Error state
-      hasError && 'border-destructive focus:ring-destructive',
+      hasError && 'border-destructive bg-red-50/50 dark:bg-red-900/10 focus:border-destructive',
       className
     );
 
     const labelClasses = cn(
-      'block text-sm font-medium mb-1 text-foreground transition-colors',
+      'block text-sm font-medium mb-2 text-foreground transition-colors',
       hasError && 'text-destructive',
       disabled && 'opacity-50'
     );
@@ -64,21 +67,21 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           />
           
           {hasError && (
-            <div className="absolute right-3 top-3">
+            <div className="absolute right-3 top-3 pointer-events-none">
               <AlertCircle className="h-4 w-4 text-destructive" />
             </div>
           )}
         </div>
 
         {(error || helperText) && (
-          <div className="text-sm">
+          <div className="text-sm mt-1.5 animate-slide-in-top">
             {error ? (
-              <p className="text-destructive flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" />
+              <p className="text-destructive flex items-center gap-1.5 font-medium">
+                <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
                 {error}
               </p>
             ) : (
-              <p className="text-muted-foreground">{helperText}</p>
+              <p className="text-muted-foreground pl-5">{helperText}</p>
             )}
           </div>
         )}

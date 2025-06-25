@@ -71,7 +71,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl border-r border-white/20 dark:border-gray-700/20 transition-all duration-300 ease-in-out hidden md:block",
+        "fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-r border-border shadow-sm transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1) hidden md:block",
         isCollapsed ? "w-16" : "w-64"
       )}
     >
@@ -79,67 +79,67 @@ export function Sidebar() {
         {/* Collapse toggle */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute -right-3 top-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full p-1 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-md"
+          className="absolute -right-3 top-6 bg-card border border-border rounded-full p-1.5 hover:shadow-md transition-all duration-200 shadow-sm hover:scale-110"
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {isCollapsed ? (
-            <ChevronRight className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
           ) : (
-            <ChevronLeft className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+            <ChevronLeft className="h-3.5 w-3.5 text-muted-foreground" />
           )}
         </button>
 
         {/* Main navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <nav className="flex-1 px-3 py-4 space-y-1.5">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200",
+                "flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
                 isActive(item.href)
-                  ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20"
-                  : "text-foreground hover:bg-white/20 dark:hover:bg-gray-800/20",
-                isCollapsed && "justify-center"
+                  ? "bg-gradient-to-r from-primary-100 to-accent-100 dark:from-primary-900/20 dark:to-accent-900/20 text-primary-700 dark:text-primary-300 shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800",
+                isCollapsed && "justify-center px-2"
               )}
               title={isCollapsed ? item.label : undefined}
             >
               <span className={cn(
-                "transition-transform duration-200",
-                isActive(item.href) && "scale-110"
+                "transition-all duration-200",
+                isActive(item.href) ? "scale-110 text-primary-600 dark:text-primary-400" : "group-hover:scale-105"
               )}>
                 {item.icon}
               </span>
               {!isCollapsed && (
-                <span className="font-medium truncate">{item.label}</span>
+                <span className="font-medium truncate transition-all duration-200">{item.label}</span>
               )}
             </Link>
           ))}
         </nav>
 
         {/* Bottom navigation */}
-        <nav className="px-3 py-4 border-t border-white/20 dark:border-gray-700/20 space-y-1">
+        <nav className="px-3 py-4 border-t border-border space-y-1.5">
           {bottomNavItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200",
+                "flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
                 isActive(item.href)
-                  ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20"
-                  : "text-foreground hover:bg-white/20 dark:hover:bg-gray-800/20",
-                isCollapsed && "justify-center"
+                  ? "bg-gradient-to-r from-primary-100 to-accent-100 dark:from-primary-900/20 dark:to-accent-900/20 text-primary-700 dark:text-primary-300 shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800",
+                isCollapsed && "justify-center px-2"
               )}
               title={isCollapsed ? item.label : undefined}
             >
               <span className={cn(
-                "transition-transform duration-200",
-                isActive(item.href) && "scale-110"
+                "transition-all duration-200",
+                isActive(item.href) ? "scale-110 text-primary-600 dark:text-primary-400" : "group-hover:scale-105"
               )}>
                 {item.icon}
               </span>
               {!isCollapsed && (
-                <span className="font-medium truncate">{item.label}</span>
+                <span className="font-medium truncate transition-all duration-200">{item.label}</span>
               )}
             </Link>
           ))}

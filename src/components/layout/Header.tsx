@@ -65,21 +65,21 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full">
-      {/* Glassmorphism header */}
-      <div className="bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl border-b border-white/20 dark:border-gray-700/20">
+    <header className="sticky top-0 z-[1030] w-full">
+      {/* Apple-style glassmorphism header */}
+      <div className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-border shadow-sm">
         <div className="container px-4 mx-auto">
           <div className="flex h-16 items-center justify-between">
             {/* Logo and brand */}
             <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+              <Link href="/" className="flex items-center space-x-3 hover:opacity-90 transition-opacity">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg blur-lg opacity-70"></div>
-                  <div className="relative bg-gradient-to-br from-blue-500 to-indigo-600 p-2 rounded-lg">
-                    <Sparkles className="h-6 w-6 text-white" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary-500 to-accent-600 rounded-xl blur-lg opacity-60"></div>
+                  <div className="relative bg-gradient-to-br from-primary-500 to-accent-600 p-2.5 rounded-xl shadow-sm">
+                    <Sparkles className="h-5 w-5 text-white" />
                   </div>
                 </div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
+                <h1 className="text-xl font-semibold bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400 bg-clip-text text-transparent">
                   {t('app.title')}
                 </h1>
               </Link>
@@ -89,7 +89,7 @@ export function Header() {
             <nav className="hidden md:flex items-center justify-end flex-1">
               <Link 
                 href="/profile"
-                className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                className="flex items-center space-x-2 text-foreground hover:text-primary transition-all duration-200 rounded-lg px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800"
               >
                 <User className="h-4 w-4" />
                 <span className="font-medium">{user.username}</span>
@@ -106,7 +106,6 @@ export function Header() {
                 size="sm"
                 onClick={handleLogout}
                 loading={isLoading}
-                className="hover:bg-white/20 dark:hover:bg-gray-800/20"
                 leftIcon={<LogOut className="h-4 w-4" />}
               >
                 {t('header.logout')}
@@ -116,13 +115,13 @@ export function Header() {
             {/* Mobile menu button */}
             <button
               onClick={toggleMobileMenu}
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="md:hidden p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-200"
               aria-label="Toggle mobile menu"
             >
               {isMobileMenuOpen ? (
-                <X className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+                <X className="h-6 w-6 text-foreground" />
               ) : (
-                <Menu className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+                <Menu className="h-6 w-6 text-foreground" />
               )}
             </button>
           </div>
@@ -132,10 +131,8 @@ export function Header() {
       {/* Mobile menu */}
       <div
         className={cn(
-          "md:hidden absolute top-16 left-0 w-full backdrop-blur-xl transform transition-all duration-300 ease-in-out",
-          theme === 'dark' 
-            ? "bg-gray-900/95 border-b border-gray-700/20" 
-            : "bg-white/95 border-b border-white/20",
+          "md:hidden absolute top-16 left-0 w-full backdrop-blur-xl transform transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1)",
+          "bg-white/95 dark:bg-gray-900/95 border-b border-border shadow-lg",
           isMobileMenuOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
         )}
       >
@@ -148,12 +145,10 @@ export function Header() {
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={cn(
-                  "flex items-center space-x-3 p-3 rounded-lg transition-all duration-200",
+                  "flex items-center space-x-3 p-3 rounded-xl transition-all duration-200",
                   isActive(item.href)
-                    ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-600 border border-blue-500/20"
-                    : theme === 'dark'
-                      ? "text-gray-300 hover:bg-gray-800"
-                      : "text-gray-700 hover:bg-gray-100"
+                    ? "bg-gradient-to-r from-primary-100 to-accent-100 dark:from-primary-900/20 dark:to-accent-900/20 text-primary-700 dark:text-primary-300 shadow-sm"
+                    : "text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800"
                 )}
               >
                 <span className={cn(
@@ -181,8 +176,8 @@ export function Header() {
                     : "text-gray-700 hover:bg-gray-100"
               )}
             >
-              <User className={cn("h-5 w-5", theme === 'dark' ? "text-gray-300" : "text-gray-700")} />
-              <span className={cn("font-medium", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>{user.username}</span>
+              <User className="h-5 w-5" />
+              <span className="font-medium">{user.username}</span>
             </Link>
           </div>
 
@@ -194,10 +189,10 @@ export function Header() {
                 setIsMobileMenuOpen(false);
               }}
               disabled={isLoading}
-              className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors w-full text-left"
+              className="flex items-center space-x-3 p-3 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-200 w-full text-left"
             >
-              <LogOut className={cn("h-5 w-5", theme === 'dark' ? "text-gray-300" : "text-gray-700")} />
-              <span className={cn("font-medium", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>
+              <LogOut className="h-5 w-5" />
+              <span className="font-medium">
                 {isLoading ? t('header.loggingOut') : t('header.logout')}
               </span>
             </button>

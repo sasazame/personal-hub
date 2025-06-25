@@ -108,10 +108,10 @@ export const ModalHeader = forwardRef<HTMLDivElement, ModalHeaderProps>(
         {showCloseButton && onClose && (
           <button
             onClick={onClose}
-            className="rounded-sm opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-opacity"
+            className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring -mr-2"
             aria-label="Close modal"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </button>
         )}
       </div>
@@ -132,7 +132,7 @@ export const ModalTitle = forwardRef<HTMLHeadingElement, ModalTitleProps>(
       <Component
         ref={ref}
         className={cn(
-          'text-lg font-semibold leading-none tracking-tight',
+          'text-xl font-semibold leading-tight tracking-tight',
           className
         )}
         {...props}
@@ -154,7 +154,7 @@ export const ModalDescription = forwardRef<HTMLParagraphElement, ModalDescriptio
     return (
       <p
         ref={ref}
-        className={cn('text-sm text-muted-foreground', className)}
+        className={cn('text-sm text-muted-foreground mt-1.5 leading-relaxed', className)}
         {...props}
       >
         {children}
@@ -174,7 +174,7 @@ export const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(
     return (
       <div
         ref={ref}
-        className={cn('p-6', className)}
+        className={cn('p-6 max-h-[60vh] overflow-y-auto', className)}
         {...props}
       >
         {children}
@@ -195,7 +195,7 @@ export const ModalFooter = forwardRef<HTMLDivElement, ModalFooterProps>(
       <div
         ref={ref}
         className={cn(
-          'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 p-6 border-t border-border',
+          'flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3 p-6 border-t border-border bg-background-secondary',
           className
         )}
         {...props}

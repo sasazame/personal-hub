@@ -4,21 +4,37 @@ import { cn } from '@/lib/cn';
 export type SwitchProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, disabled, ...props }, ref) => {
     return (
-      <label className="relative inline-flex items-center cursor-pointer">
+      <label className={cn(
+        "relative inline-flex items-center",
+        disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+      )}>
         <input
           type="checkbox"
           className="sr-only peer"
           ref={ref}
+          disabled={disabled}
           {...props}
         />
         <div
           className={cn(
-            "w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600",
+            "w-12 h-7 rounded-full transition-all duration-200",
+            "bg-neutral-200 dark:bg-neutral-700",
+            "peer-checked:bg-gradient-to-r peer-checked:from-primary-600 peer-checked:to-primary-700",
+            "peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2",
+            "shadow-inner",
             className
           )}
-        />
+        >
+          <div
+            className={cn(
+              "absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white shadow-sm",
+              "transition-transform duration-200 ease-in-out",
+              "peer-checked:translate-x-5"
+            )}
+          />
+        </div>
       </label>
     );
   }

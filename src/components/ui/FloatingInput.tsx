@@ -53,17 +53,17 @@ export const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
 
     return (
       <div className="space-y-2">
-        {/* 固定ラベル */}
+        {/* Fixed label */}
         <label
           htmlFor={inputId}
-          className="block text-sm font-medium text-white/90"
+          className="block text-sm font-semibold text-white/90 tracking-wide"
         >
           {label}
         </label>
         
         <div className="relative">
           {leftIcon && (
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70 z-10">
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 z-10">
               {leftIcon}
             </div>
           )}
@@ -72,16 +72,17 @@ export const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
             id={inputId}
             type={type}
             className={cn(
-              'w-full px-3 py-3 text-base bg-white/10 backdrop-blur-md border border-white/20 rounded-xl',
-              'transition-all duration-200',
-              'focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50',
-              'placeholder:text-white/40',
-              'text-white',
-              leftIcon && 'pl-10',
-              rightIcon && 'pr-10',
-              error && 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/50',
+              'w-full px-4 py-3.5 text-base bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl',
+              'transition-all duration-200 font-normal',
+              'hover:bg-white/15 hover:border-white/30',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:border-white/40',
+              'placeholder:text-white/50',
+              'text-white shadow-sm',
+              leftIcon && 'pl-12',
+              rightIcon && 'pr-12',
+              error && 'border-red-400/50 bg-red-500/10 focus-visible:border-red-400/50 focus-visible:ring-red-400/30',
               disabled && 'opacity-50 cursor-not-allowed',
-              focused && 'bg-white/15',
+              focused && 'bg-white/20 border-white/40',
               className
             )}
             placeholder={getPlaceholder()}
@@ -94,14 +95,17 @@ export const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
           />
 
           {rightIcon && (
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/70 z-10">
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/60 z-10">
               {rightIcon}
             </div>
           )}
         </div>
 
         {error && (
-          <p className="text-sm text-red-400 animate-slide-in-top">
+          <p className="text-sm text-red-300 animate-slide-in-top font-medium flex items-center gap-1.5">
+            <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
             {error}
           </p>
         )}

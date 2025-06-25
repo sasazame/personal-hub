@@ -51,35 +51,42 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const isFloatingActive = variant === 'floating' && (isFocused || hasValue);
 
     const inputClasses = cn(
-      'w-full border border-input bg-background text-foreground transition-all duration-200',
-      'focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent',
+      'w-full border transition-all duration-200 font-normal',
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
       'disabled:cursor-not-allowed disabled:opacity-50',
       // Default variant
       variant === 'default' && [
-        'h-10 px-3 py-2 rounded-md',
-        leftIcon && 'pl-10',
-        (rightIcon || isPassword) && 'pr-10',
+        'h-11 px-3.5 py-2.5 rounded-lg',
+        'bg-input border-input-border',
+        'hover:border-border-strong',
+        'focus:border-primary focus:bg-background',
+        leftIcon && 'pl-11',
+        (rightIcon || isPassword) && 'pr-11',
       ],
       // Floating variant
       variant === 'floating' && [
-        'h-14 px-4 pt-6 pb-2 rounded-lg',
+        'h-14 px-4 pt-6 pb-2 rounded-xl',
+        'bg-white/50 dark:bg-card/50 backdrop-blur-sm',
+        'border-white/20 dark:border-white/10',
+        'hover:bg-white/60 dark:hover:bg-card/60',
+        'focus:bg-white/80 dark:focus:bg-card/80',
         leftIcon && 'pl-12',
         (rightIcon || isPassword) && 'pr-12',
       ],
       // Error state
-      hasError && 'border-destructive focus:ring-destructive',
+      hasError && 'border-destructive bg-red-50/50 dark:bg-red-900/10 focus:border-destructive',
       className
     );
 
     const labelClasses = cn(
-      'text-sm font-medium transition-all duration-200 pointer-events-none',
+      'transition-all duration-200 pointer-events-none',
       // Default variant
-      variant === 'default' && 'block mb-1 text-foreground',
+      variant === 'default' && 'block mb-2 text-sm font-medium text-foreground',
       // Floating variant
       variant === 'floating' && [
-        'absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground',
+        'absolute left-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground',
         leftIcon && 'left-12',
-        isFloatingActive && 'top-2 translate-y-0 text-xs text-foreground',
+        isFloatingActive && 'top-2.5 translate-y-0 text-xs font-medium text-primary',
       ],
       // Error state
       hasError && variant === 'default' && 'text-destructive',
@@ -143,9 +150,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:text-foreground"
+                  className="text-muted-foreground hover:text-foreground transition-all duration-200 focus-visible:outline-none focus-visible:text-primary p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800"
                   disabled={disabled}
                   tabIndex={-1}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -162,14 +170,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         </div>
 
         {(error || helperText) && (
-          <div className="text-sm">
+          <div className="text-sm mt-1.5 animate-slide-in-top">
             {error ? (
-              <p className="text-destructive flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" />
+              <p className="text-destructive flex items-center gap-1.5 font-medium">
+                <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
                 {error}
               </p>
             ) : (
-              <p className="text-muted-foreground">{helperText}</p>
+              <p className="text-muted-foreground pl-5">{helperText}</p>
             )}
           </div>
         )}

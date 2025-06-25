@@ -73,7 +73,13 @@ export const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
         ref={ref}
         type="button"
         className={cn(
-          "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          "flex h-11 w-full items-center justify-between rounded-lg border bg-input border-input-border px-3.5 py-2.5 text-sm font-normal",
+          "transition-all duration-200",
+          "hover:border-border-strong",
+          "focus:border-primary focus:bg-background",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          "placeholder:text-muted-foreground",
           className
         )}
         onClick={() => setOpen(!open)}
@@ -113,7 +119,7 @@ export function SelectContent({ children }: SelectContentProps) {
   if (!open) return null;
   
   return (
-    <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover p-1 text-popover-foreground shadow-md">
+    <div className="absolute z-50 mt-2 w-full rounded-xl border border-border bg-card shadow-lg p-1.5 text-card-foreground animate-fade-in-scale">
       {children}
     </div>
   );
@@ -126,8 +132,11 @@ export function SelectItem({ value, children, className, ...props }: SelectItemP
     <button
       type="button"
       className={cn(
-        "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-        selectedValue === value && "bg-accent text-accent-foreground",
+        "relative flex w-full cursor-default select-none items-center rounded-lg py-2 px-3 text-sm outline-none transition-all duration-200",
+        "hover:bg-neutral-100 dark:hover:bg-neutral-800",
+        "focus-visible:bg-neutral-100 dark:focus-visible:bg-neutral-800",
+        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        selectedValue === value && "bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 font-medium",
         className
       )}
       onClick={() => onValueChange?.(value)}

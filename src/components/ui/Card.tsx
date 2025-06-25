@@ -2,19 +2,20 @@ import { forwardRef, type ReactNode } from 'react';
 import { cn, cva } from '@/lib/cn';
 
 const cardVariants = cva(
-  'bg-card text-card-foreground border border-border transition-all duration-200',
+  'bg-card text-card-foreground transition-all duration-200',
   {
     variants: {
       variant: {
-        default: 'shadow-sm',
-        elevated: 'shadow-md hover:shadow-lg',
-        glass: 'backdrop-blur-md bg-card/80 border-border/50',
-        outline: 'border-2 shadow-none',
+        default: 'border border-border shadow-sm hover:shadow-md hover:border-border-strong',
+        elevated: 'shadow-md hover:shadow-lg hover:-translate-y-[2px] border border-transparent',
+        glass: 'backdrop-blur-xl bg-white/80 dark:bg-card/60 border border-white/20 dark:border-white/10 shadow-sm',
+        outline: 'border-[1.5px] border-border-strong shadow-none hover:border-primary-200 dark:hover:border-primary-800',
+        premium: 'bg-gradient-to-br from-card via-card to-card-hover border border-border shadow-lg hover:shadow-xl hover:-translate-y-[2px]',
       },
       padding: {
         none: 'p-0',
-        sm: 'p-3',
-        md: 'p-4',
+        sm: 'p-4',
+        md: 'p-5',
         lg: 'p-6',
         xl: 'p-8',
       },
@@ -24,20 +25,21 @@ const cardVariants = cva(
         md: 'rounded-md',
         lg: 'rounded-lg',
         xl: 'rounded-xl',
+        '2xl': 'rounded-2xl',
       },
     },
     defaultVariants: {
       variant: 'default',
       padding: 'md',
-      rounded: 'lg',
+      rounded: 'xl',
     },
   }
 );
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'elevated' | 'glass' | 'outline';
+  variant?: 'default' | 'elevated' | 'glass' | 'outline' | 'premium';
   padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
-  rounded?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
+  rounded?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   children?: ReactNode;
 }
 
@@ -66,7 +68,7 @@ export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
     return (
       <div
         ref={ref}
-        className={cn('flex flex-col space-y-1.5', className)}
+        className={cn('flex flex-col space-y-1.5 pb-1', className)}
         {...props}
       >
         {children}
@@ -88,7 +90,7 @@ export const CardTitle = forwardRef<HTMLHeadingElement, CardTitleProps>(
       <Component
         ref={ref}
         className={cn(
-          'text-lg font-semibold leading-none tracking-tight text-card-foreground',
+          'text-xl font-semibold leading-tight tracking-tight text-card-foreground',
           className
         )}
         {...props}
@@ -110,7 +112,7 @@ export const CardDescription = forwardRef<HTMLParagraphElement, CardDescriptionP
     return (
       <p
         ref={ref}
-        className={cn('text-sm text-muted-foreground', className)}
+        className={cn('text-sm text-muted-foreground leading-relaxed', className)}
         {...props}
       >
         {children}
@@ -150,7 +152,7 @@ export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
     return (
       <div
         ref={ref}
-        className={cn('flex items-center pt-0', className)}
+        className={cn('flex items-center pt-4 border-t border-border', className)}
         {...props}
       >
         {children}

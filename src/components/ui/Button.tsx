@@ -3,20 +3,22 @@ import { Loader2 } from 'lucide-react';
 import { cn, cva } from '@/lib/cn';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
   {
     variants: {
       variant: {
-        primary: 'bg-blue-600 text-white shadow-md hover:bg-blue-700 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] focus:ring-blue-500 border border-blue-700',
-        secondary: 'bg-gray-600 text-white shadow-md hover:bg-gray-700 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] focus:ring-gray-500 border border-gray-700',
-        ghost: 'text-foreground hover:bg-muted hover:text-foreground hover:shadow-sm hover:scale-[1.02] active:scale-[0.98] focus:ring-ring border border-transparent hover:border-border',
-        danger: 'bg-red-600 text-white shadow-md hover:bg-red-700 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] focus:ring-red-500 border border-red-700',
-        outline: 'border-2 border-blue-600 bg-white text-blue-600 hover:bg-blue-600 hover:text-white hover:shadow-md hover:scale-[1.02] active:scale-[0.98] focus:ring-blue-500',
+        primary: 'bg-gradient-to-b from-primary-600 to-primary-700 text-white shadow-sm hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 active:shadow-sm border border-primary-800/20',
+        secondary: 'bg-white dark:bg-card text-foreground shadow-sm hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 active:shadow-sm border border-border',
+        ghost: 'text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-foreground active:scale-[0.98]',
+        danger: 'bg-gradient-to-b from-red-600 to-red-700 text-white shadow-sm hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 active:shadow-sm border border-red-800/20',
+        outline: 'border-[1.5px] border-primary-600 bg-transparent text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-950/20 hover:border-primary-700 active:scale-[0.98]',
+        accent: 'bg-gradient-to-b from-accent-600 to-accent-700 text-white shadow-sm hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 active:shadow-sm border border-accent-800/20',
       },
       size: {
-        sm: 'h-8 px-3 text-sm',
-        md: 'h-10 px-4 text-sm',
-        lg: 'h-12 px-6 text-base',
+        sm: 'h-8 px-3 text-sm rounded-md',
+        md: 'h-10 px-5 text-sm rounded-lg',
+        lg: 'h-12 px-6 text-base rounded-lg',
+        xl: 'h-14 px-8 text-lg rounded-xl',
       },
     },
     defaultVariants: {
@@ -27,8 +29,8 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline' | 'accent';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   loading?: boolean;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
