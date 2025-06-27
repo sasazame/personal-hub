@@ -9,7 +9,9 @@ console.error = (...args) => {
   if (
     typeof args[0] === 'string' && (
       (args[0].includes('An update to') && args[0].includes('was not wrapped in act(...)')) ||
-      args[0].includes('Query data cannot be undefined')
+      args[0].includes('Query data cannot be undefined') ||
+      args[0].includes('Form submission error:') ||
+      args[0].includes('Password reset failed:')
     )
   ) {
     return;
@@ -20,8 +22,14 @@ console.error = (...args) => {
 console.warn = (...args) => {
   // Suppress specific warnings during tests
   if (
-    typeof args[0] === 'string' && 
-    (args[0].includes('Logout request failed:'))
+    typeof args[0] === 'string' && (
+      args[0].includes('Logout request failed:') ||
+      args[0].includes('Failed to schedule token refresh:') ||
+      args[0].includes('Auth check failed:') ||
+      args[0].includes('Failed to parse stored user:') ||
+      args[0].includes('Removing expired access token') ||
+      args[0].includes('Removing expired refresh token')
+    )
   ) {
     return;
   }

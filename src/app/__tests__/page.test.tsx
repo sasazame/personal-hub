@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Home from '../page';
 import { AuthProvider } from '@/contexts/AuthContext';
@@ -30,6 +30,22 @@ jest.mock('@/services/auth', () => ({
       super(message);
       this.name = 'AuthAPIError';
     }
+  },
+}));
+
+// Mock OIDC service
+jest.mock('@/services/oidc-auth', () => ({
+  OIDCAuthService: {
+    isAuthenticated: jest.fn().mockReturnValue(true),
+    getUserInfo: jest.fn().mockResolvedValue({
+      id: 1,
+      username: 'testuser',
+      email: 'test@example.com',
+      createdAt: '2024-01-01T00:00:00Z',
+      updatedAt: '2024-01-01T00:00:00Z',
+    }),
+    refreshToken: jest.fn(),
+    logout: jest.fn(),
   },
 }));
 
@@ -82,7 +98,18 @@ function renderWithProviders(component: React.ReactElement) {
 describe('Home Page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    localStorageMock.getItem.mockReturnValue('fake-token');
+    localStorageMock.getItem.mockImplementation((key) => {
+      if (key === 'auth_token') return 'fake-token';
+      if (key === 'refresh_token') return 'fake-refresh-token';
+      if (key === 'user_info') return JSON.stringify({
+        id: 1,
+        username: 'testuser',
+        email: 'test@example.com',
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
+      });
+      return null;
+    });
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const mockAuthAPI = require('@/services/auth').authAPI;
     mockAuthAPI.getCurrentUser.mockResolvedValue({
@@ -100,21 +127,6 @@ describe('Home Page', () => {
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
-  it.skip('redirects to dashboard on mount', () => {
-    // Skipping useEffect test due to testing environment limitations
-    renderWithProviders(<Home />);
-    
-    // useRouter.replace should be called with '/dashboard'
-    expect(mockReplace).toHaveBeenCalledWith('/dashboard');
-  });
-
-  it.skip('shows loading text with correct styling', () => {
-    // Skipping styling test due to CSS class testing complexity
-    renderWithProviders(<Home />);
-    
-    const loadingText = screen.getByText('Loading...');
-    expect(loadingText).toBeInTheDocument();
-  });
 
   it('is wrapped in AuthGuard', () => {
     // This test verifies that the Home component is properly wrapped in AuthGuard

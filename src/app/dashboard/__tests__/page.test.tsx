@@ -175,19 +175,21 @@ describe('Dashboard Page', () => {
     expect(screen.getByText('Analytics')).toBeInTheDocument();
   });
 
-  it.skip('renders quick action button', () => {
+  it('renders quick action button', () => {
     renderWithProviders(<Dashboard />);
     
-    const quickActionButton = screen.getByText('新しいTODO');
+    // The translation function in tests returns the key itself
+    const quickActionButton = screen.getByText('dashboard.newTodo');
     expect(quickActionButton).toBeInTheDocument();
   });
 
-  it.skip('displays feature descriptions', () => {
+  it('displays feature descriptions', () => {
     renderWithProviders(<Dashboard />);
     
-    expect(screen.getByText('タスクの管理と進捗確認')).toBeInTheDocument();
-    expect(screen.getByText('スケジュールとイベント管理')).toBeInTheDocument();
-    expect(screen.getByText('メモとドキュメント作成')).toBeInTheDocument();
-    expect(screen.getByText('生産性の分析と改善')).toBeInTheDocument();
+    // The actual translation keys used in the implementation
+    expect(screen.getByText('dashboard.taskManagement')).toBeInTheDocument();
+    expect(screen.getByText('dashboard.scheduleManagement')).toBeInTheDocument();
+    expect(screen.getByText('dashboard.noteDocumentCreation')).toBeInTheDocument();
+    expect(screen.getByText('dashboard.productivityAnalysis')).toBeInTheDocument();
   });
 });

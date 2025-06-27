@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
 import { cn } from '@/lib/cn';
 
 const Avatar = React.forwardRef<
@@ -18,17 +19,28 @@ const Avatar = React.forwardRef<
 ));
 Avatar.displayName = 'Avatar';
 
+interface AvatarImageProps extends React.ComponentPropsWithoutRef<typeof Image> {
+  className?: string;
+}
+
 const AvatarImage = React.forwardRef<
   HTMLImageElement,
-  React.ImgHTMLAttributes<HTMLImageElement>
->(({ className, alt = '', ...props }, ref) => (
-  <img
-    ref={ref}
-    className={cn('aspect-square h-full w-full', className)}
-    alt={alt}
-    {...props}
-  />
-));
+  AvatarImageProps
+>(({ className, alt = '', src, ...props }, ref) => {
+  // For avatar images, we typically want to fill the container
+  // and maintain aspect ratio
+  return (
+    <Image
+      ref={ref}
+      className={cn('aspect-square h-full w-full object-cover', className)}
+      alt={alt}
+      src={src || ''}
+      fill
+      sizes="40px"
+      {...props}
+    />
+  );
+});
 AvatarImage.displayName = 'AvatarImage';
 
 const AvatarFallback = React.forwardRef<

@@ -101,10 +101,29 @@ describe('CalendarGrid', () => {
     expect(defaultProps.onEventClick).toHaveBeenCalledWith(mockEvents[0]);
   });
 
-  it.skip('shows "more" indicator when there are many events', () => {
-    // Skipping this test as it's having issues with date mocking
+  it('shows "more" indicator when there are many events', () => {
+    // Create 4 events on the same day
     const manyEvents: CalendarEvent[] = [
-      ...mockEvents,
+      {
+        id: 1,
+        title: 'Event 1',
+        startDateTime: new Date(2025, 5, 15, 9, 0).toISOString(),
+        endDateTime: new Date(2025, 5, 15, 10, 0).toISOString(),
+        allDay: false,
+        color: 'blue',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: 2,
+        title: 'Event 2',
+        startDateTime: new Date(2025, 5, 15, 10, 0).toISOString(),
+        endDateTime: new Date(2025, 5, 15, 11, 0).toISOString(),
+        allDay: false,
+        color: 'green',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
       {
         id: 3,
         title: 'Event 3',
@@ -130,7 +149,7 @@ describe('CalendarGrid', () => {
     render(<CalendarGrid {...defaultProps} events={manyEvents} />);
     
     // Should have 4 events total on June 15, so it should show +1 more (since only 3 are shown)
-    const moreIndicator = screen.queryByText(/\+\d+ more/);
+    const moreIndicator = screen.getByText('+1 more');
     expect(moreIndicator).toBeInTheDocument();
   });
 

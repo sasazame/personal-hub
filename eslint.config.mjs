@@ -20,7 +20,8 @@ const eslintConfig = [
       "coverage/**",
       "test-results/**",
       "playwright-report/**",
-      "public/mockServiceWorker.js"
+      "public/mockServiceWorker.js",
+      "localsrc/**"
     ]
   },
   ...compat.extends("next/core-web-vitals", "next/typescript"),

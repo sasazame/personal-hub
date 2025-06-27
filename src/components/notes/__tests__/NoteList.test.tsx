@@ -101,12 +101,15 @@ describe('NoteList', () => {
     expect(screen.getByText('+2')).toBeInTheDocument();
   });
 
-  it.skip('truncates long content', () => {
-    // Skipping due to content truncation implementation differences
+  it('truncates long content', () => {
     render(<NoteList {...defaultProps} />);
     
-    const truncatedContent = screen.getByText(/This is a pinned note with some content/);
-    expect(truncatedContent.textContent).toMatch(/\.\.\.$/);
+    // Content truncation is handled by CSS, so we just verify the content exists
+    const noteContent = screen.getByText(/This is a pinned note with some content/);
+    expect(noteContent).toBeInTheDocument();
+    
+    // Check that the element has the correct CSS class for truncation
+    expect(noteContent).toHaveClass('line-clamp-4');
   });
 
   it('calls onNoteClick when note is clicked', async () => {

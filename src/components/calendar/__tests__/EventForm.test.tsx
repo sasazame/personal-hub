@@ -109,15 +109,18 @@ describe('EventForm', () => {
     });
   });
 
-  it.skip('submits form with correct data', async () => {
-    // Skipping due to complex form validation requirements
+  it('submits form with correct data', async () => {
     const user = userEvent.setup();
     render(<EventForm {...defaultProps} />);
     
-    await user.type(screen.getByPlaceholderText('イベントタイトル'), 'New Event');
-    await user.type(screen.getByPlaceholderText('イベントの詳細説明'), 'Event description');
+    // Get inputs by placeholder as they don't have proper label association
+    const titleInput = screen.getByPlaceholderText('イベントタイトル');
+    const descriptionInput = screen.getByPlaceholderText('イベントの詳細説明');
     
-    const submitButton = screen.getByText('作成');
+    await user.type(titleInput, 'New Event');
+    await user.type(descriptionInput, 'Event description');
+    
+    const submitButton = screen.getByRole('button', { name: '作成' });
     await user.click(submitButton);
     
     await waitFor(() => {
@@ -144,16 +147,41 @@ describe('EventForm', () => {
     expect(screen.getByText('終了日 *')).toBeInTheDocument();
   });
 
-  it.skip('allows color selection', async () => {
-    // Skipping due to complex form validation requirements
+  it('allows color selection', async () => {
     const user = userEvent.setup();
     render(<EventForm {...defaultProps} />);
     
+    // Initially blue should be selected (default)
+    const blueColorButton = screen.getByTitle('ブルー');
+    expect(blueColorButton).toHaveClass('ring-2');
+    
+    // Click green color button
     const greenColorButton = screen.getByTitle('グリーン');
     await user.click(greenColorButton);
     
-    // Verify that the green button appears selected (has ring styling)
-    expect(greenColorButton).toHaveClass('ring-2', 'ring-gray-400', 'ring-offset-2');
+    // Verify that the green button appears selected
+    expect(greenColorButton).toHaveClass('ring-2');
+    expect(greenColorButton).toHaveClass('ring-gray-400');
+    expect(greenColorButton).toHaveClass('ring-offset-2');
+    
+    // Verify blue is no longer selected
+    expect(blueColorButton).not.toHaveClass('ring-2');
+    
+    // Submit form and verify color value
+    const titleInput = screen.getByPlaceholderText('イベントタイトル');
+    await user.type(titleInput, 'Test Event');
+    
+    const submitButton = screen.getByRole('button', { name: '作成' });
+    await user.click(submitButton);
+    
+    await waitFor(() => {
+      expect(defaultProps.onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Test Event',
+          color: 'green',
+        })
+      );
+    });
   });
 
   it('calls onClose when cancel button is clicked', async () => {
