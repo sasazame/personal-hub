@@ -107,10 +107,21 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
       };
     }
     
-    // For new events, use next 30-minute interval
-    const baseDate = defaultDate || new Date();
-    const startTime = getNext30MinInterval(baseDate);
+    // For new events, use next 30-minute interval based on current time
+    const now = new Date();
+    const startTime = getNext30MinInterval(now);
     const endTime = new Date(startTime.getTime() + 30 * 60 * 1000); // 30 minutes after start
+    
+    // If a specific date was clicked, use that date but with the calculated time
+    if (defaultDate) {
+      startTime.setFullYear(defaultDate.getFullYear());
+      startTime.setMonth(defaultDate.getMonth());
+      startTime.setDate(defaultDate.getDate());
+      
+      endTime.setFullYear(defaultDate.getFullYear());
+      endTime.setMonth(defaultDate.getMonth());
+      endTime.setDate(defaultDate.getDate());
+    }
     
     return {
       title: '',
