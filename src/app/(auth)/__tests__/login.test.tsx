@@ -1,9 +1,7 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@/test/test-utils';
 import userEvent from '@testing-library/user-event';
 import { useRouter, useSearchParams } from 'next/navigation';
 import LoginPage from '../login/page';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { ReactNode } from 'react';
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
@@ -85,9 +83,7 @@ describe('LoginPage', () => {
     get: jest.fn(),
   };
 
-  const wrapper = ({ children }: { children: ReactNode }) => (
-    <AuthProvider>{children}</AuthProvider>
-  );
+  // AuthProvider is now included in test-utils
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -98,7 +94,7 @@ describe('LoginPage', () => {
   });
 
   it('renders login form correctly', async () => {
-    render(<LoginPage />, { wrapper });
+    render(<LoginPage />);
 
     // Wait for the initial loading state to complete
     await waitFor(() => {
@@ -116,7 +112,7 @@ describe('LoginPage', () => {
 
   it('shows validation errors for empty fields', async () => {
     const user = userEvent.setup();
-    render(<LoginPage />, { wrapper });
+    render(<LoginPage />);
 
     // Wait for the initial loading state to complete
     await waitFor(() => {
@@ -134,7 +130,7 @@ describe('LoginPage', () => {
 
   it('shows validation error for invalid email', async () => {
     const user = userEvent.setup();
-    render(<LoginPage />, { wrapper });
+    render(<LoginPage />);
 
     const emailInput = screen.getByLabelText(/email/i);
     await user.type(emailInput, 'invalid-email');
@@ -151,7 +147,7 @@ describe('LoginPage', () => {
 
   it('toggles password visibility', async () => {
     const user = userEvent.setup();
-    render(<LoginPage />, { wrapper });
+    render(<LoginPage />);
 
     const passwordInput = screen.getByLabelText(/password/i);
     expect(passwordInput).toHaveAttribute('type', 'password');
@@ -171,7 +167,7 @@ describe('LoginPage', () => {
 
   it('submits form with valid data', async () => {
     const user = userEvent.setup();
-    render(<LoginPage />, { wrapper });
+    render(<LoginPage />);
 
     // Wait for the initial loading state to complete
     await waitFor(() => {
@@ -194,7 +190,7 @@ describe('LoginPage', () => {
 
   it('shows loading state during submission', async () => {
     const user = userEvent.setup();
-    render(<LoginPage />, { wrapper });
+    render(<LoginPage />);
 
     // Wait for the initial loading state to complete
     await waitFor(() => {
@@ -217,7 +213,7 @@ describe('LoginPage', () => {
   });
 
   it('has correct links', () => {
-    render(<LoginPage />, { wrapper });
+    render(<LoginPage />);
 
     const signUpLink = screen.getByRole('link', { name: 'Sign up' });
     expect(signUpLink).toHaveAttribute('href', '/register');

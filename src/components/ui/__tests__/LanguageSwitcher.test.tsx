@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@/test/test-utils';
 import { LanguageSwitcher } from '../LanguageSwitcher';
 
 // Mock useTranslations to return actual strings

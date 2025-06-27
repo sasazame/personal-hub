@@ -1,7 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@/test/test-utils';
 import { ThemeToggle } from '../ThemeToggle';
-import { ThemeProvider } from '@/contexts/ThemeContext';
 
 // Mock next-intl
 jest.mock('next-intl', () => ({
@@ -25,22 +24,15 @@ jest.mock('next-intl', () => ({
 }));
 
 describe('ThemeToggle', () => {
-  const renderWithTheme = (ui: React.ReactElement) => {
-    return render(
-      <ThemeProvider>
-        {ui}
-      </ThemeProvider>
-    );
-  };
 
   it('renders theme toggle button', () => {
-    renderWithTheme(<ThemeToggle />);
+    render(<ThemeToggle />);
     const button = screen.getByRole('button', { name: /切り替え: ダークモード/i });
     expect(button).toBeInTheDocument();
   });
 
   it('toggles theme on click', () => {
-    renderWithTheme(<ThemeToggle />);
+    render(<ThemeToggle />);
     const button = screen.getByRole('button');
     
     // Initially in light mode
@@ -56,7 +48,7 @@ describe('ThemeToggle', () => {
   });
 
   it('has proper accessibility attributes', () => {
-    renderWithTheme(<ThemeToggle />);
+    render(<ThemeToggle />);
     const button = screen.getByRole('button');
     const srText = screen.getByText('ライトモード', { selector: '.sr-only' });
     
@@ -65,7 +57,7 @@ describe('ThemeToggle', () => {
   });
 
   it('shows sun icon in light mode', () => {
-    renderWithTheme(<ThemeToggle />);
+    render(<ThemeToggle />);
     const button = screen.getByRole('button');
     const svgs = button.querySelectorAll('svg');
     const sunIcon = svgs[0];
@@ -76,7 +68,7 @@ describe('ThemeToggle', () => {
   });
 
   it('shows moon icon in dark mode', () => {
-    renderWithTheme(<ThemeToggle />);
+    render(<ThemeToggle />);
     const button = screen.getByRole('button');
     
     fireEvent.click(button);
