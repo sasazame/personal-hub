@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@/test/test-utils';
 import { CalendarGrid } from '../CalendarGrid';
 import { CalendarEvent } from '@/types/calendar';
 

@@ -8,6 +8,8 @@ import { todoApi } from '@/lib/api';
 import { Button } from '@/components/ui';
 import { Check, ChevronDown, ChevronRight, Edit2, Repeat, Link } from 'lucide-react';
 import { showSuccess, showError } from '@/components/ui/toast';
+import { useTheme } from '@/hooks/useTheme';
+import { cn } from '@/lib/cn';
 
 interface TodoItemProps {
   todo: Todo;
@@ -22,6 +24,7 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
   const [showChildren, setShowChildren] = useState(false);
   const [isHoveringCheckbox, setIsHoveringCheckbox] = useState(false);
   const queryClient = useQueryClient();
+  const { theme } = useTheme();
   
   const { data: children = [], isLoading } = useQuery({
     queryKey: ['todos', todo.id, 'children'],
@@ -131,10 +134,10 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
                     {todo.title}
                   </h3>
                   {todo.isRepeatable && (
-                    <Repeat className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <Repeat className={cn("w-4 h-4", theme === 'dark' ? "text-blue-400" : "text-blue-600")} />
                   )}
                   {todo.originalTodoId && (
-                    <Link className="w-4 h-4 text-green-600 dark:text-green-400" />
+                    <Link className={cn("w-4 h-4", theme === 'dark' ? "text-green-400" : "text-green-600")} />
                   )}
                 </div>
               </div>

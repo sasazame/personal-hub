@@ -1,5 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { render, screen, fireEvent, waitFor } from '@/test/test-utils';
 import TodoItem from '../TodoItem';
 import { Todo } from '@/types/todo';
 import { todoApi } from '@/lib/api';
@@ -57,26 +56,9 @@ const mockCompletedTodo: Todo = {
   status: 'DONE',
 };
 
-const createQueryClient = () => new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      staleTime: 0,
-    },
-    mutations: {
-      retry: false,
-    },
-  },
-});
+// QueryClient is now handled by test-utils
 
-const renderWithQueryClient = (component: React.ReactElement) => {
-  const queryClient = createQueryClient();
-  return render(
-    <QueryClientProvider client={queryClient}>
-      {component}
-    </QueryClientProvider>
-  );
-};
+// Using the custom render from test-utils which includes QueryClientProvider and ThemeProvider
 
 describe('TodoItem Checkbox Functionality', () => {
   const mockOnUpdate = jest.fn();
@@ -89,7 +71,7 @@ describe('TodoItem Checkbox Functionality', () => {
   });
 
   it('renders checkbox for incomplete todo', () => {
-    renderWithQueryClient(
+    render(
       <TodoItem
         todo={mockTodo}
         onUpdate={mockOnUpdate}
@@ -104,7 +86,7 @@ describe('TodoItem Checkbox Functionality', () => {
   });
 
   it('renders completed checkbox for completed todo', () => {
-    renderWithQueryClient(
+    render(
       <TodoItem
         todo={mockCompletedTodo}
         onUpdate={mockOnUpdate}
@@ -122,7 +104,7 @@ describe('TodoItem Checkbox Functionality', () => {
     const mockUpdatedTodo = { ...mockTodo, status: 'DONE' as const };
     (todoApi.toggleStatus as jest.Mock).mockResolvedValue(mockUpdatedTodo);
 
-    renderWithQueryClient(
+    render(
       <TodoItem
         todo={mockTodo}
         onUpdate={mockOnUpdate}
@@ -143,7 +125,7 @@ describe('TodoItem Checkbox Functionality', () => {
     const mockUpdatedTodo = { ...mockCompletedTodo, status: 'TODO' as const };
     (todoApi.toggleStatus as jest.Mock).mockResolvedValue(mockUpdatedTodo);
 
-    renderWithQueryClient(
+    render(
       <TodoItem
         todo={mockCompletedTodo}
         onUpdate={mockOnUpdate}
@@ -163,7 +145,7 @@ describe('TodoItem Checkbox Functionality', () => {
   it('disables checkbox while mutation is pending', async () => {
     (todoApi.toggleStatus as jest.Mock).mockImplementation(() => new Promise(() => {})); // Never resolves
 
-    renderWithQueryClient(
+    render(
       <TodoItem
         todo={mockTodo}
         onUpdate={mockOnUpdate}
@@ -189,7 +171,7 @@ describe('TodoItem Checkbox Functionality', () => {
     const mockUpdatedTodo = { ...recurringTodo, status: 'DONE' as const };
     (todoApi.toggleStatus as jest.Mock).mockResolvedValue(mockUpdatedTodo);
 
-    renderWithQueryClient(
+    render(
       <TodoItem
         todo={recurringTodo}
         onUpdate={mockOnUpdate}
@@ -207,7 +189,7 @@ describe('TodoItem Checkbox Functionality', () => {
   });
 
   it('shows hover state when hovering over checkbox', async () => {
-    renderWithQueryClient(
+    render(
       <TodoItem
         todo={mockTodo}
         onUpdate={mockOnUpdate}

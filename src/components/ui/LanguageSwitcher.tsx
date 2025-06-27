@@ -6,6 +6,8 @@ import { useLocale } from '@/contexts/LocaleContext';
 import { Modal, ModalHeader, ModalTitle, ModalContent } from './Modal';
 import { Globe, Check } from 'lucide-react';
 import { type Locale, locales } from '@/i18n/config';
+import { useTheme } from '@/hooks/useTheme';
+import { cn } from '@/lib/cn';
 
 // Locale names will be translated dynamically
 
@@ -17,6 +19,7 @@ const localeFlags: Record<Locale, string> = {
 export function LanguageSwitcher() {
   const t = useTranslations();
   const { locale, setLocale } = useLocale();
+  const { theme } = useTheme();
   
   const getLocaleName = (localeCode: Locale): string => {
     switch (localeCode) {
@@ -39,11 +42,19 @@ export function LanguageSwitcher() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        className={cn(
+          "flex items-center justify-center w-8 h-8 rounded-full transition-colors",
+          theme === 'dark' ? "hover:bg-gray-800" : "hover:bg-gray-100"
+        )}
         aria-label={t('common.language')}
         title={t('common.language')}
       >
-        <Globe className="h-5 w-5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors" />
+        <Globe className={cn(
+          "h-5 w-5 transition-colors",
+          theme === 'dark' 
+            ? "text-gray-400 hover:text-gray-100"
+            : "text-gray-600 hover:text-gray-900"
+        )} />
       </button>
 
       <Modal
@@ -60,14 +71,14 @@ export function LanguageSwitcher() {
               <button
                 key={loc}
                 onClick={() => handleLocaleChange(loc)}
-                className={`
-                  flex w-full items-center justify-between rounded-lg px-4 py-3 text-left transition-colors
-                  ${
-                    locale === loc
-                      ? 'bg-primary/10 text-primary'
-                      : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-                  }
-                `}
+                className={cn(
+                  "flex w-full items-center justify-between rounded-lg px-4 py-3 text-left transition-colors",
+                  locale === loc
+                    ? "bg-primary/10 text-primary"
+                    : theme === 'dark' 
+                      ? "hover:bg-gray-800"
+                      : "hover:bg-gray-100"
+                )}
               >
                 <div className="flex items-center space-x-3">
                   <span className="text-xl">{localeFlags[loc]}</span>

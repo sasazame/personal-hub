@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/cn';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useTheme } from '@/hooks/useTheme';
 import { 
   Home, 
   CheckSquare, 
@@ -27,6 +28,7 @@ export function Sidebar() {
   const t = useTranslations();
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useLocalStorage('sidebar-collapsed', false);
+  const { theme } = useTheme();
 
   const navItems: NavItem[] = [
     {
@@ -77,7 +79,10 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl border-r border-white/20 dark:border-gray-700/20 transition-all duration-300 ease-in-out hidden md:block",
+        "fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-xl border-r transition-all duration-300 ease-in-out hidden md:block",
+        theme === 'dark'
+          ? "bg-gray-900/10 border-gray-700/20"
+          : "bg-white/10 border-white/20",
         isCollapsed ? "w-16" : "w-64"
       )}
     >
@@ -85,13 +90,18 @@ export function Sidebar() {
         {/* Collapse toggle */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute -right-3 top-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full p-1 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-md"
+          className={cn(
+            "absolute -right-3 top-6 border rounded-full p-1 transition-colors shadow-md",
+            theme === 'dark'
+              ? "bg-gray-800 border-gray-700 hover:bg-gray-700"
+              : "bg-white border-gray-200 hover:bg-gray-50"
+          )}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {isCollapsed ? (
-            <ChevronRight className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+            <ChevronRight className={cn("h-4 w-4", theme === 'dark' ? "text-gray-400" : "text-gray-600")} />
           ) : (
-            <ChevronLeft className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+            <ChevronLeft className={cn("h-4 w-4", theme === 'dark' ? "text-gray-400" : "text-gray-600")} />
           )}
         </button>
 
@@ -104,8 +114,14 @@ export function Sidebar() {
               className={cn(
                 "flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200",
                 isActive(item.href)
-                  ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20"
-                  : "text-foreground hover:bg-white/20 dark:hover:bg-gray-800/20",
+                  ? cn(
+                      "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 border border-blue-500/20",
+                      theme === 'dark' ? "text-blue-400" : "text-blue-600"
+                    )
+                  : cn(
+                      "text-foreground",
+                      theme === 'dark' ? "hover:bg-gray-800/20" : "hover:bg-white/20"
+                    ),
                 isCollapsed && "justify-center"
               )}
               title={isCollapsed ? item.label : undefined}
@@ -124,7 +140,10 @@ export function Sidebar() {
         </nav>
 
         {/* Bottom navigation */}
-        <nav className="px-3 py-4 border-t border-white/20 dark:border-gray-700/20 space-y-1">
+        <nav className={cn(
+          "px-3 py-4 border-t space-y-1",
+          theme === 'dark' ? "border-gray-700/20" : "border-white/20"
+        )}>
           {bottomNavItems.map((item) => (
             <Link
               key={item.href}
@@ -132,8 +151,14 @@ export function Sidebar() {
               className={cn(
                 "flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200",
                 isActive(item.href)
-                  ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20"
-                  : "text-foreground hover:bg-white/20 dark:hover:bg-gray-800/20",
+                  ? cn(
+                      "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 border border-blue-500/20",
+                      theme === 'dark' ? "text-blue-400" : "text-blue-600"
+                    )
+                  : cn(
+                      "text-foreground",
+                      theme === 'dark' ? "hover:bg-gray-800/20" : "hover:bg-white/20"
+                    ),
                 isCollapsed && "justify-center"
               )}
               title={isCollapsed ? item.label : undefined}

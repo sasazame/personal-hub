@@ -14,11 +14,12 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       className={cn(
         'relative inline-flex h-8 w-14 items-center rounded-full',
-        'bg-gray-200 dark:bg-gray-700',
         'transition-colors duration-300 ease-in-out',
         'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-        'hover:bg-gray-300 dark:hover:bg-gray-600',
-        'border border-gray-300 dark:border-gray-600'
+        'border',
+        theme === 'dark'
+          ? 'bg-gray-700 hover:bg-gray-600 border-gray-600'
+          : 'bg-gray-200 hover:bg-gray-300 border-gray-300'
       )}
       aria-label={t('theme.toggle', { mode: theme === 'light' ? t('theme.darkMode') : t('theme.lightMode') })}
     >

@@ -67,7 +67,12 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full">
       {/* Glassmorphism header */}
-      <div className="bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl border-b border-white/20 dark:border-gray-700/20">
+      <div className={cn(
+        "backdrop-blur-xl border-b",
+        theme === 'dark'
+          ? "bg-gray-900/10 border-gray-700/20"
+          : "bg-white/10 border-white/20"
+      )}>
         <div className="container px-4 mx-auto">
           <div className="flex h-16 items-center justify-between">
             {/* Logo and brand */}
@@ -79,22 +84,16 @@ export function Header() {
                     <Sparkles className="h-6 w-6 text-white" />
                   </div>
                 </div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
+                <h1 className={cn(
+                  "text-xl font-bold bg-gradient-to-r bg-clip-text text-transparent",
+                  theme === 'dark'
+                    ? "from-blue-400 to-indigo-400"
+                    : "from-blue-600 to-indigo-600"
+                )}>
                   {t('app.title')}
                 </h1>
               </Link>
             </div>
-
-            {/* Desktop navigation */}
-            <nav className="hidden md:flex items-center justify-end flex-1">
-              <Link 
-                href="/profile"
-                className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-              >
-                <User className="h-4 w-4" />
-                <span className="font-medium">{user.username}</span>
-              </Link>
-            </nav>
 
             {/* Desktop actions */}
             <div className="hidden md:flex items-center space-x-4">
@@ -106,7 +105,7 @@ export function Header() {
                 size="sm"
                 onClick={handleLogout}
                 loading={isLoading}
-                className="hover:bg-white/20 dark:hover:bg-gray-800/20"
+                className={theme === 'dark' ? "hover:bg-gray-800/20" : "hover:bg-white/20"}
                 leftIcon={<LogOut className="h-4 w-4" />}
               >
                 {t('header.logout')}
@@ -116,13 +115,16 @@ export function Header() {
             {/* Mobile menu button */}
             <button
               onClick={toggleMobileMenu}
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className={cn(
+                "md:hidden p-2 rounded-lg transition-colors",
+                theme === 'dark' ? "hover:bg-gray-800" : "hover:bg-gray-100"
+              )}
               aria-label="Toggle mobile menu"
             >
               {isMobileMenuOpen ? (
-                <X className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+                <X className="h-6 w-6 text-gray-700" />
               ) : (
-                <Menu className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+                <Menu className={cn("h-6 w-6", theme === 'dark' ? "text-gray-300" : "text-gray-700")} />
               )}
             </button>
           </div>
@@ -168,7 +170,10 @@ export function Header() {
           </div>
 
           {/* User profile section */}
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+          <div className={cn(
+            "border-t pt-4",
+            theme === 'dark' ? "border-gray-700" : "border-gray-200"
+          )}>
             <Link
               href="/profile"
               onClick={() => setIsMobileMenuOpen(false)}
@@ -187,14 +192,20 @@ export function Header() {
           </div>
 
           {/* Logout and settings */}
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-2">
+          <div className={cn(
+            "border-t pt-4 space-y-2",
+            theme === 'dark' ? "border-gray-700" : "border-gray-200"
+          )}>
             <button
               onClick={() => {
                 handleLogout();
                 setIsMobileMenuOpen(false);
               }}
               disabled={isLoading}
-              className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors w-full text-left"
+              className={cn(
+                "flex items-center space-x-3 p-3 rounded-lg transition-colors w-full text-left",
+                theme === 'dark' ? "hover:bg-gray-800" : "hover:bg-gray-100"
+              )}
             >
               <LogOut className={cn("h-5 w-5", theme === 'dark' ? "text-gray-300" : "text-gray-700")} />
               <span className={cn("font-medium", theme === 'dark' ? "text-gray-300" : "text-gray-700")}>
@@ -204,7 +215,10 @@ export function Header() {
           </div>
 
           {/* Theme and language toggles */}
-          <div className="flex items-center justify-center space-x-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className={cn(
+            "flex items-center justify-center space-x-4 pt-4 border-t",
+            theme === 'dark' ? "border-gray-700" : "border-gray-200"
+          )}>
             <LanguageSwitcher />
             <ThemeToggle />
           </div>

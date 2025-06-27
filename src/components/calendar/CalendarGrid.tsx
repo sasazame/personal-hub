@@ -3,6 +3,7 @@
 import { CalendarEvent } from '@/types/calendar';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { cn } from '@/lib/cn';
+import { useTheme } from '@/hooks/useTheme';
 
 interface CalendarGridProps {
   currentDate: Date;
@@ -16,6 +17,7 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick }:
   const safeEvents = Array.isArray(events) ? events : [];
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
+  const { theme } = useTheme();
   const startDate = new Date(monthStart);
   startDate.setDate(startDate.getDate() - monthStart.getDay());
   
@@ -39,12 +41,22 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick }:
   };
 
   return (
-    <div className="grid grid-cols-7 gap-px bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl rounded-lg overflow-hidden border border-white/20 dark:border-gray-700/20">
+    <div className={cn(
+      "grid grid-cols-7 gap-px backdrop-blur-xl rounded-lg overflow-hidden border",
+      theme === 'dark' 
+        ? "bg-gray-800/20 border-gray-700/20"
+        : "bg-white/20 border-white/20"
+    )}>
       {/* Header */}
       {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
         <div
           key={day}
-          className="bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl p-3 text-center text-sm font-medium text-gray-600 dark:text-gray-300 border-b border-white/10 dark:border-gray-700/10"
+          className={cn(
+            "backdrop-blur-xl p-3 text-center text-sm font-medium border-b",
+            theme === 'dark'
+              ? "bg-gray-800/30 text-gray-300 border-gray-700/10"
+              : "bg-white/30 text-gray-600 border-white/10"
+          )}
         >
           {day}
         </div>
@@ -60,16 +72,21 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick }:
           <div
             key={day.toISOString()}
             className={cn(
-              "bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl min-h-[120px] p-2 cursor-pointer hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-200 border-r border-b border-white/10 dark:border-gray-700/10",
-              !isCurrentMonth && "text-gray-400 dark:text-gray-500 bg-white/20 dark:bg-gray-800/20"
+              "backdrop-blur-xl min-h-[120px] p-2 cursor-pointer transition-all duration-200 border-r border-b",
+              theme === 'dark'
+                ? "bg-gray-900/40 hover:bg-gray-800/60 border-gray-700/10"
+                : "bg-white/40 hover:bg-white/60 border-white/10",
+              !isCurrentMonth && (theme === 'dark' 
+                ? "text-gray-500 bg-gray-800/20"
+                : "text-gray-400 bg-white/20")
             )}
             onClick={() => onDateClick(day)}
           >
             <div className={cn(
               "text-sm font-medium mb-1",
-              isDayToday && "text-blue-600 dark:text-blue-400 font-bold",
-              !isDayToday && isCurrentMonth && "text-gray-700 dark:text-gray-200",
-              !isDayToday && !isCurrentMonth && "text-gray-400 dark:text-gray-500"
+              isDayToday && (theme === 'dark' ? "text-blue-400 font-bold" : "text-blue-600 font-bold"),
+              !isDayToday && isCurrentMonth && (theme === 'dark' ? "text-gray-200" : "text-gray-700"),
+              !isDayToday && !isCurrentMonth && (theme === 'dark' ? "text-gray-500" : "text-gray-400")
             )}>
               {format(day, 'd')}
               {isDayToday && (
@@ -85,11 +102,21 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick }:
                   key={event.id}
                   className={cn(
                     "text-xs p-1 rounded truncate cursor-pointer hover:opacity-80 transition-opacity",
-                    event.color === 'blue' && "bg-blue-500/20 dark:bg-blue-400/20 text-blue-700 dark:text-blue-300 border border-blue-500/30 dark:border-blue-400/30",
-                    event.color === 'green' && "bg-green-500/20 dark:bg-green-400/20 text-green-700 dark:text-green-300 border border-green-500/30 dark:border-green-400/30",
-                    event.color === 'red' && "bg-red-500/20 dark:bg-red-400/20 text-red-700 dark:text-red-300 border border-red-500/30 dark:border-red-400/30",
-                    event.color === 'purple' && "bg-purple-500/20 dark:bg-purple-400/20 text-purple-700 dark:text-purple-300 border border-purple-500/30 dark:border-purple-400/30",
-                    event.color === 'orange' && "bg-orange-500/20 dark:bg-orange-400/20 text-orange-700 dark:text-orange-300 border border-orange-500/30 dark:border-orange-400/30"
+                    event.color === 'blue' && (theme === 'dark' 
+                      ? "bg-blue-400/20 text-blue-300 border border-blue-400/30"
+                      : "bg-blue-500/20 text-blue-700 border border-blue-500/30"),
+                    event.color === 'green' && (theme === 'dark'
+                      ? "bg-green-400/20 text-green-300 border border-green-400/30"
+                      : "bg-green-500/20 text-green-700 border border-green-500/30"),
+                    event.color === 'red' && (theme === 'dark'
+                      ? "bg-red-400/20 text-red-300 border border-red-400/30"
+                      : "bg-red-500/20 text-red-700 border border-red-500/30"),
+                    event.color === 'purple' && (theme === 'dark'
+                      ? "bg-purple-400/20 text-purple-300 border border-purple-400/30"
+                      : "bg-purple-500/20 text-purple-700 border border-purple-500/30"),
+                    event.color === 'orange' && (theme === 'dark'
+                      ? "bg-orange-400/20 text-orange-300 border border-orange-400/30"
+                      : "bg-orange-500/20 text-orange-700 border border-orange-500/30")
                   )}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -101,7 +128,7 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick }:
                 </div>
               ))}
               {dayEvents.length > 3 && (
-                <div className="text-xs text-gray-600 dark:text-gray-300 font-medium">
+                <div className={cn("text-xs font-medium", theme === 'dark' ? "text-gray-300" : "text-gray-600")}>
                   +{dayEvents.length - 3} more
                 </div>
               )}
