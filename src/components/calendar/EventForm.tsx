@@ -9,6 +9,7 @@ import { CalendarEvent, CreateCalendarEventDto } from '@/types/calendar';
 import { Button, Input, TextArea, Modal } from '@/components/ui';
 import { Switch } from '@/components/ui/switch';
 import { useGoogleAuth } from '@/hooks/useGoogleIntegration';
+import { useFormSubmit, formTransformers } from '@/hooks/useFormSubmit';
 import { format } from 'date-fns';
 
 // Schema and type will be created inside component to access translations
@@ -53,14 +54,7 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
     { value: 'orange', label: t('calendar.colors.orange'), class: 'bg-orange-500' },
   ];
   
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-    setValue,
-    reset,
-  } = useForm<EventFormData>({
+  const form = useForm<EventFormData>({
     resolver: zodResolver(eventSchema),
     defaultValues: event ? {
       title: event.title,
@@ -87,6 +81,15 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
     }
   });
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+    reset,
+  } = form;
+
   const allDay = watch('allDay');
 
   // Update form when defaultDate changes
@@ -97,8 +100,8 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
     }
   }, [defaultDate, event, setValue]);
 
-  const handleFormSubmit = (data: EventFormData) => {
-    // Convert datetime-local format to ISO 8601 format
+  // Transform function for event form data
+  const transformEventData = (data: EventFormData): CreateCalendarEventDto => {
     const formatDateTime = (dateTimeLocal: string, allDay: boolean) => {
       if (!dateTimeLocal) return '';
       
@@ -115,7 +118,7 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
       }
     };
 
-    const formattedData = {
+    return {
       ...data,
       startDateTime: formatDateTime(data.startDateTime, data.allDay),
       endDateTime: formatDateTime(data.endDateTime, data.allDay),
@@ -125,11 +128,22 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
       location: data.location || undefined,
       description: data.description || undefined,
     };
-
-    onSubmit(formattedData);
-    reset();
-    onClose();
   };
+
+  // Use the generic form submit hook
+  const { handleSubmit: handleFormSubmit, isSubmitting: isFormSubmitting } = useFormSubmit<EventFormData, CreateCalendarEventDto>(
+    {
+      onSubmit,
+      transform: transformEventData,
+      resetOnSuccess: true,
+      closeOnSuccess: true,
+    },
+    form,
+    onClose
+  );
+  
+  // Use either the prop or the hook's isSubmitting state
+  const submitting = isSubmitting ?? isFormSubmitting;
 
   const handleClose = () => {
     reset();
@@ -276,7 +290,7 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
               type="button"
               variant="danger"
               onClick={onDelete}
-              disabled={isSubmitting}
+              disabled={submitting}
             >
               {t('common.delete')}
             </Button>
@@ -286,15 +300,15 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
               type="button"
               variant="secondary"
               onClick={handleClose}
-              disabled={isSubmitting}
+              disabled={submitting}
             >
               {t('common.cancel')}
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={submitting}
             >
-              {isSubmitting ? t('calendar.saving') : event ? t('calendar.update') : t('calendar.create')}
+              {submitting ? t('calendar.saving') : event ? t('calendar.update') : t('calendar.create')}
             </Button>
           </div>
         </div>
