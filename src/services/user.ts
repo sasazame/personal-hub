@@ -1,5 +1,6 @@
 import api from '@/lib/api';
 import type { User, UpdateUserDto, ChangePasswordDto } from '@/types/user';
+import type { UpdateWeekStartDayDto } from '@/types/goal';
 
 export const userApi = {
   async getById(id: string): Promise<User> {
@@ -18,5 +19,10 @@ export const userApi = {
 
   async delete(id: string): Promise<void> {
     await api.delete(`/users/${id}`);
+  },
+
+  async updateWeekStartDay(id: string, data: UpdateWeekStartDayDto): Promise<User> {
+    const response = await api.put<User>(`/users/${id}/week-start-day`, data);
+    return response.data;
   },
 };

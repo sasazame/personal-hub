@@ -32,6 +32,7 @@
     "todos": "TODO",
     "calendar": "カレンダー",
     "notes": "メモ",
+    "goals": "目標",
     "analytics": "分析",
     "tags": "タグ",
     "starred": "スター付き",
@@ -494,6 +495,141 @@
   },
   "language": {
     "japanese": "日本語"
+  },
+  "goal": {
+    "title": "目標管理",
+    "subtitle": "目標を設定して進捗を追跡",
+    "myGoals": "私の目標",
+    "createGoal": "新しい目標を作成",
+    "editGoal": "目標を編集",
+    "deleteGoal": "目標を削除",
+    "confirmDelete": "この目標を削除してもよろしいですか？",
+    "noGoals": "目標がありません",
+    "createFirstGoal": "最初の目標を作成",
+    "goalCreated": "目標を作成しました",
+    "goalUpdated": "目標を更新しました",
+    "goalDeleted": "目標を削除しました",
+    "recordProgress": "進捗を記録",
+    "progressRecorded": "進捗を記録しました",
+    "progress": "進捗",
+    "progressPercentage": "{percentage}%",
+    "progressValue": "{current} / {target}",
+    "filterByType": "タイプで絞り込み:",
+    "activeGoalsOnly": "アクティブな目標のみ",
+    "allTypes": "すべてのタイプ",
+    "fields": {
+      "title": "タイトル",
+      "description": "説明",
+      "goalType": "目標タイプ",
+      "metricType": "測定タイプ",
+      "targetValue": "目標値",
+      "currentValue": "現在値",
+      "metricUnit": "単位",
+      "startDate": "開始日",
+      "endDate": "終了日",
+      "status": "ステータス",
+      "value": "値",
+      "note": "メモ"
+    },
+    "placeholders": {
+      "title": "目標のタイトルを入力",
+      "description": "目標の詳細説明（任意）",
+      "targetValue": "目標値を入力",
+      "metricUnit": "例: 冊、km、時間",
+      "progressValue": "進捗値を入力",
+      "progressNote": "進捗に関するメモ（任意）"
+    },
+    "types": {
+      "daily": "日次",
+      "weekly": "週次",
+      "monthly": "月次",
+      "annual": "年次"
+    },
+    "metricTypes": {
+      "count": "回数",
+      "numeric": "数値",
+      "percentage": "パーセント",
+      "time": "時間"
+    },
+    "statuses": {
+      "active": "アクティブ",
+      "completed": "完了",
+      "paused": "一時停止",
+      "cancelled": "キャンセル"
+    },
+    "actions": {
+      "create": "作成",
+      "update": "更新",
+      "save": "保存",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "close": "閉じる"
+    },
+    "validation": {
+      "titleRequired": "タイトルは必須です",
+      "targetValueRequired": "目標値は必須です",
+      "targetValuePositive": "目標値は正の数である必要があります",
+      "progressValueRequired": "進捗値は必須です",
+      "progressValuePositive": "進捗値は正の数である必要があります",
+      "dateRangeInvalid": "終了日は開始日より後である必要があります"
+    },
+    "sections": {
+      "annualGoals": "年間目標",
+      "monthlyGoals": "月間目標",
+      "weeklyGoals": "週間目標",
+      "dailyGoals": "日次目標"
+    },
+    "units": {
+      "minutes": "分",
+      "hours": "時間"
+    },
+    "viewDetails": "詳細を見る",
+    "viewCalendar": "カレンダー",
+    "today": "今日",
+    "days": "日",
+    "tracking": {
+      "achievementStatus": "達成状況",
+      "achievedDays": "{achieved}/{total}日",
+      "currentStreak": "連続",
+      "longestStreak": "最長",
+      "todayStatus": {
+        "pending": "未達成",
+        "achieved": "達成済み",
+        "failed": "失敗"
+      },
+      "achievementRecorded": "達成を記録しました",
+      "achievementRemoved": "達成記録を削除しました",
+      "recordAchievement": "今日の達成を記録",
+      "viewCalendar": "カレンダーで見る"
+    },
+    "errors": {
+      "toggleAchievementFailed": "達成状況の更新に失敗しました"
+    },
+    "back": "戻る",
+    "stats": "統計",
+    "history": "履歴",
+    "calendar": "カレンダー",
+    "statistics": "統計情報",
+    "achievementCalendar": "達成カレンダー",
+    "comingSoon": "近日公開予定",
+    "goalNotFound": "目標が見つかりません",
+    "achievementHistory": "達成履歴",
+    "listView": "リスト表示",
+    "calendarView": "カレンダー表示",
+    "achievementList": "達成リスト",
+    "achievementCalendar": "達成カレンダー",
+    "noAchievements": "まだ達成記録がありません",
+    "achievementDate": "達成日",
+    "achievementNote": "メモ",
+    "editAchievement": "達成記録を編集",
+    "deleteAchievement": "達成記録を削除",
+    "confirmDeleteAchievement": "この達成記録を削除してもよろしいですか？",
+    "achievementDeleted": "達成記録を削除しました",
+    "achievementUpdated": "達成記録を更新しました",
+    "type": "タイプ",
+    "today": "今日",
+    "achieved": "達成済み",
+    "pending": "未達成"
   },
   "legal": {
     "terms": {

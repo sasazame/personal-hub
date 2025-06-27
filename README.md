@@ -45,6 +45,28 @@ npm run dev
 open http://localhost:3000
 ```
 
+### Development Workflow
+
+```bash
+# 1. Development (Fast reload with Turbopack)
+npm run dev
+# Use for: Quick iterations, component development, styling changes
+
+# 2. Production Preview (Optimized build)
+npm run preview
+# Use for: Integration testing, performance testing, final checks
+
+# 3. Production Build + Start (Separate commands)
+npm run build
+npm run start
+# Use for: Deployment preparation, production debugging
+```
+
+#### Workflow Recommendations
+- **開発中**: `npm run dev` で細かな変更を確認
+- **機能完成時**: `npm run preview` で結合テスト
+- **PR作成前**: `npm run build` でビルドエラーがないことを確認
+
 ## 🛠️ Environment Setup
 
 ### Environment Variables

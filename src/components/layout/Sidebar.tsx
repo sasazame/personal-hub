@@ -13,7 +13,8 @@ import {
   ChevronRight,
   Calendar,
   FileText,
-  BarChart3
+  BarChart3,
+  Target
 } from 'lucide-react';
 
 interface NavItem {
@@ -47,6 +48,11 @@ export function Sidebar() {
       href: '/notes',
       label: t('nav.notes'),
       icon: <FileText className="h-5 w-5" />
+    },
+    {
+      href: '/goals',
+      label: t('nav.goals'),
+      icon: <Target className="h-5 w-5" />
     },
     {
       href: '/analytics',

@@ -9,6 +9,7 @@
     "dev:debug": "NODE_OPTIONS='--inspect' next dev --turbopack",
     "build": "next build",
     "start": "next start",
+    "preview": "npm run build && npm run start",
     "lint": "next lint -d .",
     "type-check": "tsc --noEmit",
     "test": "jest",
@@ -25,6 +26,7 @@
     "test:e2e:headed": "playwright test --headed"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.0.1",
     "@tanstack/react-query": "^5.79.0",
