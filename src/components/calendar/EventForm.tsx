@@ -10,7 +10,7 @@ import { Button, Input, TextArea, Modal } from '@/components/ui';
 import { Switch } from '@/components/ui/switch';
 import { useGoogleAuth } from '@/hooks/useGoogleIntegration';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
-import { format } from 'date-fns';
+import { useLocale } from '@/contexts/LocaleContext';
 
 // Schema and type will be created inside component to access translations
 
@@ -29,6 +29,7 @@ interface EventFormProps {
 export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSubmitting, onDelete }: EventFormProps) {
   const t = useTranslations();
   const { hasIntegration } = useGoogleAuth();
+  const { locale } = useLocale();
   const [selectedColor, setSelectedColor] = useState(event?.color || 'blue');
   
   const eventSchema = z.object({
@@ -54,31 +55,50 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
     { value: 'orange', label: t('calendar.colors.orange'), class: 'bg-orange-500' },
   ];
   
-  const form = useForm<EventFormData>({
-    resolver: zodResolver(eventSchema),
-    defaultValues: event ? {
-      title: event.title,
-      description: event.description || '',
-      startDateTime: format(new Date(event.startDateTime), "yyyy-MM-dd'T'HH:mm"),
-      endDateTime: format(new Date(event.endDateTime), "yyyy-MM-dd'T'HH:mm"),
-      location: event.location || '',
-      allDay: event.allDay,
-      color: event.color || 'blue',
-      reminders: event.reminders || [],
-      recurrence: event.recurrence,
-      syncToGoogle: event.syncToGoogle ?? true,
-    } : {
+  // Helper to format datetime for HTML datetime-local input
+  const formatDateTimeForInput = (date: Date | string) => {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    // datetime-local requires YYYY-MM-DDTHH:mm format
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  const getDefaultValues = () => {
+    if (event) {
+      return {
+        title: event.title,
+        description: event.description || '',
+        startDateTime: formatDateTimeForInput(event.startDateTime),
+        endDateTime: formatDateTimeForInput(event.endDateTime),
+        location: event.location || '',
+        allDay: event.allDay,
+        color: event.color || 'blue',
+        reminders: event.reminders || [],
+        recurrence: event.recurrence,
+        syncToGoogle: event.syncToGoogle ?? true,
+      };
+    }
+    return {
       title: '',
       description: '',
-      startDateTime: defaultDate ? format(defaultDate, "yyyy-MM-dd'T'09:00") : format(new Date(), "yyyy-MM-dd'T'09:00"),
-      endDateTime: defaultDate ? format(defaultDate, "yyyy-MM-dd'T'10:00") : format(new Date(), "yyyy-MM-dd'T'10:00"),
+      startDateTime: defaultDate ? formatDateTimeForInput(defaultDate) : formatDateTimeForInput(new Date()),
+      endDateTime: defaultDate ? formatDateTimeForInput(new Date(defaultDate.getTime() + 60 * 60 * 1000)) : formatDateTimeForInput(new Date(Date.now() + 60 * 60 * 1000)),
       location: '',
       allDay: false,
       color: 'blue',
       reminders: [],
       recurrence: undefined,
       syncToGoogle: true,
-    }
+    };
+  };
+
+  const form = useForm<EventFormData>({
+    resolver: zodResolver(eventSchema),
+    defaultValues: getDefaultValues()
   });
 
   const {
@@ -92,13 +112,23 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
 
   const allDay = watch('allDay');
 
-  // Update form when defaultDate changes
+  // Update form when defaultDate changes or when modal opens with event
   useEffect(() => {
-    if (defaultDate && !event) {
-      setValue('startDateTime', format(defaultDate, "yyyy-MM-dd'T'09:00"));
-      setValue('endDateTime', format(defaultDate, "yyyy-MM-dd'T'10:00"));
+    if (isOpen) {
+      const newValues = getDefaultValues();
+      reset(newValues);
+      setSelectedColor(newValues.color || 'blue');
     }
-  }, [defaultDate, event, setValue]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, event, defaultDate, reset]);
+
+  // Get datetime input pattern based on locale
+  const getDateTimePattern = () => {
+    if (locale === 'ja') {
+      return 'yyyy/MM/dd HH:mm';
+    }
+    return 'MM/dd/yyyy, hh:mm a';
+  };
 
   // Transform function for event form data
   const transformEventData = (data: EventFormData): CreateCalendarEventDto => {
@@ -206,10 +236,10 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
           </label>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              {t('calendar.startDate')}{allDay ? '' : ''} *
+              {t('calendar.startDate')} * {!allDay && <span className="text-xs text-muted-foreground">({getDateTimePattern()})</span>}
             </label>
             <Input
               type={allDay ? 'date' : 'datetime-local'}
@@ -221,7 +251,7 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
 
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              {t('calendar.endDate')}{allDay ? '' : ''} *
+              {t('calendar.endDate')} * {!allDay && <span className="text-xs text-muted-foreground">({getDateTimePattern()})</span>}
             </label>
             <Input
               type={allDay ? 'date' : 'datetime-local'}

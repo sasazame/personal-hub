@@ -42,20 +42,32 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick }:
 
   return (
     <div className={cn(
-      "grid grid-cols-7 gap-px backdrop-blur-xl rounded-lg overflow-hidden border",
+      "grid grid-cols-7 backdrop-blur-xl rounded-lg overflow-hidden border",
       theme === 'dark' 
-        ? "bg-gray-800/20 border-gray-700/20"
-        : "bg-white/20 border-white/20"
+        ? "bg-gray-800/20 border-gray-700/50"
+        : "bg-white/20 border-gray-300/50"
     )}>
       {/* Header */}
-      {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+      {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
         <div
           key={day}
           className={cn(
-            "backdrop-blur-xl p-3 text-center text-sm font-medium border-b",
+            "backdrop-blur-xl p-3 text-center text-sm font-medium border-b border-r",
             theme === 'dark'
-              ? "bg-gray-800/30 text-gray-300 border-gray-700/10"
-              : "bg-white/30 text-gray-600 border-white/10"
+              ? "text-gray-300 border-gray-700/30"
+              : "text-gray-600 border-gray-200",
+            // Sunday (index 0) - red background
+            index === 0 && (theme === 'dark' 
+              ? "bg-red-900/20" 
+              : "bg-red-50"),
+            // Saturday (index 6) - blue background
+            index === 6 && (theme === 'dark' 
+              ? "bg-blue-900/20" 
+              : "bg-blue-50"),
+            // Weekdays - normal background
+            index > 0 && index < 6 && (theme === 'dark'
+              ? "bg-gray-800/30"
+              : "bg-white/30")
           )}
         >
           {day}
@@ -74,23 +86,25 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick }:
             className={cn(
               "backdrop-blur-xl min-h-[120px] p-2 cursor-pointer transition-all duration-200 border-r border-b",
               theme === 'dark'
-                ? "bg-gray-900/40 hover:bg-gray-800/60 border-gray-700/10"
-                : "bg-white/40 hover:bg-white/60 border-white/10",
+                ? "bg-gray-900/40 hover:bg-gray-800/60 border-gray-700/30"
+                : "bg-white/40 hover:bg-white/60 border-gray-200",
               !isCurrentMonth && (theme === 'dark' 
                 ? "text-gray-500 bg-gray-800/20"
-                : "text-gray-400 bg-white/20")
+                : "text-gray-400 bg-gray-100/50")
             )}
             onClick={() => onDateClick(day)}
           >
-            <div className={cn(
-              "text-sm font-medium mb-1",
-              isDayToday && (theme === 'dark' ? "text-blue-400 font-bold" : "text-blue-600 font-bold"),
-              !isDayToday && isCurrentMonth && (theme === 'dark' ? "text-gray-200" : "text-gray-700"),
-              !isDayToday && !isCurrentMonth && (theme === 'dark' ? "text-gray-500" : "text-gray-400")
-            )}>
-              {format(day, 'd')}
-              {isDayToday && (
-                <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-full flex items-center justify-center text-xs mt-1 shadow-lg">
+            <div className="mb-1">
+              {isDayToday ? (
+                <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-full flex items-center justify-center text-xs shadow-lg font-bold">
+                  {format(day, 'd')}
+                </div>
+              ) : (
+                <div className={cn(
+                  "text-sm font-medium",
+                  isCurrentMonth && (theme === 'dark' ? "text-gray-200" : "text-gray-700"),
+                  !isCurrentMonth && (theme === 'dark' ? "text-gray-500" : "text-gray-400")
+                )}>
                   {format(day, 'd')}
                 </div>
               )}

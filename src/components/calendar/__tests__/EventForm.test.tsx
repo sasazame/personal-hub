@@ -202,12 +202,13 @@ describe('EventForm', () => {
   });
 
   it('sets default date when defaultDate provided', () => {
-    const defaultDate = new Date(2025, 5, 20);
+    const defaultDate = new Date(2025, 5, 20, 9, 0);
     render(<EventForm {...defaultProps} defaultDate={defaultDate} />);
     
     // Should have the default date set in the form
-    const startDateInput = screen.getByDisplayValue('2025-06-20T09:00');
-    expect(startDateInput).toBeInTheDocument();
+    const startDateInput = document.querySelector('input[name="startDateTime"]') as HTMLInputElement;
+    expect(startDateInput).toBeTruthy();
+    expect(startDateInput.value).toBe('2025-06-20T09:00');
   });
 
   it('does not render when closed', () => {
