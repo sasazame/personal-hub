@@ -210,7 +210,7 @@ function TodoApp() {
               {t('todo.title')}
             </h1>
             <p className="text-muted-foreground mt-1">
-              {t('app.subtitle')}
+              {t('todo.subtitle')}
             </p>
           </div>
           <div className="flex gap-2">

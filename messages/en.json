@@ -127,6 +127,7 @@
   },
   "todo": {
     "title": "TODO",
+    "subtitle": "Manage TODOs",
     "todos": "TODOs",
     "addTodo": "Add TODO",
     "editTodo": "Edit TODO",
@@ -607,7 +608,7 @@
     },
     "back": "Back",
     "stats": "Stats",
-    "history": "History", 
+    "history": "History",
     "calendar": "Calendar",
     "statistics": "Statistics",
     "achievementCalendar": "Achievement Calendar",
@@ -617,7 +618,6 @@
     "listView": "List View",
     "calendarView": "Calendar View",
     "achievementList": "Achievement List",
-    "achievementCalendar": "Achievement Calendar",
     "noAchievements": "No achievements recorded yet",
     "achievementDate": "Achievement Date",
     "achievementNote": "Note",
@@ -627,7 +627,6 @@
     "achievementDeleted": "Achievement deleted",
     "achievementUpdated": "Achievement updated",
     "type": "Type",
-    "today": "Today",
     "achieved": "Achieved",
     "pending": "Pending"
   },

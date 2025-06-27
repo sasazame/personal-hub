@@ -23,7 +23,7 @@
   },
   "app": {
     "title": "Personal Hub",
-    "description": "個人の生産性を向上させる総合的なプラットフォーム",
+    "description": "生産性を向上させる、総合プラットフォーム",
     "subtitle": "タスク、カレンダー、メモ、分析を一元管理"
   },
   "nav": {
@@ -52,7 +52,7 @@
     "quickStats": "クイック統計",
     "todaysTodos": "今日のTODO",
     "noTodos": "今日のTODOはありません",
-    "recentNotes": "最近のメモ", 
+    "recentNotes": "最近のメモ",
     "noNotes": "メモはまだありません",
     "todayEvents": "今日のイベント",
     "noEvents": "今日のイベントはありません",
@@ -127,6 +127,7 @@
   },
   "todo": {
     "title": "TODO",
+    "subtitle": "TODOを管理",
     "todos": "TODO一覧",
     "addTodo": "TODOを追加",
     "editTodo": "TODOを編集",
@@ -617,7 +618,6 @@
     "listView": "リスト表示",
     "calendarView": "カレンダー表示",
     "achievementList": "達成リスト",
-    "achievementCalendar": "達成カレンダー",
     "noAchievements": "まだ達成記録がありません",
     "achievementDate": "達成日",
     "achievementNote": "メモ",
@@ -627,7 +627,6 @@
     "achievementDeleted": "達成記録を削除しました",
     "achievementUpdated": "達成記録を更新しました",
     "type": "タイプ",
-    "today": "今日",
     "achieved": "達成済み",
     "pending": "未達成"
   },
