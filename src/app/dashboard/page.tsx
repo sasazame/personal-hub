@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { useTodaysEvents } from '@/hooks/useCalendar';
 import { useRecentNotes } from '@/hooks/useNotes';
+import { useGoals } from '@/hooks/useGoals';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { todoApi } from '@/lib/api';
 import { format } from 'date-fns';
@@ -17,7 +18,10 @@ import {
   FileText, 
   BarChart3,
   Plus,
-  ArrowRight
+  ArrowRight,
+  Target,
+  TrendingUp,
+  Trophy
 } from 'lucide-react';
 
 function DashboardPage() {
@@ -38,12 +42,18 @@ function DashboardPage() {
   });
   const { data: todaysEvents = [] } = useTodaysEvents();
   const { data: recentNotes = [] } = useRecentNotes(3);
+  const { activeGoals } = useGoals();
 
   // Handle 403 errors in development gracefully
   const todos = todosResponse?.content || [];
   const incompleteTodos = todos.filter(todo => todo.status !== 'DONE');
   const completedTodos = todos.filter(todo => todo.status === 'DONE');
   const completionRate = todos.length > 0 ? Math.round((completedTodos.length / todos.length) * 100) : 0;
+  
+  // Calculate goals statistics
+  const totalActiveGoals = activeGoals.length;
+  const goalsWithHighAchievement = activeGoals.filter(goal => goal.progressPercentage >= 80).length;
+  const dailyGoals = activeGoals.filter(goal => goal.goalType === 'DAILY');
   
   // Log error for debugging but don't break the UI
   if (todosError && process.env.NODE_ENV === 'development') {
@@ -60,6 +70,15 @@ function DashboardPage() {
       stats: t('dashboard.incompleteTasks', { count: incompleteTodos.length }),
       count: incompleteTodos.length,
       total: todos.length
+    },
+    {
+      title: 'Goals',
+      description: t('dashboard.goalTrackingDescription'),
+      icon: Target,
+      href: '/goals',
+      color: 'bg-indigo-500',
+      stats: t('dashboard.activeGoalsCount', { count: totalActiveGoals }),
+      count: totalActiveGoals
     },
     {
       title: 'Calendar',
@@ -85,7 +104,7 @@ function DashboardPage() {
       icon: BarChart3,
       href: '/analytics',
       color: 'bg-orange-500',
-      stats: `完了率: ${completionRate}%`,
+      stats: t('dashboard.completionRatePercentage', { rate: completionRate }),
       count: completionRate
     }
   ];
@@ -210,6 +229,102 @@ function DashboardPage() {
             )}
           </Card>
         </div>
+
+        {/* Active Goals Section */}
+        {activeGoals.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-semibold text-foreground">
+                {t('dashboard.activeGoals')}
+              </h2>
+              <Link href="/goals" className="text-indigo-600 hover:text-indigo-700 text-sm">
+                {t('dashboard.viewAllArrow')}
+              </Link>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {activeGoals.slice(0, 6).map((goal) => (
+                <Link key={goal.id} href={`/goals/${goal.id}`}>
+                  <Card className="h-full p-4 hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between">
+                        <h3 className="font-medium text-foreground truncate pr-2">{goal.title}</h3>
+                        <div className={`px-2 py-1 rounded text-xs font-medium ${
+                          goal.goalType === 'DAILY' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+                          goal.goalType === 'WEEKLY' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                          goal.goalType === 'MONTHLY' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' :
+                          'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                        }`}>
+                          {goal.goalType}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">{t('dashboard.progress')}</span>
+                          <span className="font-medium">{goal.progressPercentage}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full transition-all ${
+                              goal.progressPercentage >= 80 ? 'bg-green-500' :
+                              goal.progressPercentage >= 50 ? 'bg-yellow-500' :
+                              'bg-blue-500'
+                            }`}
+                            style={{ width: `${Math.min(100, goal.progressPercentage)}%` }}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>{goal.currentValue} / {goal.targetValue} {goal.metricUnit}</span>
+                        <span>{format(new Date(goal.endDate), 'MMM d')}</span>
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Goal Statistics */}
+        {activeGoals.length > 0 && (
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-foreground">
+                {t('dashboard.goalStatistics')}
+              </h2>
+              <Link href="/goals" className="text-indigo-600 hover:text-indigo-700 text-sm">
+                {t('dashboard.manageGoals')} →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="text-center p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+                <Target className="w-8 h-8 text-indigo-600 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-indigo-600">{totalActiveGoals}</div>
+                <div className="text-sm text-muted-foreground">{t('dashboard.activeGoals')}</div>
+              </div>
+              <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <Trophy className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-green-600">{goalsWithHighAchievement}</div>
+                <div className="text-sm text-muted-foreground">{t('dashboard.nearCompletion')}</div>
+              </div>
+              <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <TrendingUp className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-blue-600">{dailyGoals.length}</div>
+                <div className="text-sm text-muted-foreground">{t('dashboard.dailyGoals')}</div>
+              </div>
+              <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                <BarChart3 className="w-8 h-8 text-orange-600 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-orange-600">
+                  {activeGoals.length > 0 ? Math.round(activeGoals.reduce((sum, goal) => sum + goal.progressPercentage, 0) / activeGoals.length) : 0}%
+                </div>
+                <div className="text-sm text-muted-foreground">{t('dashboard.avgProgress')}</div>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* TODO進捗サマリー */}
         {todos.length > 0 && (
