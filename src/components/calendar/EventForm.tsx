@@ -73,6 +73,24 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
     return `${year}-${month}-${day}`;
   };
 
+  // Helper to get next 30-minute interval
+  const getNext30MinInterval = (date: Date) => {
+    const minutes = date.getMinutes();
+    const hours = date.getHours();
+    
+    // Round up to next 30-minute interval
+    if (minutes === 0 || minutes === 30) {
+      // Already on a 30-minute mark, use it
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes, 0, 0);
+    } else if (minutes < 30) {
+      // Round up to :30
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, 30, 0, 0);
+    } else {
+      // Round up to next hour
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours + 1, 0, 0, 0);
+    }
+  };
+
   const getDefaultValues = () => {
     if (event) {
       return {
@@ -88,13 +106,17 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
         syncToGoogle: event.syncToGoogle ?? true,
       };
     }
-    const now = defaultDate || new Date();
-    const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+    
+    // For new events, use next 30-minute interval
+    const baseDate = defaultDate || new Date();
+    const startTime = getNext30MinInterval(baseDate);
+    const endTime = new Date(startTime.getTime() + 30 * 60 * 1000); // 30 minutes after start
+    
     return {
       title: '',
       description: '',
-      startDateTime: formatDateTimeForInput(now),
-      endDateTime: formatDateTimeForInput(oneHourLater),
+      startDateTime: formatDateTimeForInput(startTime),
+      endDateTime: formatDateTimeForInput(endTime),
       location: '',
       allDay: false,
       color: 'blue',
@@ -255,7 +277,7 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
               <DateTimeInput
                 value={watch('startDateTime')}
                 onChange={(value) => setValue('startDateTime', value)}
-                label={`${t('calendar.startDate')} *`}
+                label={t('calendar.startDate')}
                 error={errors.startDateTime?.message}
                 required
               />
@@ -279,7 +301,7 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
               <DateTimeInput
                 value={watch('endDateTime')}
                 onChange={(value) => setValue('endDateTime', value)}
-                label={`${t('calendar.endDate')} *`}
+                label={t('calendar.endDate')}
                 error={errors.endDateTime?.message}
                 required
               />
