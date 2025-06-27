@@ -9,6 +9,7 @@ import { Input } from '@/components/ui';
 import { TextArea } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { Repeat, Calendar } from 'lucide-react';
+import { useFormSubmit } from '@/hooks/useFormSubmit';
 
 interface TodoFormProps {
   onSubmit: (data: CreateTodoDto) => void;
@@ -23,12 +24,7 @@ export default function TodoForm({ onSubmit, onCancel, isSubmitting, parentId }:
   const [repeatType, setRepeatType] = useState<RepeatType>('DAILY');
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm<CreateTodoDto>({
+  const form = useForm<CreateTodoDto>({
     defaultValues: {
       status: 'TODO',
       priority: 'MEDIUM',
@@ -36,6 +32,23 @@ export default function TodoForm({ onSubmit, onCancel, isSubmitting, parentId }:
       isRepeatable: false,
     },
   });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = form;
+
+  const { handleSubmit: handleFormSubmit, isSubmitting: isFormSubmitting } = useFormSubmit<CreateTodoDto>(
+    {
+      onSubmit,
+      resetOnSuccess: true,
+      closeOnSuccess: true,
+    },
+    form,
+    onCancel
+  );
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -55,7 +68,7 @@ export default function TodoForm({ onSubmit, onCancel, isSubmitting, parentId }:
       </ModalHeader>
       
       <ModalContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div>
             <Input
               {...register('title', { required: t('todo.titleRequired') })}
@@ -277,17 +290,17 @@ export default function TodoForm({ onSubmit, onCancel, isSubmitting, parentId }:
               type="button"
               variant="secondary"
               onClick={onCancel}
-              disabled={isSubmitting}
+              disabled={isFormSubmitting || isSubmitting}
             >
               {t('common.cancel')}
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isFormSubmitting || isSubmitting}
               className="flex items-center gap-2"
             >
               {isRepeatable && <Repeat className="h-4 w-4" />}
-              {isSubmitting ? t('todo.creating') : (isRepeatable ? t('recurring.createRecurring') : t('todo.createTodo'))}
+              {(isFormSubmitting || isSubmitting) ? t('todo.creating') : (isRepeatable ? t('recurring.createRecurring') : t('todo.createTodo'))}
             </Button>
           </div>
         </form>

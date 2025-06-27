@@ -9,6 +9,7 @@ import { Input } from '@/components/ui';
 import { TextArea } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { Repeat, Calendar } from 'lucide-react';
+import { useFormSubmit } from '@/hooks/useFormSubmit';
 
 interface TodoEditFormProps {
   todo: Todo;
@@ -25,12 +26,7 @@ export default function TodoEditForm({ todo, onSubmit, onCancel, onDelete, isSub
   const [repeatType, setRepeatType] = useState<RepeatType>(todo.repeatConfig?.repeatType || 'DAILY');
   const [selectedDays, setSelectedDays] = useState<number[]>(todo.repeatConfig?.daysOfWeek || []);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm<UpdateTodoDto>({
+  const form = useForm<UpdateTodoDto>({
     defaultValues: {
       title: todo.title,
       description: todo.description,
@@ -41,6 +37,23 @@ export default function TodoEditForm({ todo, onSubmit, onCancel, onDelete, isSub
       repeatConfig: todo.repeatConfig || null,
     },
   });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = form;
+
+  const { handleSubmit: handleFormSubmit, isSubmitting: isFormSubmitting } = useFormSubmit<UpdateTodoDto>(
+    {
+      onSubmit,
+      resetOnSuccess: false, // Don't reset on update
+      closeOnSuccess: true,
+    },
+    form,
+    onCancel
+  );
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -60,7 +73,7 @@ export default function TodoEditForm({ todo, onSubmit, onCancel, onDelete, isSub
       </ModalHeader>
       
       <ModalContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div>
             <Input
               {...register('title', { required: t('todo.titleRequired') })}
@@ -287,7 +300,7 @@ export default function TodoEditForm({ todo, onSubmit, onCancel, onDelete, isSub
               type="button"
               variant="danger"
               onClick={onDelete}
-              disabled={isSubmitting || isDeleting}
+              disabled={isFormSubmitting || isSubmitting || isDeleting}
             >
               {isDeleting ? t('common.loading') : t('common.delete')}
             </Button>
@@ -296,15 +309,15 @@ export default function TodoEditForm({ todo, onSubmit, onCancel, onDelete, isSub
                 type="button"
                 variant="secondary"
                 onClick={onCancel}
-                disabled={isSubmitting || isDeleting}
+                disabled={isFormSubmitting || isSubmitting || isDeleting}
               >
                 {t('common.cancel')}
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting || isDeleting}
+                disabled={isFormSubmitting || isSubmitting || isDeleting}
               >
-                {isSubmitting ? t('todo.updating') : t('todo.updateTodo')}
+                {(isFormSubmitting || isSubmitting) ? t('todo.updating') : t('todo.updateTodo')}
               </Button>
             </div>
           </div>

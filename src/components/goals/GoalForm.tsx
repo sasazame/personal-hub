@@ -121,10 +121,10 @@ export const GoalForm = ({ goal, onSuccess, onCancel }: GoalFormProps) => {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Goal Type</label>
+          <label className="block text-sm font-medium text-foreground mb-1">Goal Type</label>
           <select
             {...register('goalType')}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2"
+            className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
           >
             <option value={GoalType.DAILY}>Daily</option>
             <option value={GoalType.WEEKLY}>Weekly</option>
@@ -134,7 +134,7 @@ export const GoalForm = ({ goal, onSuccess, onCancel }: GoalFormProps) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Metric Type</label>
+          <label className="block text-sm font-medium text-foreground mb-1">Metric Type</label>
           <select
             {...register('metricType')}
             onChange={(e) => {
@@ -142,7 +142,7 @@ export const GoalForm = ({ goal, onSuccess, onCancel }: GoalFormProps) => {
               setSelectedMetricType(value);
               setValue('metricType', value);
             }}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2"
+            className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
           >
             <option value={MetricType.COUNT}>Count</option>
             <option value={MetricType.NUMERIC}>Numeric</option>

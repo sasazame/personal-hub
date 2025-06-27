@@ -195,9 +195,14 @@ describe('RegisterPage', () => {
     });
   });
 
-  it.skip('validates username format', async () => {
+  it('validates username format', async () => {
     const user = userEvent.setup();
     render(<RegisterPage />, { wrapper });
+
+    // Wait for the initial loading state to complete
+    await waitFor(() => {
+      expect(screen.queryByText('Creating account...')).not.toBeInTheDocument();
+    });
 
     const usernameInput = screen.getByLabelText(/username/i);
     const emailInput = screen.getByLabelText(/email/i);
@@ -214,9 +219,9 @@ describe('RegisterPage', () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/username can only contain letters, numbers, and underscores/i)).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText('Username can only contain letters, numbers, and underscores')).toBeInTheDocument();
+    }, { timeout: 10000 });
+  }, 15000);
 
   it('toggles password visibility', async () => {
     const user = userEvent.setup();
@@ -297,7 +302,7 @@ describe('RegisterPage', () => {
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith('/');
     });
-  });
+  }, 10000);
 
   it('has correct links', () => {
     render(<RegisterPage />, { wrapper });

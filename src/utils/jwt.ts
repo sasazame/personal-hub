@@ -2,6 +2,8 @@
  * Unified JWT utilities for consistent token handling across the application
  */
 
+import { conditionalChainSync } from './conditionalHelpers';
+
 export interface JWTPayload {
   exp?: number;
   iat?: number;
@@ -86,26 +88,30 @@ export function hasValidAccessToken(): boolean {
  * Debug token information (development only)
  */
 export function debugToken(token: string): void {
-  if (process.env.NODE_ENV !== 'development') {
-    return;
-  }
-  
   const payload = decodeJWT(token);
-  if (payload) {
-    const now = Math.floor(Date.now() / 1000);
-    const expiresIn = payload.exp ? payload.exp - now : 'unknown';
-    
-    console.log('JWT Debug Info:', {
-      tokenLength: token.length,
-      payload: {
-        sub: payload.sub,
-        exp: payload.exp,
-        iat: payload.iat,
-        expiresInSeconds: expiresIn,
-        isExpired: payload.exp ? payload.exp < now : 'unknown'
-      }
-    });
-  } else {
-    console.log('JWT Debug: Failed to decode token');
-  }
+  
+  conditionalChainSync([
+    {
+      condition: process.env.NODE_ENV === 'development',
+      action: () => {
+        if (payload !== null) {
+          const now = Math.floor(Date.now() / 1000);
+          const expiresIn = payload.exp ? payload.exp - now : 'unknown';
+          
+          console.log('JWT Debug Info:', {
+            tokenLength: token.length,
+            payload: {
+              sub: payload.sub,
+              exp: payload.exp,
+              iat: payload.iat,
+              expiresInSeconds: expiresIn,
+              isExpired: payload.exp ? payload.exp < now : 'unknown'
+            }
+          });
+        } else {
+          console.log('JWT Debug: Failed to decode token');
+        }
+      },
+    },
+  ]);
 }

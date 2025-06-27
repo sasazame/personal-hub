@@ -37,7 +37,9 @@ export default function ForgotPasswordPage() {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // In real implementation, this would call the password reset API
-      console.log('Password reset requested for:', data.email);
+      // Password reset requested for: data.email
+      // TODO: Implement actual password reset API call with data.email
+      void data; // Acknowledge the parameter for now
       
       setIsSubmitted(true);
     } catch (error) {
