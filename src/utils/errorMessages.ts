@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import { ErrorHandler, findErrorKey, extractErrorMessage } from './errorHandling';
 
 // Error message keys that correspond to the i18n messages
 export const ERROR_KEYS = {
@@ -30,81 +31,72 @@ export const ERROR_KEYS = {
   UNKNOWN_ERROR: 'errors.general',
 } as const;
 
+// Create a custom error handler with application-specific matchers
+const appErrorHandler = new ErrorHandler([
+  // Add application-specific matchers
+  { pattern: 'INVALID_CREDENTIALS', errorKey: ERROR_KEYS.INVALID_CREDENTIALS },
+  { pattern: 'USER_ALREADY_EXISTS', errorKey: ERROR_KEYS.USER_ALREADY_EXISTS },
+  { pattern: 'EMAIL_NOT_FOUND', errorKey: ERROR_KEYS.EMAIL_NOT_FOUND },
+  { pattern: 'INVALID_EMAIL', errorKey: ERROR_KEYS.INVALID_EMAIL },
+  { pattern: 'WEAK_PASSWORD', errorKey: ERROR_KEYS.WEAK_PASSWORD },
+  { pattern: 'TOKEN_EXPIRED', errorKey: ERROR_KEYS.TOKEN_EXPIRED },
+  { pattern: 'TODO_NOT_FOUND', errorKey: ERROR_KEYS.TODO_NOT_FOUND },
+]);
+
 // Custom hook to get translated error messages
 export function useErrorMessages() {
   const t = useTranslations();
   
   return {
     getErrorMessage: (error: unknown): string => {
-      if (error instanceof Error) {
-        // Check if the error message matches any of our predefined errors
-        const errorKey = Object.keys(ERROR_KEYS).find(key =>
-          error.message.includes(key) || error.message.includes(key.toLowerCase())
-        ) as keyof typeof ERROR_KEYS;
-        
-        if (errorKey) {
-          return t(ERROR_KEYS[errorKey]);
-        }
-        
-        // Check for common HTTP status codes
-        if (error.message.includes('401')) {
-          return t(ERROR_KEYS.UNAUTHORIZED);
-        }
-        if (error.message.includes('404')) {
-          return t(ERROR_KEYS.TODO_NOT_FOUND);
-        }
-        if (error.message.includes('500')) {
-          return t(ERROR_KEYS.SERVER_ERROR);
-        }
-        if (error.message.includes('timeout')) {
-          return t(ERROR_KEYS.TIMEOUT_ERROR);
-        }
-        if (error.message.includes('network') || error.message.includes('fetch')) {
-          return t(ERROR_KEYS.NETWORK_ERROR);
-        }
-        
-        // Return the original message if it's already user-friendly
-        return error.message;
+      // First try to find a matching error key
+      const errorKey = findErrorKey(error, ERROR_KEYS);
+      if (errorKey) {
+        return t(errorKey);
       }
       
-      return t(ERROR_KEYS.UNKNOWN_ERROR);
+      // Then try the error handler for HTTP status codes and patterns
+      const matchedKey = appErrorHandler.match(error);
+      if (matchedKey) {
+        return t(matchedKey);
+      }
+      
+      // Extract and return the error message or use default
+      const message = extractErrorMessage(error, ERROR_KEYS.UNKNOWN_ERROR);
+      
+      // If it's the default unknown error key, translate it
+      if (message === ERROR_KEYS.UNKNOWN_ERROR) {
+        return t(message);
+      }
+      
+      // Otherwise return the original message if it's user-friendly
+      return error instanceof Error ? error.message : t(ERROR_KEYS.UNKNOWN_ERROR);
     }
   };
 }
 
 // Legacy function for backward compatibility - should be updated to use the hook
 export function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    // Check if the error message matches any of our predefined errors
-    const errorKey = Object.keys(ERROR_KEYS).find(key =>
-      error.message.includes(key) || error.message.includes(key.toLowerCase())
-    ) as keyof typeof ERROR_KEYS;
-    
-    if (errorKey) {
-      // Return the key for components to handle translation
-      return ERROR_KEYS[errorKey];
-    }
-    
-    // Check for common HTTP status codes
-    if (error.message.includes('401')) {
-      return ERROR_KEYS.UNAUTHORIZED;
-    }
-    if (error.message.includes('404')) {
-      return ERROR_KEYS.TODO_NOT_FOUND;
-    }
-    if (error.message.includes('500')) {
-      return ERROR_KEYS.SERVER_ERROR;
-    }
-    if (error.message.includes('timeout')) {
-      return ERROR_KEYS.TIMEOUT_ERROR;
-    }
-    if (error.message.includes('network') || error.message.includes('fetch')) {
-      return ERROR_KEYS.NETWORK_ERROR;
-    }
-    
-    // Return the original message if it's already user-friendly
-    return error.message;
+  // First try to find a matching error key
+  const errorKey = findErrorKey(error, ERROR_KEYS);
+  if (errorKey) {
+    return errorKey;
   }
   
-  return ERROR_KEYS.UNKNOWN_ERROR;
+  // Then try the error handler for HTTP status codes and patterns
+  const matchedKey = appErrorHandler.match(error);
+  if (matchedKey) {
+    return matchedKey;
+  }
+  
+  // Extract and return the error message or use default
+  const message = extractErrorMessage(error, ERROR_KEYS.UNKNOWN_ERROR);
+  
+  // If it's the default unknown error key, return it
+  if (message === ERROR_KEYS.UNKNOWN_ERROR) {
+    return message;
+  }
+  
+  // Otherwise return the original message if it's user-friendly
+  return error instanceof Error ? error.message : ERROR_KEYS.UNKNOWN_ERROR;
 }

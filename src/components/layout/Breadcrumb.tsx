@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { ChevronRight, Home } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { getRouteLabel } from '@/config/navigation';
 
 interface BreadcrumbSegment {
   label: string;
@@ -26,34 +27,8 @@ export function Breadcrumb() {
       currentPath += `/${segment}`;
       const isLast = index === segments.length - 1;
       
-      // Translate segment names
-      let label = segment;
-      switch (segment) {
-        case 'todos':
-          label = t('nav.todos');
-          break;
-        case 'profile':
-          label = t('nav.profile');
-          break;
-        case 'settings':
-          label = t('nav.settings');
-          break;
-        case 'calendar':
-          label = t('nav.calendar');
-          break;
-        case 'tags':
-          label = t('nav.tags');
-          break;
-        case 'starred':
-          label = t('nav.starred');
-          break;
-        case 'archive':
-          label = t('nav.archive');
-          break;
-        default:
-          // Capitalize first letter for dynamic segments
-          label = segment.charAt(0).toUpperCase() + segment.slice(1);
-      }
+      // Use centralized route label translation
+      const label = getRouteLabel(segment, t);
 
       breadcrumbs.push({
         label,
