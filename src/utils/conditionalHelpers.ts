@@ -163,3 +163,55 @@ export function conditionalPipe<T>(...processors: Array<{
     return result;
   };
 }
+
+/**
+ * Execute nested conditional chains
+ * Useful for reducing duplication in complex conditional structures
+ */
+export interface ConditionalChainItem {
+  condition: boolean | (() => boolean);
+  action: () => void | Promise<void>;
+  nested?: ConditionalChainItem[];
+}
+
+export async function conditionalChain(
+  chains: ConditionalChainItem[]
+): Promise<void> {
+  for (const { condition, action, nested } of chains) {
+    const shouldExecute = typeof condition === 'function' ? condition() : condition;
+    
+    if (shouldExecute) {
+      await action();
+      
+      if (nested && nested.length > 0) {
+        await conditionalChain(nested);
+      }
+    }
+  }
+}
+
+/**
+ * Synchronous version of conditionalChain for non-async operations
+ */
+export function conditionalChainSync(
+  chains: Array<{
+    condition: boolean | (() => boolean);
+    action: () => void;
+    nested?: Array<{
+      condition: boolean | (() => boolean);
+      action: () => void;
+    }>;
+  }>
+): void {
+  chains.forEach(({ condition, action, nested }) => {
+    const shouldExecute = typeof condition === 'function' ? condition() : condition;
+    
+    if (shouldExecute) {
+      action();
+      
+      if (nested) {
+        conditionalChainSync(nested);
+      }
+    }
+  });
+}

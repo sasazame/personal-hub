@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { UseFormReturn } from 'react-hook-form';
+import { UseFormReturn, FieldValues } from 'react-hook-form';
 
 export interface UseFormSubmitOptions<TFormData, TSubmitData = TFormData> {
   onSubmit: (data: TSubmitData) => Promise<void> | void;
@@ -19,7 +19,7 @@ export interface UseFormSubmitReturn<TFormData> {
  * Generic hook for handling form submissions with common patterns
  * Reduces code duplication across form components
  */
-export function useFormSubmit<TFormData, TSubmitData = TFormData>(
+export function useFormSubmit<TFormData extends FieldValues = FieldValues, TSubmitData = TFormData>(
   options: UseFormSubmitOptions<TFormData, TSubmitData>,
   form?: UseFormReturn<TFormData>,
   onClose?: () => void
@@ -82,9 +82,9 @@ export function createFormDataTransformer<TFormData, TSubmitData>(
     // Merge with defaults, filtering out undefined values
     const result = { ...defaultValues } as TSubmitData;
     
-    Object.entries(transformed as any).forEach(([key, value]) => {
+    Object.entries(transformed as Record<string, unknown>).forEach(([key, value]) => {
       if (value !== undefined) {
-        (result as any)[key] = value;
+        (result as Record<string, unknown>)[key] = value;
       }
     });
     
@@ -99,14 +99,14 @@ export const formTransformers = {
   /**
    * Ensure array fields have default empty arrays
    */
-  ensureArrays: <T extends Record<string, any>>(
+  ensureArrays: <T extends Record<string, unknown>>(
     data: T,
     arrayFields: Array<keyof T>
   ): T => {
     const result = { ...data };
     arrayFields.forEach(field => {
       if (!result[field]) {
-        result[field] = [] as any;
+        result[field] = [] as T[keyof T];
       }
     });
     return result;
@@ -115,10 +115,10 @@ export const formTransformers = {
   /**
    * Convert empty strings to undefined
    */
-  emptyToUndefined: <T extends Record<string, any>>(data: T): T => {
+  emptyToUndefined: <T extends Record<string, unknown>>(data: T): T => {
     const result = {} as T;
     Object.entries(data).forEach(([key, value]) => {
-      result[key as keyof T] = value === '' ? undefined : value;
+      (result as Record<string, unknown>)[key] = value === '' ? undefined : value;
     });
     return result;
   },
@@ -126,7 +126,7 @@ export const formTransformers = {
   /**
    * Format date fields
    */
-  formatDates: <T extends Record<string, any>>(
+  formatDates: <T extends Record<string, unknown>>(
     data: T,
     dateFields: Array<keyof T>,
     formatter: (date: string) => string
@@ -134,7 +134,7 @@ export const formTransformers = {
     const result = { ...data };
     dateFields.forEach(field => {
       if (result[field]) {
-        result[field] = formatter(result[field] as string) as any;
+        result[field] = formatter(result[field] as string) as T[keyof T];
       }
     });
     return result;

@@ -2,6 +2,11 @@ import { renderHook, act } from '@testing-library/react';
 import { UseFormReturn } from 'react-hook-form';
 import { useFormSubmit, createFormDataTransformer, formTransformers } from '../useFormSubmit';
 
+interface TestFormData {
+  name: string;
+  description?: string;
+}
+
 describe('useFormSubmit', () => {
   const mockOnSubmit = jest.fn();
   const mockOnSuccess = jest.fn();
@@ -11,7 +16,7 @@ describe('useFormSubmit', () => {
 
   const mockForm = {
     reset: mockReset,
-  } as unknown as UseFormReturn<any>;
+  } as unknown as UseFormReturn<TestFormData>;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -99,7 +104,7 @@ describe('useFormSubmit', () => {
     );
 
     await act(async () => {
-      await result.current.handleSubmit({});
+      await result.current.handleSubmit({ name: 'test' });
     });
 
     expect(mockReset).not.toHaveBeenCalled();
@@ -118,7 +123,7 @@ describe('useFormSubmit', () => {
     );
 
     await act(async () => {
-      await result.current.handleSubmit({});
+      await result.current.handleSubmit({ name: 'test' });
     });
 
     expect(mockOnClose).not.toHaveBeenCalled();
@@ -160,9 +165,20 @@ describe('useFormSubmit', () => {
 
 describe('createFormDataTransformer', () => {
   it('should merge with default values', () => {
-    const transformer = createFormDataTransformer(
+    interface FormData {
+      name: string;
+      extra?: string;
+    }
+    
+    interface SubmitData {
+      status: string;
+      priority: string;
+      name?: string;
+    }
+    
+    const transformer = createFormDataTransformer<FormData, SubmitData>(
       { status: 'active', priority: 'medium' },
-      (data: any) => ({ name: data.name })
+      (data) => ({ name: data.name })
     );
 
     const result = transformer({ name: 'Test', extra: 'data' });
@@ -175,9 +191,19 @@ describe('createFormDataTransformer', () => {
   });
 
   it('should filter out undefined values', () => {
-    const transformer = createFormDataTransformer(
+    interface FormData {
+      name: string;
+    }
+    
+    interface SubmitData {
+      status: string;
+      name?: string;
+      description?: string;
+    }
+    
+    const transformer = createFormDataTransformer<FormData, SubmitData>(
       { status: 'active' },
-      (data: any) => ({
+      (data) => ({
         name: data.name,
         description: undefined,
       })
@@ -264,7 +290,7 @@ describe('formTransformers', () => {
       const formatter = jest.fn();
 
       const result = formTransformers.formatDates(
-        data as any,
+        data as Record<string, unknown>,
         ['startDate', 'endDate'],
         formatter
       );

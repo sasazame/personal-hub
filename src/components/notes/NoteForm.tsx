@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { Note, CreateNoteDto } from '@/types/note';
 import { Button, Input, TextArea, Modal } from '@/components/ui';
 import { X, Plus } from 'lucide-react';
+import { useFormSubmit } from '@/hooks/useFormSubmit';
 
 // Schema and type will be created inside component to access translations
 
@@ -33,13 +34,7 @@ export function NoteForm({ isOpen, onClose, onSubmit, note, isSubmitting }: Note
   
   type NoteFormData = z.infer<typeof noteSchema>;
   
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    reset,
-  } = useForm<NoteFormData>({
+  const form = useForm<NoteFormData>({
     resolver: zodResolver(noteSchema),
     defaultValues: note ? {
       title: note.title,
@@ -49,6 +44,36 @@ export function NoteForm({ isOpen, onClose, onSubmit, note, isSubmitting }: Note
       content: '',
     }
   });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    reset,
+  } = form;
+
+  // Create custom close handler
+  const handleClose = () => {
+    reset();
+    setTags([]);
+    setCurrentTag('');
+    onClose();
+  };
+
+  const { handleSubmit: handleFormSubmit, isSubmitting: isFormSubmitting } = useFormSubmit<NoteFormData, CreateNoteDto>(
+    {
+      onSubmit,
+      transform: (data) => ({
+        ...data,
+        tags,
+      }),
+      resetOnSuccess: true,
+      closeOnSuccess: true,
+    },
+    form,
+    handleClose
+  );
 
   // Reset form when note changes
   useEffect(() => {
@@ -61,21 +86,6 @@ export function NoteForm({ isOpen, onClose, onSubmit, note, isSubmitting }: Note
       setTags([]);
     }
   }, [note, setValue, reset]);
-
-  const handleFormSubmit = (data: NoteFormData) => {
-    onSubmit({
-      ...data,
-      tags,
-    });
-    handleClose();
-  };
-
-  const handleClose = () => {
-    reset();
-    setTags([]);
-    setCurrentTag('');
-    onClose();
-  };
 
   const addTag = () => {
     const trimmedTag = currentTag.trim();
@@ -183,15 +193,15 @@ export function NoteForm({ isOpen, onClose, onSubmit, note, isSubmitting }: Note
             type="button"
             variant="secondary"
             onClick={handleClose}
-            disabled={isSubmitting}
+            disabled={isFormSubmitting || isSubmitting}
           >
             {t('common.cancel')}
           </Button>
           <Button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isFormSubmitting || isSubmitting}
           >
-            {isSubmitting ? (note ? t('notes.updating') : t('notes.creating')) : note ? t('notes.update') : t('notes.create')}
+            {(isFormSubmitting || isSubmitting) ? (note ? t('notes.updating') : t('notes.creating')) : note ? t('notes.update') : t('notes.create')}
           </Button>
         </div>
         </form>

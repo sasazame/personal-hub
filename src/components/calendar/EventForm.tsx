@@ -9,7 +9,7 @@ import { CalendarEvent, CreateCalendarEventDto } from '@/types/calendar';
 import { Button, Input, TextArea, Modal } from '@/components/ui';
 import { Switch } from '@/components/ui/switch';
 import { useGoogleAuth } from '@/hooks/useGoogleIntegration';
-import { useFormSubmit, formTransformers } from '@/hooks/useFormSubmit';
+import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { format } from 'date-fns';
 
 // Schema and type will be created inside component to access translations

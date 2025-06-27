@@ -5,6 +5,8 @@ import {
   conditionalExecute,
   createSwitchMapper,
   conditionalPipe,
+  conditionalChain,
+  conditionalChainSync,
   ConditionalRule,
   MatchOptions
 } from '../conditionalHelpers';
@@ -245,5 +247,153 @@ describe('conditionalPipe', () => {
 
     pipeline(1);
     expect(order).toEqual([1, 2, 3, 4]);
+  });
+});
+
+describe('conditionalChain', () => {
+  it('should execute actions when conditions are true', async () => {
+    const executed: string[] = [];
+
+    await conditionalChain([
+      {
+        condition: true,
+        action: () => { executed.push('first'); },
+      },
+      {
+        condition: false,
+        action: () => { executed.push('second'); },
+      },
+      {
+        condition: () => true,
+        action: () => { executed.push('third'); },
+      },
+    ]);
+
+    expect(executed).toEqual(['first', 'third']);
+  });
+
+  it('should handle nested chains', async () => {
+    const executed: string[] = [];
+
+    await conditionalChain([
+      {
+        condition: true,
+        action: () => { executed.push('outer'); },
+        nested: [
+          {
+            condition: true,
+            action: () => { executed.push('nested1'); },
+          },
+          {
+            condition: false,
+            action: () => { executed.push('nested2'); },
+          },
+          {
+            condition: true,
+            action: () => { executed.push('nested3'); },
+            nested: [
+              {
+                condition: true,
+                action: () => { executed.push('deeply-nested'); },
+              },
+            ],
+          },
+        ],
+      },
+    ]);
+
+    expect(executed).toEqual(['outer', 'nested1', 'nested3', 'deeply-nested']);
+  });
+
+  it('should skip nested chains when parent condition is false', async () => {
+    const executed: string[] = [];
+
+    await conditionalChain([
+      {
+        condition: false,
+        action: () => { executed.push('outer'); },
+        nested: [
+          {
+            condition: true,
+            action: () => { executed.push('should-not-execute'); },
+          },
+        ],
+      },
+    ]);
+
+    expect(executed).toEqual([]);
+  });
+
+  it('should handle async actions', async () => {
+    const executed: string[] = [];
+
+    await conditionalChain([
+      {
+        condition: true,
+        action: async () => {
+          await new Promise(resolve => setTimeout(resolve, 10));
+          executed.push('async1');
+        },
+      },
+      {
+        condition: true,
+        action: async () => {
+          await new Promise(resolve => setTimeout(resolve, 5));
+          executed.push('async2');
+        },
+      },
+    ]);
+
+    expect(executed).toEqual(['async1', 'async2']);
+  });
+});
+
+describe('conditionalChainSync', () => {
+  it('should execute actions when conditions are true', () => {
+    const executed: string[] = [];
+
+    conditionalChainSync([
+      {
+        condition: true,
+        action: () => { executed.push('first'); },
+      },
+      {
+        condition: false,
+        action: () => { executed.push('second'); },
+      },
+      {
+        condition: () => true,
+        action: () => { executed.push('third'); },
+      },
+    ]);
+
+    expect(executed).toEqual(['first', 'third']);
+  });
+
+  it('should handle nested chains', () => {
+    const executed: string[] = [];
+
+    conditionalChainSync([
+      {
+        condition: true,
+        action: () => { executed.push('outer'); },
+        nested: [
+          {
+            condition: true,
+            action: () => { executed.push('nested1'); },
+          },
+          {
+            condition: false,
+            action: () => { executed.push('nested2'); },
+          },
+        ],
+      },
+    ]);
+
+    expect(executed).toEqual(['outer', 'nested1']);
+  });
+
+  it('should handle empty chains', () => {
+    expect(() => conditionalChainSync([])).not.toThrow();
   });
 });
