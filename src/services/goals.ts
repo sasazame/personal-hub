@@ -7,6 +7,10 @@ import type {
   RecordProgressDto,
   GoalMilestone,
   GoalType,
+  GoalWithTracking,
+  ToggleAchievementResponse,
+  PagedResponse,
+  UpdateProgressDto,
 } from '@/types/goal';
 
 export const goalsService = {
@@ -15,8 +19,13 @@ export const goalsService = {
     return response.data;
   },
 
-  getGoal: async (id: number): Promise<Goal> => {
-    const response = await api.get<Goal>(`/goals/${id}`);
+  getGoal: async (id: number): Promise<GoalWithTracking> => {
+    const response = await api.get<GoalWithTracking>(`/goals/${id}`);
+    return response.data;
+  },
+  
+  getGoalWithTracking: async (id: number): Promise<GoalWithTracking> => {
+    const response = await api.get<GoalWithTracking>(`/goals/${id}`);
     return response.data;
   },
 
@@ -74,5 +83,54 @@ export const goalsService = {
 
   resetWeeklyGoals: async (): Promise<void> => {
     await api.post('/goals/reset-weekly');
+  },
+
+  toggleAchievement: async (goalId: number): Promise<ToggleAchievementResponse> => {
+    const response = await api.post<ToggleAchievementResponse>(
+      `/goals/${goalId}/toggle-achievement`
+    );
+    return response.data;
+  },
+
+  getAchievementHistory: async (goalId: number): Promise<GoalProgress[]> => {
+    const response = await api.get<GoalProgress[]>(
+      `/goals/${goalId}/achievement-history`
+    );
+    return response.data;
+  },
+
+  getProgressHistory: async (
+    goalId: number,
+    params?: {
+      page?: number;
+      size?: number;
+      startDate?: string;
+      endDate?: string;
+    }
+  ): Promise<PagedResponse<GoalProgress>> => {
+    const response = await api.get<PagedResponse<GoalProgress>>(
+      `/goals/${goalId}/progress-history`,
+      { params }
+    );
+    return response.data;
+  },
+
+  updateProgress: async (
+    goalId: number,
+    progressId: number,
+    data: UpdateProgressDto
+  ): Promise<GoalProgress> => {
+    const response = await api.put<GoalProgress>(
+      `/goals/${goalId}/progress/${progressId}`,
+      data
+    );
+    return response.data;
+  },
+
+  deleteProgress: async (
+    goalId: number,
+    progressId: number
+  ): Promise<void> => {
+    await api.delete(`/goals/${goalId}/progress/${progressId}`);
   },
 };

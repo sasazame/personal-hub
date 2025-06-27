@@ -32,8 +32,12 @@ before-*.png
 after-*.png
 README-original.md
 
+# local source (Claude-generated)
+/localsrc
 # local documentation (Claude-generated)
 /localdoc
+# log files
+/logs
 
 # debug
 npm-debug.log*

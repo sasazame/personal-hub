@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { TextArea } from '@/components/ui/TextArea';
 import { useGoals } from '@/hooks/useGoals';
-import { GoalType, MetricType } from '@/types/goal';
+import { GoalType, MetricType, type Goal } from '@/types/goal';
 
 const goalFormSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -32,13 +32,15 @@ const goalFormSchema = z.object({
 type GoalFormData = z.infer<typeof goalFormSchema>;
 
 interface GoalFormProps {
+  goal?: Goal;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
-export const GoalForm = ({ onSuccess, onCancel }: GoalFormProps) => {
-  const { createGoal, isCreating } = useGoals();
-  const [selectedMetricType, setSelectedMetricType] = useState<MetricType>(MetricType.COUNT);
+export const GoalForm = ({ goal, onSuccess, onCancel }: GoalFormProps) => {
+  const { createGoal, isCreating, updateGoal, isUpdating } = useGoals();
+  const [selectedMetricType, setSelectedMetricType] = useState<MetricType>(goal?.metricType || MetricType.COUNT);
+  const isEditing = !!goal;
 
   const {
     register,
@@ -47,7 +49,16 @@ export const GoalForm = ({ onSuccess, onCancel }: GoalFormProps) => {
     setValue,
   } = useForm<GoalFormData>({
     resolver: zodResolver(goalFormSchema),
-    defaultValues: {
+    defaultValues: goal ? {
+      title: goal.title,
+      description: goal.description || '',
+      goalType: goal.goalType,
+      metricType: goal.metricType,
+      metricUnit: goal.metricUnit || '',
+      targetValue: goal.targetValue,
+      startDate: format(new Date(goal.startDate), 'yyyy-MM-dd'),
+      endDate: format(new Date(goal.endDate), 'yyyy-MM-dd'),
+    } : {
       goalType: GoalType.WEEKLY,
       metricType: MetricType.COUNT,
       startDate: format(new Date(), 'yyyy-MM-dd'),
@@ -56,11 +67,19 @@ export const GoalForm = ({ onSuccess, onCancel }: GoalFormProps) => {
   });
 
   const onSubmit = (data: GoalFormData) => {
-    createGoal(data, {
-      onSuccess: () => {
-        onSuccess?.();
-      },
-    });
+    if (isEditing) {
+      updateGoal({ id: goal.id, data }, {
+        onSuccess: () => {
+          onSuccess?.();
+        },
+      });
+    } else {
+      createGoal(data, {
+        onSuccess: () => {
+          onSuccess?.();
+        },
+      });
+    }
   };
 
   const getMetricUnitPlaceholder = () => {
@@ -182,13 +201,13 @@ export const GoalForm = ({ onSuccess, onCancel }: GoalFormProps) => {
             type="button"
             variant="secondary"
             onClick={onCancel}
-            disabled={isCreating}
+            disabled={isCreating || isUpdating}
           >
             Cancel
           </Button>
         )}
-        <Button type="submit" disabled={isCreating}>
-          {isCreating ? 'Creating...' : 'Create Goal'}
+        <Button type="submit" disabled={isCreating || isUpdating}>
+          {isEditing ? (isUpdating ? 'Updating...' : 'Update Goal') : (isCreating ? 'Creating...' : 'Create Goal')}
         </Button>
       </div>
     </form>

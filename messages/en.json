@@ -496,6 +496,141 @@
   "language": {
     "japanese": "Japanese"
   },
+  "goal": {
+    "title": "Goal Management",
+    "subtitle": "Set goals and track progress",
+    "myGoals": "My Goals",
+    "createGoal": "Create New Goal",
+    "editGoal": "Edit Goal",
+    "deleteGoal": "Delete Goal",
+    "confirmDelete": "Are you sure you want to delete this goal?",
+    "noGoals": "No goals found",
+    "createFirstGoal": "Create your first goal",
+    "goalCreated": "Goal created successfully",
+    "goalUpdated": "Goal updated successfully",
+    "goalDeleted": "Goal deleted successfully",
+    "recordProgress": "Record Progress",
+    "progressRecorded": "Progress recorded successfully",
+    "progress": "Progress",
+    "progressPercentage": "{percentage}%",
+    "progressValue": "{current} / {target}",
+    "filterByType": "Filter by Type:",
+    "activeGoalsOnly": "Active Goals Only",
+    "allTypes": "All Types",
+    "fields": {
+      "title": "Title",
+      "description": "Description",
+      "goalType": "Goal Type",
+      "metricType": "Metric Type",
+      "targetValue": "Target Value",
+      "currentValue": "Current Value",
+      "metricUnit": "Unit",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "status": "Status",
+      "value": "Value",
+      "note": "Note"
+    },
+    "placeholders": {
+      "title": "Enter goal title",
+      "description": "Detailed description of the goal (optional)",
+      "targetValue": "Enter target value",
+      "metricUnit": "e.g., books, km, hours",
+      "progressValue": "Enter progress value",
+      "progressNote": "Notes on progress (optional)"
+    },
+    "types": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "annual": "Annual"
+    },
+    "metricTypes": {
+      "count": "Count",
+      "numeric": "Numeric",
+      "percentage": "Percentage",
+      "time": "Time"
+    },
+    "statuses": {
+      "active": "Active",
+      "completed": "Completed",
+      "paused": "Paused",
+      "cancelled": "Cancelled"
+    },
+    "actions": {
+      "create": "Create",
+      "update": "Update",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "close": "Close"
+    },
+    "validation": {
+      "titleRequired": "Title is required",
+      "targetValueRequired": "Target value is required",
+      "targetValuePositive": "Target value must be a positive number",
+      "progressValueRequired": "Progress value is required",
+      "progressValuePositive": "Progress value must be a positive number",
+      "dateRangeInvalid": "End date must be after start date"
+    },
+    "sections": {
+      "annualGoals": "Annual Goals",
+      "monthlyGoals": "Monthly Goals",
+      "weeklyGoals": "Weekly Goals",
+      "dailyGoals": "Daily Goals"
+    },
+    "units": {
+      "minutes": "minutes",
+      "hours": "hours"
+    },
+    "viewDetails": "View Details",
+    "viewCalendar": "Calendar",
+    "today": "Today",
+    "days": "days",
+    "tracking": {
+      "achievementStatus": "Achievement Status",
+      "achievedDays": "{achieved}/{total} days",
+      "currentStreak": "Streak",
+      "longestStreak": "Best",
+      "todayStatus": {
+        "pending": "Not achieved",
+        "achieved": "Achieved",
+        "failed": "Failed"
+      },
+      "achievementRecorded": "Achievement recorded",
+      "achievementRemoved": "Achievement removed",
+      "recordAchievement": "Record today's achievement",
+      "viewCalendar": "View calendar"
+    },
+    "errors": {
+      "toggleAchievementFailed": "Failed to update achievement status"
+    },
+    "back": "Back",
+    "stats": "Stats",
+    "history": "History", 
+    "calendar": "Calendar",
+    "statistics": "Statistics",
+    "achievementCalendar": "Achievement Calendar",
+    "comingSoon": "Coming Soon",
+    "goalNotFound": "Goal not found",
+    "achievementHistory": "Achievement History",
+    "listView": "List View",
+    "calendarView": "Calendar View",
+    "achievementList": "Achievement List",
+    "achievementCalendar": "Achievement Calendar",
+    "noAchievements": "No achievements recorded yet",
+    "achievementDate": "Achievement Date",
+    "achievementNote": "Note",
+    "editAchievement": "Edit Achievement",
+    "deleteAchievement": "Delete Achievement",
+    "confirmDeleteAchievement": "Are you sure you want to delete this achievement?",
+    "achievementDeleted": "Achievement deleted",
+    "achievementUpdated": "Achievement updated",
+    "type": "Type",
+    "today": "Today",
+    "achieved": "Achieved",
+    "pending": "Pending"
+  },
   "legal": {
     "terms": {
       "title": "Terms of Service",

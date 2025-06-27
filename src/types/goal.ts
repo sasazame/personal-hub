@@ -85,3 +85,38 @@ export enum GoalStatus {
 export interface UpdateWeekStartDayDto {
   weekStartDay: number;
 }
+
+export interface GoalTrackingInfo {
+  totalDays: number;
+  achievedDays: number;
+  achievementRate: number;
+  currentStreak: number;
+  longestStreak: number;
+  todayStatus: 'PENDING' | 'ACHIEVED' | 'FAILED';
+  currentPeriodStatus: 'IN_PROGRESS' | 'COMPLETED' | 'FAILED';
+  currentPeriodAchieved: boolean;
+}
+
+export interface GoalWithTracking extends Goal {
+  trackingInfo: GoalTrackingInfo;
+}
+
+export interface ToggleAchievementResponse {
+  goalId: number;
+  periodType: string;
+  periodDate: string;
+  achieved: boolean;
+  progressId: number | null;
+}
+
+export interface PagedResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+}
+
+export interface UpdateProgressDto {
+  value: number;
+  note?: string;
+}

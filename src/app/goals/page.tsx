@@ -1,15 +1,24 @@
-import { Metadata } from 'next';
-import { GoalsList } from '@/components/goals';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Goals - Personal Hub',
-  description: 'Manage your personal goals and track progress',
-};
+import { AuthGuard } from '@/components/auth';
+import { AppLayout } from '@/components/layout';
+import { GoalsList } from '@/components/goals';
+import { usePageTitle } from '@/hooks/usePageTitle';
+
+function GoalsApp() {
+  usePageTitle('Goals - Personal Hub');
+
+  return (
+    <AppLayout>
+      <GoalsList />
+    </AppLayout>
+  );
+}
 
 export default function GoalsPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <GoalsList />
-    </div>
+    <AuthGuard>
+      <GoalsApp />
+    </AuthGuard>
   );
 }
