@@ -6,11 +6,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslations } from 'next-intl';
 import { CalendarEvent, CreateCalendarEventDto } from '@/types/calendar';
-import { Button, Input, TextArea, Modal } from '@/components/ui';
+import { Button, Input, TextArea, Modal, DateTimeInput } from '@/components/ui';
 import { Switch } from '@/components/ui/switch';
 import { useGoogleAuth } from '@/hooks/useGoogleIntegration';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
-import { format } from 'date-fns';
 
 // Schema and type will be created inside component to access translations
 
@@ -54,31 +53,93 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
     { value: 'orange', label: t('calendar.colors.orange'), class: 'bg-orange-500' },
   ];
   
-  const form = useForm<EventFormData>({
-    resolver: zodResolver(eventSchema),
-    defaultValues: event ? {
-      title: event.title,
-      description: event.description || '',
-      startDateTime: format(new Date(event.startDateTime), "yyyy-MM-dd'T'HH:mm"),
-      endDateTime: format(new Date(event.endDateTime), "yyyy-MM-dd'T'HH:mm"),
-      location: event.location || '',
-      allDay: event.allDay,
-      color: event.color || 'blue',
-      reminders: event.reminders || [],
-      recurrence: event.recurrence,
-      syncToGoogle: event.syncToGoogle ?? true,
-    } : {
+  // Helper to format datetime for input
+  const formatDateTimeForInput = (date: Date | string) => {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(d.getTime())) {
+      // Return current date if invalid
+      return new Date().toISOString();
+    }
+    // For DateTimeInput component, we need ISO string
+    return d.toISOString();
+  };
+  
+  // Helper to format date for HTML date input
+  const formatDateForInput = (date: Date | string) => {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Helper to get next 30-minute interval
+  const getNext30MinInterval = (date: Date) => {
+    const minutes = date.getMinutes();
+    const hours = date.getHours();
+    
+    // Round up to next 30-minute interval
+    if (minutes === 0 || minutes === 30) {
+      // Already on a 30-minute mark, use it
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes, 0, 0);
+    } else if (minutes < 30) {
+      // Round up to :30
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, 30, 0, 0);
+    } else {
+      // Round up to next hour
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours + 1, 0, 0, 0);
+    }
+  };
+
+  const getDefaultValues = () => {
+    if (event) {
+      return {
+        title: event.title,
+        description: event.description || '',
+        startDateTime: event.allDay ? formatDateForInput(event.startDateTime) : formatDateTimeForInput(event.startDateTime),
+        endDateTime: event.allDay ? formatDateForInput(event.endDateTime) : formatDateTimeForInput(event.endDateTime),
+        location: event.location || '',
+        allDay: event.allDay,
+        color: event.color || 'blue',
+        reminders: event.reminders || [],
+        recurrence: event.recurrence,
+        syncToGoogle: event.syncToGoogle ?? true,
+      };
+    }
+    
+    // For new events, use next 30-minute interval based on current time
+    const now = new Date();
+    const startTime = getNext30MinInterval(now);
+    const endTime = new Date(startTime.getTime() + 30 * 60 * 1000); // 30 minutes after start
+    
+    // If a specific date was clicked, use that date but with the calculated time
+    if (defaultDate) {
+      startTime.setFullYear(defaultDate.getFullYear());
+      startTime.setMonth(defaultDate.getMonth());
+      startTime.setDate(defaultDate.getDate());
+      
+      endTime.setFullYear(defaultDate.getFullYear());
+      endTime.setMonth(defaultDate.getMonth());
+      endTime.setDate(defaultDate.getDate());
+    }
+    
+    return {
       title: '',
       description: '',
-      startDateTime: defaultDate ? format(defaultDate, "yyyy-MM-dd'T'09:00") : format(new Date(), "yyyy-MM-dd'T'09:00"),
-      endDateTime: defaultDate ? format(defaultDate, "yyyy-MM-dd'T'10:00") : format(new Date(), "yyyy-MM-dd'T'10:00"),
+      startDateTime: formatDateTimeForInput(startTime),
+      endDateTime: formatDateTimeForInput(endTime),
       location: '',
       allDay: false,
       color: 'blue',
       reminders: [],
       recurrence: undefined,
       syncToGoogle: true,
-    }
+    };
+  };
+
+  const form = useForm<EventFormData>({
+    resolver: zodResolver(eventSchema),
+    defaultValues: getDefaultValues()
   });
 
   const {
@@ -92,13 +153,16 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
 
   const allDay = watch('allDay');
 
-  // Update form when defaultDate changes
+  // Update form when defaultDate changes or when modal opens with event
   useEffect(() => {
-    if (defaultDate && !event) {
-      setValue('startDateTime', format(defaultDate, "yyyy-MM-dd'T'09:00"));
-      setValue('endDateTime', format(defaultDate, "yyyy-MM-dd'T'10:00"));
+    if (isOpen) {
+      const newValues = getDefaultValues();
+      reset(newValues);
+      setSelectedColor(newValues.color || 'blue');
     }
-  }, [defaultDate, event, setValue]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, event, defaultDate, reset]);
+
 
   // Transform function for event form data
   const transformEventData = (data: EventFormData): CreateCalendarEventDto => {
@@ -206,29 +270,53 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
           </label>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              {t('calendar.startDate')}{allDay ? '' : ''} *
-            </label>
-            <Input
-              type={allDay ? 'date' : 'datetime-local'}
-              {...register('startDateTime')}
-              label=""
-              error={errors.startDateTime?.message}
-            />
+            {allDay ? (
+              <>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  {t('calendar.startDate')} *
+                </label>
+                <Input
+                  type="date"
+                  {...register('startDateTime')}
+                  label=""
+                  error={errors.startDateTime?.message}
+                />
+              </>
+            ) : (
+              <DateTimeInput
+                value={watch('startDateTime')}
+                onChange={(value) => setValue('startDateTime', value)}
+                label={t('calendar.startDate')}
+                error={errors.startDateTime?.message}
+                required
+              />
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              {t('calendar.endDate')}{allDay ? '' : ''} *
-            </label>
-            <Input
-              type={allDay ? 'date' : 'datetime-local'}
-              {...register('endDateTime')}
-              label=""
-              error={errors.endDateTime?.message}
-            />
+            {allDay ? (
+              <>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  {t('calendar.endDate')} *
+                </label>
+                <Input
+                  type="date"
+                  {...register('endDateTime')}
+                  label=""
+                  error={errors.endDateTime?.message}
+                />
+              </>
+            ) : (
+              <DateTimeInput
+                value={watch('endDateTime')}
+                onChange={(value) => setValue('endDateTime', value)}
+                label={t('calendar.endDate')}
+                error={errors.endDateTime?.message}
+                required
+              />
+            )}
           </div>
         </div>
 
