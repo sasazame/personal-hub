@@ -6,11 +6,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslations } from 'next-intl';
 import { CalendarEvent, CreateCalendarEventDto } from '@/types/calendar';
-import { Button, Input, TextArea, Modal } from '@/components/ui';
+import { Button, Input, TextArea, Modal, DateTimeInput } from '@/components/ui';
 import { Switch } from '@/components/ui/switch';
 import { useGoogleAuth } from '@/hooks/useGoogleIntegration';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
-import { useLocale } from '@/contexts/LocaleContext';
 
 // Schema and type will be created inside component to access translations
 
@@ -29,7 +28,6 @@ interface EventFormProps {
 export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSubmitting, onDelete }: EventFormProps) {
   const t = useTranslations();
   const { hasIntegration } = useGoogleAuth();
-  const { locale } = useLocale();
   const [selectedColor, setSelectedColor] = useState(event?.color || 'blue');
   
   const eventSchema = z.object({
@@ -55,16 +53,24 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
     { value: 'orange', label: t('calendar.colors.orange'), class: 'bg-orange-500' },
   ];
   
-  // Helper to format datetime for HTML datetime-local input
+  // Helper to format datetime for input
   const formatDateTimeForInput = (date: Date | string) => {
     const d = typeof date === 'string' ? new Date(date) : date;
-    // datetime-local requires YYYY-MM-DDTHH:mm format
+    if (isNaN(d.getTime())) {
+      // Return current date if invalid
+      return new Date().toISOString();
+    }
+    // For DateTimeInput component, we need ISO string
+    return d.toISOString();
+  };
+  
+  // Helper to format date for HTML date input
+  const formatDateForInput = (date: Date | string) => {
+    const d = typeof date === 'string' ? new Date(date) : date;
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+    return `${year}-${month}-${day}`;
   };
 
   const getDefaultValues = () => {
@@ -72,8 +78,8 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
       return {
         title: event.title,
         description: event.description || '',
-        startDateTime: formatDateTimeForInput(event.startDateTime),
-        endDateTime: formatDateTimeForInput(event.endDateTime),
+        startDateTime: event.allDay ? formatDateForInput(event.startDateTime) : formatDateTimeForInput(event.startDateTime),
+        endDateTime: event.allDay ? formatDateForInput(event.endDateTime) : formatDateTimeForInput(event.endDateTime),
         location: event.location || '',
         allDay: event.allDay,
         color: event.color || 'blue',
@@ -82,11 +88,13 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
         syncToGoogle: event.syncToGoogle ?? true,
       };
     }
+    const now = defaultDate || new Date();
+    const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
     return {
       title: '',
       description: '',
-      startDateTime: defaultDate ? formatDateTimeForInput(defaultDate) : formatDateTimeForInput(new Date()),
-      endDateTime: defaultDate ? formatDateTimeForInput(new Date(defaultDate.getTime() + 60 * 60 * 1000)) : formatDateTimeForInput(new Date(Date.now() + 60 * 60 * 1000)),
+      startDateTime: formatDateTimeForInput(now),
+      endDateTime: formatDateTimeForInput(oneHourLater),
       location: '',
       allDay: false,
       color: 'blue',
@@ -122,13 +130,6 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, event, defaultDate, reset]);
 
-  // Get datetime input pattern based on locale
-  const getDateTimePattern = () => {
-    if (locale === 'ja') {
-      return 'yyyy/MM/dd HH:mm';
-    }
-    return 'MM/dd/yyyy, hh:mm a';
-  };
 
   // Transform function for event form data
   const transformEventData = (data: EventFormData): CreateCalendarEventDto => {
@@ -238,27 +239,51 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              {t('calendar.startDate')} * {!allDay && <span className="text-xs text-muted-foreground">({getDateTimePattern()})</span>}
-            </label>
-            <Input
-              type={allDay ? 'date' : 'datetime-local'}
-              {...register('startDateTime')}
-              label=""
-              error={errors.startDateTime?.message}
-            />
+            {allDay ? (
+              <>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  {t('calendar.startDate')} *
+                </label>
+                <Input
+                  type="date"
+                  {...register('startDateTime')}
+                  label=""
+                  error={errors.startDateTime?.message}
+                />
+              </>
+            ) : (
+              <DateTimeInput
+                value={watch('startDateTime')}
+                onChange={(value) => setValue('startDateTime', value)}
+                label={`${t('calendar.startDate')} *`}
+                error={errors.startDateTime?.message}
+                required
+              />
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              {t('calendar.endDate')} * {!allDay && <span className="text-xs text-muted-foreground">({getDateTimePattern()})</span>}
-            </label>
-            <Input
-              type={allDay ? 'date' : 'datetime-local'}
-              {...register('endDateTime')}
-              label=""
-              error={errors.endDateTime?.message}
-            />
+            {allDay ? (
+              <>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  {t('calendar.endDate')} *
+                </label>
+                <Input
+                  type="date"
+                  {...register('endDateTime')}
+                  label=""
+                  error={errors.endDateTime?.message}
+                />
+              </>
+            ) : (
+              <DateTimeInput
+                value={watch('endDateTime')}
+                onChange={(value) => setValue('endDateTime', value)}
+                label={`${t('calendar.endDate')} *`}
+                error={errors.endDateTime?.message}
+                required
+              />
+            )}
           </div>
         </div>
 
