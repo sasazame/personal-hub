@@ -12,6 +12,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { showSuccess, showError } from '@/components/ui/toast';
 import { format, addMonths, subMonths } from 'date-fns';
 import { ChevronLeft, ChevronRight, Plus, Settings } from 'lucide-react';
+import { formatLocalDateTime } from '@/utils/dateFormatting';
 
 function CalendarPage() {
   const t = useTranslations();
@@ -111,19 +112,19 @@ function CalendarPage() {
     const originalEnd = new Date(event.endDateTime);
     const duration = originalEnd.getTime() - originalStart.getTime();
 
-    // For all-day events, set to midnight UTC
+    // For all-day events, set to midnight local time
     if (event.allDay) {
-      const newStartUTC = new Date(Date.UTC(
+      const newStart = new Date(
         newDate.getFullYear(),
         newDate.getMonth(),
         newDate.getDate(),
         0, 0, 0, 0
-      ));
-      const newEndUTC = new Date(newStartUTC.getTime() + duration);
+      );
+      const newEnd = new Date(newStart.getTime() + duration);
 
       const updateData: UpdateCalendarEventDto = {
-        startDateTime: newStartUTC.toISOString(),
-        endDateTime: newEndUTC.toISOString(),
+        startDateTime: formatLocalDateTime(newStart),
+        endDateTime: formatLocalDateTime(newEnd),
       };
 
       updateMutation.mutate({ id: eventId, data: updateData }, {
@@ -140,8 +141,8 @@ function CalendarPage() {
       const newEnd = new Date(newDate.getTime() + duration);
 
       const updateData: UpdateCalendarEventDto = {
-        startDateTime: newDate.toISOString(),
-        endDateTime: newEnd.toISOString(),
+        startDateTime: formatLocalDateTime(newDate),
+        endDateTime: formatLocalDateTime(newEnd),
       };
 
       updateMutation.mutate({ id: eventId, data: updateData }, {

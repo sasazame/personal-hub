@@ -10,6 +10,7 @@ import { Button, Input, TextArea, Modal, DateTimeInput } from '@/components/ui';
 import { Switch } from '@/components/ui/switch';
 import { useGoogleAuth } from '@/hooks/useGoogleIntegration';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
+import { formatDateTimeForAPI } from '@/utils/dateFormatting';
 
 // Schema and type will be created inside component to access translations
 
@@ -203,26 +204,10 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
 
   // Transform function for event form data
   const transformEventData = (data: EventFormData): CreateCalendarEventDto => {
-    const formatDateTime = (dateTimeLocal: string, allDay: boolean) => {
-      if (!dateTimeLocal) return '';
-      
-      if (allDay) {
-        // For all-day events, use date only and set to start of day
-        const dateOnly = dateTimeLocal.split('T')[0];
-        return `${dateOnly}T00:00:00`;
-      } else {
-        // For timed events, convert datetime-local to ISO 8601
-        // datetime-local format: YYYY-MM-DDTHH:mm
-        // We need to treat this as local time and convert properly
-        const date = new Date(dateTimeLocal);
-        return date.toISOString();
-      }
-    };
-
     return {
       ...data,
-      startDateTime: formatDateTime(data.startDateTime, data.allDay),
-      endDateTime: formatDateTime(data.endDateTime, data.allDay),
+      startDateTime: formatDateTimeForAPI(data.startDateTime, data.allDay),
+      endDateTime: formatDateTimeForAPI(data.endDateTime, data.allDay),
       // Ensure required fields have default values
       reminders: data.reminders || [],
       recurrence: data.recurrence || undefined,
