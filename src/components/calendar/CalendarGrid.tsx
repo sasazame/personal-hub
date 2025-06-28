@@ -39,11 +39,16 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick, o
         const eventEnd = new Date(event.endDateTime);
         
         if (event.allDay) {
+          // For all-day events, compare dates without considering time
           return isSameDay(date, eventStart) || 
                  (date >= eventStart && date <= eventEnd);
         }
         
-        return isSameDay(date, eventStart);
+        // For timed events, check if the event's local date matches the calendar date
+        // This ensures events appear on the correct day regardless of timezone
+        return eventStart.getFullYear() === date.getFullYear() &&
+               eventStart.getMonth() === date.getMonth() &&
+               eventStart.getDate() === date.getDate();
       })
       .sort((a, b) => {
         // Sort by start time first

@@ -620,5 +620,95 @@ describe('CalendarGrid', () => {
       expect(lateNewDate.getMinutes()).toBe(15);
       expect(lateNewDate.getDate()).toBe(20);
     });
+
+    it('handles dragging to previous dates without time shifts', () => {
+      // Test with a specific timezone scenario
+      const eventWithTimezone: CalendarEvent = {
+        id: 1,
+        title: 'Meeting',
+        // This ISO string represents 09:00 in the local timezone
+        startDateTime: '2025-06-15T09:00:00.000Z',
+        endDateTime: '2025-06-15T10:00:00.000Z',
+        allDay: false,
+        color: 'blue',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      render(<CalendarGrid {...propsWithDragDrop} events={[eventWithTimezone]} />);
+      
+      const mockDataTransfer = {
+        effectAllowed: '',
+        dropEffect: '',
+        setData: jest.fn(),
+        getData: jest.fn(),
+        clearData: jest.fn(),
+        setDragImage: jest.fn(),
+        types: [],
+        files: {} as FileList,
+        items: {} as DataTransferItemList,
+      };
+      
+      // The displayed time might be different due to timezone
+      const eventElements = screen.getAllByText(/\d{2}:\d{2} Meeting/);
+      const eventElement = eventElements[0];
+      
+      // First drag: from 15th to 14th (previous day)
+      const targetDate14 = screen.getAllByText('14')[0].closest('div')!.parentElement!;
+      
+      fireEvent.dragStart(eventElement, { dataTransfer: mockDataTransfer });
+      fireEvent.drop(targetDate14, { dataTransfer: mockDataTransfer });
+      
+      expect(propsWithDragDrop.onEventDateChange).toHaveBeenCalledTimes(1);
+      const [[, firstNewDate]] = propsWithDragDrop.onEventDateChange.mock.calls;
+      
+      // The date should be 14th, and time should be preserved
+      expect(firstNewDate.getDate()).toBe(14);
+      
+      // Clear for next test
+      propsWithDragDrop.onEventDateChange.mockClear();
+    });
+
+    it('correctly handles events near midnight when dragging across dates', () => {
+      const lateNightEvent: CalendarEvent = {
+        id: 1,
+        title: 'Late Night Event',
+        startDateTime: new Date(2025, 5, 15, 23, 30).toISOString(),
+        endDateTime: new Date(2025, 5, 16, 0, 30).toISOString(), // Crosses midnight
+        allDay: false,
+        color: 'blue',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      render(<CalendarGrid {...propsWithDragDrop} events={[lateNightEvent]} />);
+      
+      const mockDataTransfer = {
+        effectAllowed: '',
+        dropEffect: '',
+        setData: jest.fn(),
+        getData: jest.fn(),
+        clearData: jest.fn(),
+        setDragImage: jest.fn(),
+        types: [],
+        files: {} as FileList,
+        items: {} as DataTransferItemList,
+      };
+      
+      const eventElement = screen.getByText('23:30 Late Night Event');
+      
+      // Drag from 15th to 14th
+      const targetDate14 = screen.getAllByText('14')[0].closest('div')!.parentElement!;
+      
+      fireEvent.dragStart(eventElement, { dataTransfer: mockDataTransfer });
+      fireEvent.drop(targetDate14, { dataTransfer: mockDataTransfer });
+      
+      const [[, newDate]] = propsWithDragDrop.onEventDateChange.mock.calls;
+      
+      // Should be 14th at 23:30
+      expect(newDate.getDate()).toBe(14);
+      expect(newDate.getHours()).toBe(23);
+      expect(newDate.getMinutes()).toBe(30);
+    });
   });
 });

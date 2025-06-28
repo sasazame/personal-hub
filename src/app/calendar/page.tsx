@@ -111,23 +111,48 @@ function CalendarPage() {
     const originalEnd = new Date(event.endDateTime);
     const duration = originalEnd.getTime() - originalStart.getTime();
 
-    // Create new ISO strings with the updated date
-    const newStart = new Date(newDate);
-    const newEnd = new Date(newDate.getTime() + duration);
+    // For all-day events, set to midnight UTC
+    if (event.allDay) {
+      const newStartUTC = new Date(Date.UTC(
+        newDate.getFullYear(),
+        newDate.getMonth(),
+        newDate.getDate(),
+        0, 0, 0, 0
+      ));
+      const newEndUTC = new Date(newStartUTC.getTime() + duration);
 
-    const updateData: UpdateCalendarEventDto = {
-      startDateTime: newStart.toISOString(),
-      endDateTime: newEnd.toISOString(),
-    };
+      const updateData: UpdateCalendarEventDto = {
+        startDateTime: newStartUTC.toISOString(),
+        endDateTime: newEndUTC.toISOString(),
+      };
 
-    updateMutation.mutate({ id: eventId, data: updateData }, {
-      onSuccess: () => {
-        showSuccess(t('calendar.eventUpdated'));
-      },
-      onError: (error) => {
-        showError(error instanceof Error ? error.message : t('calendar.updateFailed'));
-      },
-    });
+      updateMutation.mutate({ id: eventId, data: updateData }, {
+        onSuccess: () => {
+          showSuccess(t('calendar.eventUpdated'));
+        },
+        onError: (error) => {
+          showError(error instanceof Error ? error.message : t('calendar.updateFailed'));
+        },
+      });
+    } else {
+      // For timed events, preserve the local time
+      // newDate already has the correct local time from CalendarGrid
+      const newEnd = new Date(newDate.getTime() + duration);
+
+      const updateData: UpdateCalendarEventDto = {
+        startDateTime: newDate.toISOString(),
+        endDateTime: newEnd.toISOString(),
+      };
+
+      updateMutation.mutate({ id: eventId, data: updateData }, {
+        onSuccess: () => {
+          showSuccess(t('calendar.eventUpdated'));
+        },
+        onError: (error) => {
+          showError(error instanceof Error ? error.message : t('calendar.updateFailed'));
+        },
+      });
+    }
   };
 
   if (isLoading) {
