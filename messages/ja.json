@@ -73,7 +73,17 @@
     "todoProgressSummary": "TODO進捗サマリー",
     "totalTasks": "総タスク数",
     "incomplete": "未完了",
-    "completionRate": "完了率"
+    "completionRate": "完了率",
+    "goalTrackingDescription": "個人目標の追跡と達成",
+    "activeGoalsCount": "アクティブな目標: {count}件",
+    "completionRatePercentage": "完了率: {rate}%",
+    "activeGoals": "アクティブな目標",
+    "progress": "進捗",
+    "goalStatistics": "目標統計",
+    "manageGoals": "目標を管理",
+    "nearCompletion": "もうすぐ達成",
+    "dailyGoals": "デイリー目標",
+    "avgProgress": "平均進捗"
   },
   "auth": {
     "login": "ログイン",

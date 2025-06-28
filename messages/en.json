@@ -73,7 +73,17 @@
     "todoProgressSummary": "TODO Progress Summary",
     "totalTasks": "Total Tasks",
     "incomplete": "Incomplete",
-    "completionRate": "Completion Rate"
+    "completionRate": "Completion Rate",
+    "goalTrackingDescription": "Track and achieve your personal goals",
+    "activeGoalsCount": "{count} active goals",
+    "completionRatePercentage": "Completion rate: {rate}%",
+    "activeGoals": "Active Goals",
+    "progress": "Progress",
+    "goalStatistics": "Goal Statistics",
+    "manageGoals": "Manage Goals",
+    "nearCompletion": "Near Completion",
+    "dailyGoals": "Daily Goals",
+    "avgProgress": "Avg Progress"
   },
   "auth": {
     "login": "Login",
