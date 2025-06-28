@@ -117,21 +117,33 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick, o
     e.preventDefault();
     
     if (draggedEvent && draggedEvent.id && onEventDateChange) {
-      // Calculate the time difference to maintain the event duration
+      // Parse the original start time
       const originalStart = new Date(draggedEvent.startDateTime);
       
-      // Set the new start date while maintaining the original time
-      const newStart = new Date(date);
       if (!draggedEvent.allDay) {
-        newStart.setHours(originalStart.getHours());
-        newStart.setMinutes(originalStart.getMinutes());
-        newStart.setSeconds(0);
-        newStart.setMilliseconds(0);
+        // For timed events, we need to preserve the exact time
+        // Extract time components from the original event
+        const hours = originalStart.getHours();
+        const minutes = originalStart.getMinutes();
+        
+        // Create new date with the target date's year, month, day
+        // but with the original event's time
+        const newStart = new Date(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          hours,
+          minutes,
+          0,
+          0
+        );
+        
+        onEventDateChange(draggedEvent.id, newStart);
       } else {
-        newStart.setHours(0, 0, 0, 0);
+        // For all-day events, just use the date at midnight
+        const newStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+        onEventDateChange(draggedEvent.id, newStart);
       }
-      
-      onEventDateChange(draggedEvent.id, newStart);
     }
     
     setDraggedEvent(null);

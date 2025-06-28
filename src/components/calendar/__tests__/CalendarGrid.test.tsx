@@ -477,5 +477,148 @@ describe('CalendarGrid', () => {
       // Check if the highlight class is removed
       expect(targetDateCell).not.toHaveClass('bg-blue-100/40');
     });
+
+    it('maintains consistent time when dragging multiple times', () => {
+      const { rerender } = render(<CalendarGrid {...propsWithDragDrop} />);
+      
+      const mockDataTransfer = {
+        effectAllowed: '',
+        dropEffect: '',
+        setData: jest.fn(),
+        getData: jest.fn(),
+        clearData: jest.fn(),
+        setDragImage: jest.fn(),
+        types: [],
+        files: {} as FileList,
+        items: {} as DataTransferItemList,
+      };
+      
+      // First drag: from 15th to 20th
+      const eventElement = screen.getByText('09:00 Test Event');
+      const targetDate20 = screen.getAllByText('20')[0].closest('div')!.parentElement!;
+      
+      fireEvent.dragStart(eventElement, { dataTransfer: mockDataTransfer });
+      fireEvent.drop(targetDate20, { dataTransfer: mockDataTransfer });
+      
+      expect(propsWithDragDrop.onEventDateChange).toHaveBeenCalledTimes(1);
+      const [[, firstNewDate]] = propsWithDragDrop.onEventDateChange.mock.calls;
+      expect(firstNewDate.getHours()).toBe(9);
+      expect(firstNewDate.getMinutes()).toBe(0);
+      expect(firstNewDate.getDate()).toBe(20);
+      
+      // Clear previous calls
+      propsWithDragDrop.onEventDateChange.mockClear();
+      
+      // Second drag: from 20th to 25th (simulating the event has moved)
+      const updatedEvent = {
+        ...mockEvents[0],
+        startDateTime: new Date(2025, 5, 20, 9, 0).toISOString(),
+        endDateTime: new Date(2025, 5, 20, 10, 0).toISOString(),
+      };
+      
+      // Re-render with updated event position
+      rerender(
+        <CalendarGrid {...propsWithDragDrop} events={[updatedEvent, mockEvents[1]]} />
+      );
+      
+      const movedEventElement = screen.getByText('09:00 Test Event');
+      const targetDate25 = screen.getAllByText('25')[0].closest('div')!.parentElement!;
+      
+      fireEvent.dragStart(movedEventElement, { dataTransfer: mockDataTransfer });
+      fireEvent.drop(targetDate25, { dataTransfer: mockDataTransfer });
+      
+      expect(propsWithDragDrop.onEventDateChange).toHaveBeenCalledTimes(1);
+      const [[, secondNewDate]] = propsWithDragDrop.onEventDateChange.mock.calls;
+      
+      // Time should still be 09:00, not shifted
+      expect(secondNewDate.getHours()).toBe(9);
+      expect(secondNewDate.getMinutes()).toBe(0);
+      expect(secondNewDate.getDate()).toBe(25);
+    });
+
+    it('preserves exact time when dragging events with different times', () => {
+      const eventsWithDifferentTimes: CalendarEvent[] = [
+        {
+          id: 1,
+          title: 'Morning Event',
+          startDateTime: new Date(2025, 5, 15, 7, 30).toISOString(),
+          endDateTime: new Date(2025, 5, 15, 8, 30).toISOString(),
+          allDay: false,
+          color: 'blue',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: 2,
+          title: 'Afternoon Event',
+          startDateTime: new Date(2025, 5, 15, 15, 45).toISOString(),
+          endDateTime: new Date(2025, 5, 15, 16, 45).toISOString(),
+          allDay: false,
+          color: 'green',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: 3,
+          title: 'Late Event',
+          startDateTime: new Date(2025, 5, 15, 23, 15).toISOString(),
+          endDateTime: new Date(2025, 5, 15, 23, 59).toISOString(),
+          allDay: false,
+          color: 'red',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ];
+
+      render(<CalendarGrid {...propsWithDragDrop} events={eventsWithDifferentTimes} />);
+      
+      const mockDataTransfer = {
+        effectAllowed: '',
+        dropEffect: '',
+        setData: jest.fn(),
+        getData: jest.fn(),
+        clearData: jest.fn(),
+        setDragImage: jest.fn(),
+        types: [],
+        files: {} as FileList,
+        items: {} as DataTransferItemList,
+      };
+      
+      // Test morning event (07:30)
+      const morningEvent = screen.getByText('07:30 Morning Event');
+      const targetDate20 = screen.getAllByText('20')[0].closest('div')!.parentElement!;
+      
+      fireEvent.dragStart(morningEvent, { dataTransfer: mockDataTransfer });
+      fireEvent.drop(targetDate20, { dataTransfer: mockDataTransfer });
+      
+      const [[, morningNewDate]] = propsWithDragDrop.onEventDateChange.mock.calls;
+      expect(morningNewDate.getHours()).toBe(7);
+      expect(morningNewDate.getMinutes()).toBe(30);
+      expect(morningNewDate.getDate()).toBe(20);
+      
+      // Clear and test afternoon event (15:45)
+      propsWithDragDrop.onEventDateChange.mockClear();
+      
+      const afternoonEvent = screen.getByText('15:45 Afternoon Event');
+      fireEvent.dragStart(afternoonEvent, { dataTransfer: mockDataTransfer });
+      fireEvent.drop(targetDate20, { dataTransfer: mockDataTransfer });
+      
+      const [[, afternoonNewDate]] = propsWithDragDrop.onEventDateChange.mock.calls;
+      expect(afternoonNewDate.getHours()).toBe(15);
+      expect(afternoonNewDate.getMinutes()).toBe(45);
+      expect(afternoonNewDate.getDate()).toBe(20);
+      
+      // Clear and test late event (23:15)
+      propsWithDragDrop.onEventDateChange.mockClear();
+      
+      const lateEvent = screen.getByText('23:15 Late Event');
+      fireEvent.dragStart(lateEvent, { dataTransfer: mockDataTransfer });
+      fireEvent.drop(targetDate20, { dataTransfer: mockDataTransfer });
+      
+      const [[, lateNewDate]] = propsWithDragDrop.onEventDateChange.mock.calls;
+      expect(lateNewDate.getHours()).toBe(23);
+      expect(lateNewDate.getMinutes()).toBe(15);
+      expect(lateNewDate.getDate()).toBe(20);
+    });
   });
 });
