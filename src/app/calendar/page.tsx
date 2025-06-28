@@ -102,6 +102,34 @@ function CalendarPage() {
     setSelectedDate(null);
   };
 
+  const handleEventDateChange = (eventId: number, newDate: Date) => {
+    const event = events.find(e => e.id === eventId);
+    if (!event) return;
+
+    // Calculate the duration to maintain it
+    const originalStart = new Date(event.startDateTime);
+    const originalEnd = new Date(event.endDateTime);
+    const duration = originalEnd.getTime() - originalStart.getTime();
+
+    // Create new ISO strings with the updated date
+    const newStart = new Date(newDate);
+    const newEnd = new Date(newDate.getTime() + duration);
+
+    const updateData: UpdateCalendarEventDto = {
+      startDateTime: newStart.toISOString(),
+      endDateTime: newEnd.toISOString(),
+    };
+
+    updateMutation.mutate({ id: eventId, data: updateData }, {
+      onSuccess: () => {
+        showSuccess(t('calendar.eventUpdated'));
+      },
+      onError: (error) => {
+        showError(error instanceof Error ? error.message : t('calendar.updateFailed'));
+      },
+    });
+  };
+
   if (isLoading) {
     return (
       <AppLayout>
@@ -204,6 +232,7 @@ function CalendarPage() {
           events={events}
           onDateClick={handleDateClick}
           onEventClick={handleEventClick}
+          onEventDateChange={handleEventDateChange}
         />
 
         {/* Event Form */}

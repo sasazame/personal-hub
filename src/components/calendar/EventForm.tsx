@@ -152,6 +152,8 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
   } = form;
 
   const allDay = watch('allDay');
+  const startDateTime = watch('startDateTime');
+  const endDateTime = watch('endDateTime');
 
   // Update form when defaultDate changes or when modal opens with event
   useEffect(() => {
@@ -162,6 +164,41 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, event, defaultDate, reset]);
+
+  // Handle allDay toggle - preserve the date portion
+  useEffect(() => {
+    if (allDay) {
+      // When switching to all-day, convert datetime to date only
+      if (startDateTime && startDateTime.includes('T')) {
+        const startDate = startDateTime.split('T')[0];
+        setValue('startDateTime', startDate);
+      }
+      if (endDateTime && endDateTime.includes('T')) {
+        const endDate = endDateTime.split('T')[0];
+        setValue('endDateTime', endDate);
+      }
+    } else {
+      // When switching from all-day to timed event, convert date to datetime
+      if (startDateTime && !startDateTime.includes('T')) {
+        // Use current time as basis for the default time
+        const now = new Date();
+        const baseStartTime = getNext30MinInterval(now);
+        
+        // Apply the date from the form but keep the calculated time
+        const startDateParts = startDateTime.split('-');
+        baseStartTime.setFullYear(parseInt(startDateParts[0]));
+        baseStartTime.setMonth(parseInt(startDateParts[1]) - 1);
+        baseStartTime.setDate(parseInt(startDateParts[2]));
+        
+        setValue('startDateTime', formatDateTimeForInput(baseStartTime));
+        
+        // End time is 30 minutes after start
+        const baseEndTime = new Date(baseStartTime.getTime() + 30 * 60 * 1000);
+        setValue('endDateTime', formatDateTimeForInput(baseEndTime));
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allDay]);
 
 
   // Transform function for event form data

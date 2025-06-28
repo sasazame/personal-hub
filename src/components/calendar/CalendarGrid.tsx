@@ -4,15 +4,17 @@ import { CalendarEvent } from '@/types/calendar';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { cn } from '@/lib/cn';
 import { useTheme } from '@/hooks/useTheme';
+import { useState } from 'react';
 
 interface CalendarGridProps {
   currentDate: Date;
   events: CalendarEvent[];
   onDateClick: (date: Date) => void;
   onEventClick: (event: CalendarEvent) => void;
+  onEventDateChange?: (eventId: number, newDate: Date) => void;
 }
 
-export function CalendarGrid({ currentDate, events, onDateClick, onEventClick }: CalendarGridProps) {
+export function CalendarGrid({ currentDate, events, onDateClick, onEventClick, onEventDateChange }: CalendarGridProps) {
   // Ensure events is always an array
   const safeEvents = Array.isArray(events) ? events : [];
   const monthStart = startOfMonth(currentDate);
@@ -25,19 +27,115 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick }:
   endDate.setDate(endDate.getDate() + (6 - monthEnd.getDay()));
 
   const days = eachDayOfInterval({ start: startDate, end: endDate });
+  
+  const [draggedEvent, setDraggedEvent] = useState<CalendarEvent | null>(null);
+  const [dragOverDate, setDragOverDate] = useState<Date | null>(null);
+  const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
 
   const getEventsForDay = (date: Date) => {
-    return safeEvents.filter(event => {
-      const eventStart = new Date(event.startDateTime);
-      const eventEnd = new Date(event.endDateTime);
+    return safeEvents
+      .filter(event => {
+        const eventStart = new Date(event.startDateTime);
+        const eventEnd = new Date(event.endDateTime);
+        
+        if (event.allDay) {
+          return isSameDay(date, eventStart) || 
+                 (date >= eventStart && date <= eventEnd);
+        }
+        
+        return isSameDay(date, eventStart);
+      })
+      .sort((a, b) => {
+        // Sort by start time first
+        const startDiff = new Date(a.startDateTime).getTime() - new Date(b.startDateTime).getTime();
+        if (startDiff !== 0) return startDiff;
+        
+        // If start times are equal, sort by end time
+        return new Date(a.endDateTime).getTime() - new Date(b.endDateTime).getTime();
+      });
+  };
+
+  const formatEventTitle = (event: CalendarEvent) => {
+    if (event.allDay) {
+      return event.title;
+    }
+    const eventDate = new Date(event.startDateTime);
+    const hours = eventDate.getHours().toString().padStart(2, '0');
+    const minutes = eventDate.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes} ${event.title}`;
+  };
+
+  const toggleDateExpansion = (date: Date) => {
+    const dateKey = date.toISOString().split('T')[0];
+    const newExpanded = new Set(expandedDates);
+    if (newExpanded.has(dateKey)) {
+      newExpanded.delete(dateKey);
+    } else {
+      newExpanded.add(dateKey);
+    }
+    setExpandedDates(newExpanded);
+  };
+
+  const isDateExpanded = (date: Date) => {
+    const dateKey = date.toISOString().split('T')[0];
+    return expandedDates.has(dateKey);
+  };
+
+  const handleDragStart = (e: React.DragEvent, event: CalendarEvent) => {
+    setDraggedEvent(event);
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move';
+    }
+    // Add a visual effect to the dragged element
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '0.5';
+    }
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    // Reset the opacity
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '1';
+    }
+    setDraggedEvent(null);
+    setDragOverDate(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent, date: Date) => {
+    e.preventDefault();
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'move';
+    }
+    setDragOverDate(date);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverDate(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, date: Date) => {
+    e.preventDefault();
+    
+    if (draggedEvent && draggedEvent.id && onEventDateChange) {
+      // Calculate the time difference to maintain the event duration
+      const originalStart = new Date(draggedEvent.startDateTime);
       
-      if (event.allDay) {
-        return isSameDay(date, eventStart) || 
-               (date >= eventStart && date <= eventEnd);
+      // Set the new start date while maintaining the original time
+      const newStart = new Date(date);
+      if (!draggedEvent.allDay) {
+        newStart.setHours(originalStart.getHours());
+        newStart.setMinutes(originalStart.getMinutes());
+        newStart.setSeconds(0);
+        newStart.setMilliseconds(0);
+      } else {
+        newStart.setHours(0, 0, 0, 0);
       }
       
-      return isSameDay(date, eventStart);
-    });
+      onEventDateChange(draggedEvent.id, newStart);
+    }
+    
+    setDraggedEvent(null);
+    setDragOverDate(null);
   };
 
   return (
@@ -90,9 +188,15 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick }:
                 : "bg-white/40 hover:bg-white/60 border-gray-200",
               !isCurrentMonth && (theme === 'dark' 
                 ? "text-gray-500 bg-gray-800/20"
-                : "text-gray-400 bg-gray-100/50")
+                : "text-gray-400 bg-gray-100/50"),
+              dragOverDate && isSameDay(dragOverDate, day) && (theme === 'dark'
+                ? "bg-blue-900/40 border-blue-500"
+                : "bg-blue-100/40 border-blue-500")
             )}
             onClick={() => onDateClick(day)}
+            onDragOver={(e) => handleDragOver(e, day)}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, day)}
           >
             <div className="mb-1">
               {isDayToday ? (
@@ -111,11 +215,15 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick }:
             </div>
             
             <div className="space-y-1">
-              {dayEvents.slice(0, 3).map((event) => (
+              {(isDateExpanded(day) ? dayEvents : dayEvents.slice(0, 3)).map((event) => (
                 <div
                   key={event.id}
+                  draggable={onEventDateChange !== undefined}
+                  onDragStart={(e) => handleDragStart(e, event)}
+                  onDragEnd={handleDragEnd}
                   className={cn(
                     "text-xs p-1 rounded truncate cursor-pointer hover:opacity-80 transition-opacity",
+                    onEventDateChange && "cursor-move",
                     event.color === 'blue' && (theme === 'dark' 
                       ? "bg-blue-400/20 text-blue-300 border border-blue-400/30"
                       : "bg-blue-500/20 text-blue-700 border border-blue-500/30"),
@@ -136,14 +244,37 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick }:
                     e.stopPropagation();
                     onEventClick(event);
                   }}
-                  title={event.title}
+                  title={formatEventTitle(event)}
                 >
-                  {event.title}
+                  {formatEventTitle(event)}
                 </div>
               ))}
-              {dayEvents.length > 3 && (
-                <div className={cn("text-xs font-medium", theme === 'dark' ? "text-gray-300" : "text-gray-600")}>
+              {dayEvents.length > 3 && !isDateExpanded(day) && (
+                <div 
+                  className={cn(
+                    "text-xs font-medium cursor-pointer hover:underline",
+                    theme === 'dark' ? "text-gray-300" : "text-gray-600"
+                  )}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleDateExpansion(day);
+                  }}
+                >
                   +{dayEvents.length - 3} more
+                </div>
+              )}
+              {isDateExpanded(day) && dayEvents.length > 3 && (
+                <div 
+                  className={cn(
+                    "text-xs font-medium cursor-pointer hover:underline",
+                    theme === 'dark' ? "text-gray-300" : "text-gray-600"
+                  )}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleDateExpansion(day);
+                  }}
+                >
+                  Show less
                 </div>
               )}
             </div>
