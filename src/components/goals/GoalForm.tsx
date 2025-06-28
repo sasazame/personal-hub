@@ -1,11 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { format } from 'date-fns';
-import { Button } from '@/components/ui/Button';
+import { format, addDays } from 'date-fns';
+import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/Input';
 import { TextArea } from '@/components/ui/TextArea';
 import { useGoals } from '@/hooks/useGoals';
@@ -15,18 +14,10 @@ const goalFormSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
   goalType: z.nativeEnum(GoalType),
-  metricType: z.nativeEnum(MetricType),
-  metricUnit: z.string().optional(),
-  targetValue: z.number().positive('Target value must be positive'),
-  startDate: z.string().min(1, 'Start date is required'),
-  endDate: z.string().min(1, 'End date is required'),
-}).refine((data) => {
-  const start = new Date(data.startDate);
-  const end = new Date(data.endDate);
-  return end > start;
-}, {
-  message: 'End date must be after start date',
-  path: ['endDate'],
+  // Start and end dates will be hidden in initial release
+  // but keeping them for future use
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
 });
 
 type GoalFormData = z.infer<typeof goalFormSchema>;
@@ -37,66 +28,57 @@ interface GoalFormProps {
   onCancel?: () => void;
 }
 
-export const GoalForm = ({ goal, onSuccess, onCancel }: GoalFormProps) => {
+export function GoalForm({ goal, onSuccess, onCancel }: GoalFormProps) {
+  const t = useTranslations();
   const { createGoal, isCreating, updateGoal, isUpdating } = useGoals();
-  const [selectedMetricType, setSelectedMetricType] = useState<MetricType>(goal?.metricType || MetricType.COUNT);
   const isEditing = !!goal;
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
   } = useForm<GoalFormData>({
     resolver: zodResolver(goalFormSchema),
     defaultValues: goal ? {
       title: goal.title,
       description: goal.description || '',
       goalType: goal.goalType,
-      metricType: goal.metricType,
-      metricUnit: goal.metricUnit || '',
-      targetValue: goal.targetValue,
       startDate: format(new Date(goal.startDate), 'yyyy-MM-dd'),
       endDate: format(new Date(goal.endDate), 'yyyy-MM-dd'),
     } : {
-      goalType: GoalType.WEEKLY,
-      metricType: MetricType.COUNT,
+      goalType: GoalType.DAILY,
+      // Default dates - will be hidden in UI but sent to backend
       startDate: format(new Date(), 'yyyy-MM-dd'),
-      endDate: format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd'),
+      endDate: format(addDays(new Date(), 365), 'yyyy-MM-dd'),
     },
   });
 
   const onSubmit = (data: GoalFormData) => {
+    // For new goals, ensure we have default values for required backend fields
+    const submitData = {
+      ...data,
+      // These fields are temporarily hardcoded until backend is updated
+      metricType: MetricType.COUNT,
+      targetValue: 1,
+      currentValue: 0,
+      // Ensure dates are set
+      startDate: data.startDate || format(new Date(), 'yyyy-MM-dd'),
+      endDate: data.endDate || format(addDays(new Date(), 365), 'yyyy-MM-dd'),
+    };
+
     if (isEditing) {
-      updateGoal({ id: goal.id, data }, {
+      updateGoal({ id: goal.id, data: submitData }, {
         onSuccess: () => {
           onSuccess?.();
         },
       });
     } else {
-      createGoal(data, {
+      createGoal(submitData, {
         onSuccess: () => {
           onSuccess?.();
         },
       });
     }
-  };
-
-  const getMetricUnitPlaceholder = () => {
-    switch (selectedMetricType) {
-      case MetricType.NUMERIC:
-        return 'e.g., kg, km, hours';
-      case MetricType.TIME:
-        return 'minutes';
-      case MetricType.PERCENTAGE:
-        return '%';
-      default:
-        return '';
-    }
-  };
-
-  const shouldShowMetricUnit = () => {
-    return selectedMetricType === MetricType.NUMERIC || selectedMetricType === MetricType.TIME;
   };
 
   return (
@@ -104,8 +86,8 @@ export const GoalForm = ({ goal, onSuccess, onCancel }: GoalFormProps) => {
       <div>
         <Input
           {...register('title')}
-          label="Title"
-          placeholder="Goal title"
+          label={t('goal.fields.title')}
+          placeholder={t('goal.placeholders.title')}
           error={errors.title?.message}
         />
       </div>
@@ -113,103 +95,53 @@ export const GoalForm = ({ goal, onSuccess, onCancel }: GoalFormProps) => {
       <div>
         <TextArea
           {...register('description')}
-          label="Description (optional)"
-          placeholder="Description (optional)"
+          label={t('goal.fields.description')}
+          placeholder={t('goal.placeholders.description')}
           rows={3}
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Goal Type</label>
-          <select
-            {...register('goalType')}
-            className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
-          >
-            <option value={GoalType.DAILY}>Daily</option>
-            <option value={GoalType.WEEKLY}>Weekly</option>
-            <option value={GoalType.MONTHLY}>Monthly</option>
-            <option value={GoalType.ANNUAL}>Annual</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Metric Type</label>
-          <select
-            {...register('metricType')}
-            onChange={(e) => {
-              const value = e.target.value as MetricType;
-              setSelectedMetricType(value);
-              setValue('metricType', value);
-            }}
-            className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
-          >
-            <option value={MetricType.COUNT}>Count</option>
-            <option value={MetricType.NUMERIC}>Numeric</option>
-            <option value={MetricType.PERCENTAGE}>Percentage</option>
-            <option value={MetricType.TIME}>Time</option>
-          </select>
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-1">
+          {t('goal.fields.goalType')}
+        </label>
+        <select
+          {...register('goalType')}
+          className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+        >
+          <option value={GoalType.DAILY}>{t('goal.types.daily')}</option>
+          <option value={GoalType.WEEKLY}>{t('goal.types.weekly')}</option>
+          <option value={GoalType.MONTHLY}>{t('goal.types.monthly')}</option>
+          <option value={GoalType.ANNUAL}>{t('goal.types.annual')}</option>
+        </select>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Input
-            {...register('targetValue', { valueAsNumber: true })}
-            label="Target Value"
-            type="number"
-            step="0.01"
-            placeholder="Target value"
-            error={errors.targetValue?.message}
-          />
-        </div>
+      {/* Hidden fields for future use - not displayed in initial release */}
+      <input type="hidden" {...register('startDate')} />
+      <input type="hidden" {...register('endDate')} />
 
-        {shouldShowMetricUnit() && (
-          <div>
-            <Input
-              {...register('metricUnit')}
-              label="Unit"
-              placeholder={getMetricUnitPlaceholder()}
-            />
-          </div>
-        )}
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Input
-            {...register('startDate')}
-            label="Start Date"
-            type="date"
-            error={errors.startDate?.message}
-          />
-        </div>
-
-        <div>
-          <Input
-            {...register('endDate')}
-            label="End Date"
-            type="date"
-            error={errors.endDate?.message}
-          />
-        </div>
-      </div>
-
-      <div className="flex gap-2 justify-end">
+      <div className="flex gap-2 justify-end pt-4">
         {onCancel && (
-          <Button
+          <button
             type="button"
-            variant="secondary"
             onClick={onCancel}
             disabled={isCreating || isUpdating}
+            className="px-4 py-2 text-foreground bg-muted rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50"
           >
-            Cancel
-          </Button>
+            {t('common.cancel')}
+          </button>
         )}
-        <Button type="submit" disabled={isCreating || isUpdating}>
-          {isEditing ? (isUpdating ? 'Updating...' : 'Update Goal') : (isCreating ? 'Creating...' : 'Create Goal')}
-        </Button>
+        <button
+          type="submit"
+          disabled={isCreating || isUpdating}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+        >
+          {isEditing 
+            ? (isUpdating ? t('goal.updating') : t('goal.updateGoal')) 
+            : (isCreating ? t('goal.creating') : t('goal.createGoal'))
+          }
+        </button>
       </div>
     </form>
   );
-};
+}

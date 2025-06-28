@@ -4,19 +4,22 @@ import type {
   UpdateGoalDto,
   RecordProgressDto,
   GoalType,
+  GoalWithStatus,
 } from '@/types/goal';
+import type { GoalFilter } from '@/components/goals/FilterTabs';
 
-export const useGoals = () => {
+export const useGoals = (date?: string, filter: GoalFilter = 'active') => {
   const queryClient = useQueryClient();
 
   const goalsQuery = useQuery({
-    queryKey: ['goals'],
-    queryFn: goalsService.getUserGoals,
+    queryKey: ['goals', 'date', date, 'filter', filter],
+    queryFn: () => goalsService.getGoalsByDateAndFilter(date || new Date().toISOString().split('T')[0], filter),
   });
 
   const activeGoalsQuery = useQuery({
     queryKey: ['goals', 'active'],
     queryFn: goalsService.getActiveGoals,
+    enabled: false, // Disabled as we're using the new filtered query
   });
 
   const createGoalMutation = useMutation({
@@ -59,10 +62,10 @@ export const useGoals = () => {
   });
 
   return {
-    goals: goalsQuery.data ?? [],
+    goals: (goalsQuery.data ?? []) as GoalWithStatus[],
     activeGoals: activeGoalsQuery.data ?? [],
-    isLoading: goalsQuery.isLoading || activeGoalsQuery.isLoading,
-    error: goalsQuery.error || activeGoalsQuery.error,
+    isLoading: goalsQuery.isLoading,
+    error: goalsQuery.error,
     createGoal: createGoalMutation.mutate,
     updateGoal: updateGoalMutation.mutate,
     deleteGoal: deleteGoalMutation.mutate,

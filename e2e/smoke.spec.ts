@@ -8,7 +8,7 @@ test.describe('Smoke Tests', () => {
     await page.waitForLoadState('domcontentloaded');
     
     // Check basic page properties
-    await expect(page).toHaveTitle(/TODO App/);
+    await expect(page).toHaveTitle(/Personal Hub/);
     
     // Log current page content for debugging
     console.log('Page URL:', page.url());
