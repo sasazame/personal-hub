@@ -10,6 +10,7 @@ import { Button, Input, TextArea, Modal, DateTimeInput } from '@/components/ui';
 import { Switch } from '@/components/ui/switch';
 import { useGoogleAuth } from '@/hooks/useGoogleIntegration';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
+import { formatDateTimeForAPI } from '@/utils/dateFormatting';
 
 // Schema and type will be created inside component to access translations
 
@@ -152,6 +153,8 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
   } = form;
 
   const allDay = watch('allDay');
+  const startDateTime = watch('startDateTime');
+  const endDateTime = watch('endDateTime');
 
   // Update form when defaultDate changes or when modal opens with event
   useEffect(() => {
@@ -163,29 +166,48 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, event, defaultDate, reset]);
 
+  // Handle allDay toggle - preserve the date portion
+  useEffect(() => {
+    if (allDay) {
+      // When switching to all-day, convert datetime to date only
+      if (startDateTime && startDateTime.includes('T')) {
+        const startDate = startDateTime.split('T')[0];
+        setValue('startDateTime', startDate);
+      }
+      if (endDateTime && endDateTime.includes('T')) {
+        const endDate = endDateTime.split('T')[0];
+        setValue('endDateTime', endDate);
+      }
+    } else {
+      // When switching from all-day to timed event, convert date to datetime
+      if (startDateTime && !startDateTime.includes('T')) {
+        // Use current time as basis for the default time
+        const now = new Date();
+        const baseStartTime = getNext30MinInterval(now);
+        
+        // Apply the date from the form but keep the calculated time
+        const startDateParts = startDateTime.split('-');
+        baseStartTime.setFullYear(parseInt(startDateParts[0]));
+        baseStartTime.setMonth(parseInt(startDateParts[1]) - 1);
+        baseStartTime.setDate(parseInt(startDateParts[2]));
+        
+        setValue('startDateTime', formatDateTimeForInput(baseStartTime));
+        
+        // End time is 30 minutes after start
+        const baseEndTime = new Date(baseStartTime.getTime() + 30 * 60 * 1000);
+        setValue('endDateTime', formatDateTimeForInput(baseEndTime));
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allDay]);
+
 
   // Transform function for event form data
   const transformEventData = (data: EventFormData): CreateCalendarEventDto => {
-    const formatDateTime = (dateTimeLocal: string, allDay: boolean) => {
-      if (!dateTimeLocal) return '';
-      
-      if (allDay) {
-        // For all-day events, use date only and set to start of day
-        const dateOnly = dateTimeLocal.split('T')[0];
-        return `${dateOnly}T00:00:00`;
-      } else {
-        // For timed events, convert datetime-local to ISO 8601
-        // datetime-local format: YYYY-MM-DDTHH:mm
-        // We need to treat this as local time and convert properly
-        const date = new Date(dateTimeLocal);
-        return date.toISOString();
-      }
-    };
-
     return {
       ...data,
-      startDateTime: formatDateTime(data.startDateTime, data.allDay),
-      endDateTime: formatDateTime(data.endDateTime, data.allDay),
+      startDateTime: formatDateTimeForAPI(data.startDateTime, data.allDay),
+      endDateTime: formatDateTimeForAPI(data.endDateTime, data.allDay),
       // Ensure required fields have default values
       reminders: data.reminders || [],
       recurrence: data.recurrence || undefined,
