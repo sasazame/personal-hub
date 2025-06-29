@@ -38,3 +38,13 @@ export interface AuthError {
     details?: Record<string, unknown>;
   };
 }
+
+export interface PasswordResetResponse {
+  message: string;
+  success: boolean;
+}
+
+export interface ValidateTokenResponse {
+  message: string;
+  success: boolean;
+}

@@ -9,6 +9,9 @@ import { ArrowLeft, Mail, CheckCircle, Sparkles } from 'lucide-react';
 import { Button, FloatingInput } from '@/components/ui';
 import { z } from 'zod';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { authAPI } from '@/services/auth';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/useToast';
 
 const resetPasswordSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -18,6 +21,8 @@ type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
 export default function ForgotPasswordPage() {
   const t = useTranslations();
+  const router = useRouter();
+  const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -33,17 +38,19 @@ export default function ForgotPasswordPage() {
     try {
       setIsLoading(true);
       
-      // Mock implementation - simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const response = await authAPI.requestPasswordReset(data.email);
       
-      // In real implementation, this would call the password reset API
-      // Password reset requested for: data.email
-      // TODO: Implement actual password reset API call with data.email
-      void data; // Acknowledge the parameter for now
-      
-      setIsSubmitted(true);
+      if (response.success) {
+        setIsSubmitted(true);
+        
+        // Redirect to login page after 5 seconds
+        setTimeout(() => {
+          router.push('/login');
+        }, 5000);
+      }
     } catch (error) {
       console.error('Password reset failed:', error);
+      toast.showError(error instanceof Error ? error.message : t('auth.resetPasswordFailed'));
     } finally {
       setIsLoading(false);
     }

@@ -127,7 +127,20 @@
     "resetLinkSent": "パスワードリセットリンクを送信しました",
     "resetLinkSentMessage": "このメールアドレスでアカウントが存在する場合、パスワードリセットリンクが間もなく送信されます",
     "backToLogin": "ログインに戻る",
-    "sendingResetLink": "リセットリンクを送信中..."
+    "sendingResetLink": "リセットリンクを送信中...",
+    "resetPasswordFailed": "パスワードのリセットに失敗しました",
+    "invalidResetLink": "無効なリセットリンク",
+    "invalidOrExpiredToken": "リセットリンクが無効か、有効期限が切れています",
+    "requestNewLink": "新しいリセットリンクをリクエスト",
+    "validatingToken": "リセットリンクを検証中...",
+    "setNewPassword": "新しいパスワードを設定",
+    "setNewPasswordDescription": "新しいパスワードを入力してください",
+    "newPassword": "新しいパスワード",
+    "passwordResetSuccess": "パスワードリセット完了",
+    "passwordResetSuccessMessage": "パスワードが正常にリセットされました",
+    "passwordResetFailed": "パスワードのリセットに失敗しました",
+    "redirectingToLogin": "ログインページにリダイレクト中...",
+    "resettingPassword": "パスワードをリセット中..."
   },
   "input": {
     "placeholder": "{field}を入力してください",

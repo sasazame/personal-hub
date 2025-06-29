@@ -1,6 +1,27 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ForgotPasswordPage from '../forgot-password/page';
+import { authAPI } from '@/services/auth';
+
+// Mock services
+jest.mock('@/services/auth');
+jest.mock('@/hooks/useToast');
+
+const mockRouter = {
+  push: jest.fn(),
+};
+
+const mockToast = {
+  showError: jest.fn(),
+};
+
+jest.mock('next/navigation', () => ({
+  useRouter: () => mockRouter,
+}));
+
+jest.mock('@/hooks/useToast', () => ({
+  useToast: () => mockToast,
+}));
 
 // Mock next-intl
 jest.mock('next-intl', () => ({
@@ -14,6 +35,7 @@ jest.mock('next-intl', () => ({
       'auth.backToLogin': 'Back to Login',
       'auth.resetLinkSent': 'Password reset link sent',
       'auth.resetLinkSentMessage': 'If an account exists with this email, you will receive a password reset link shortly',
+      'auth.resetPasswordFailed': 'Failed to reset password',
     };
     
     if (key === 'legal.terms.lastUpdated' && params?.date) {
@@ -70,6 +92,11 @@ describe('ForgotPasswordPage', () => {
   });
 
   it('shows loading state when submitting', async () => {
+    // Mock the API call to not resolve immediately
+    (authAPI.requestPasswordReset as jest.Mock).mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve({ success: true }), 1000))
+    );
+    
     render(<ForgotPasswordPage />);
     
     const emailInput = screen.getByLabelText('Email');
@@ -78,12 +105,19 @@ describe('ForgotPasswordPage', () => {
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.click(submitButton);
     
+    // The button should show loading state
     await waitFor(() => {
-      expect(screen.getByText('Sending reset link...')).toBeInTheDocument();
+      const loadingButton = screen.getByRole('button');
+      expect(loadingButton).toHaveTextContent('Sending reset link...');
     });
   });
 
   it('shows success message after submission', async () => {
+    (authAPI.requestPasswordReset as jest.Mock).mockResolvedValue({
+      success: true,
+      message: 'If an account with this email exists, you will receive a password reset email.',
+    });
+
     render(<ForgotPasswordPage />);
     
     const emailInput = screen.getByLabelText('Email');
@@ -92,12 +126,35 @@ describe('ForgotPasswordPage', () => {
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.click(submitButton);
     
-    // Wait for the mock submission to complete (2 seconds)
     await waitFor(() => {
+      expect(authAPI.requestPasswordReset).toHaveBeenCalledWith('test@example.com');
       expect(screen.getByText('Password reset link sent')).toBeInTheDocument();
-    }, { timeout: 3000 });
+    });
     
     expect(screen.getByText('If an account exists with this email, you will receive a password reset link shortly')).toBeInTheDocument();
+    
+    // Check if redirect is scheduled (don't wait for actual redirect)
+    expect(mockRouter.push).not.toHaveBeenCalled();
+    
+    // Just verify that the success state is shown
+  }, 10000);
+
+  it('shows error message when API call fails', async () => {
+    (authAPI.requestPasswordReset as jest.Mock).mockRejectedValue(
+      new Error('Network error')
+    );
+
+    render(<ForgotPasswordPage />);
+    
+    const emailInput = screen.getByLabelText('Email');
+    const submitButton = screen.getByRole('button', { name: 'Send Reset Link' });
+    
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.click(submitButton);
+    
+    await waitFor(() => {
+      expect(mockToast.showError).toHaveBeenCalledWith('Network error');
+    });
   });
 
   it('shows back to login link', () => {
