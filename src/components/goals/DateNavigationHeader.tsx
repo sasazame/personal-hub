@@ -1,13 +1,11 @@
 'use client';
 
 import React, { useEffect, useCallback } from 'react';
-import DatePicker from 'react-datepicker';
-import { ChevronLeftIcon, ChevronRightIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { format, addDays, subDays } from 'date-fns';
 import { ja, enUS } from 'date-fns/locale';
 import { useTranslations, useLocale } from 'next-intl';
-import 'react-datepicker/dist/react-datepicker.css';
-import styles from './DateNavigationHeader.module.css';
+import { DatePicker } from '@/components/ui/DatePicker';
 
 interface DateNavigationHeaderProps {
   selectedDate: Date;
@@ -92,25 +90,15 @@ export function DateNavigationHeader({ selectedDate, onDateChange }: DateNavigat
         </div>
 
         {/* Date Display and Picker */}
-        <div className={`flex items-center space-x-4 ${styles.datePickerContainer}`}>
+        <div className="flex items-center space-x-4">
           <span className="text-lg font-semibold text-foreground">
             {format(selectedDate, locale === 'ja' ? 'yyyy年M月d日(EEEE)' : 'EEEE, MMMM d, yyyy', { locale: dateLocale })}
           </span>
           
           <DatePicker
-            selected={selectedDate}
-            onChange={(date: Date | null) => date && onDateChange(date)}
-            dateFormat={locale === 'ja' ? 'yyyy年MM月dd日' : 'MMMM d, yyyy'}
-            locale={dateLocale}
-            className="px-3 py-1.5 text-sm border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
-            popperClassName="react-datepicker-popper"
-            showPopperArrow={false}
-            customInput={
-              <button className="inline-flex items-center gap-2 px-3 py-1.5 text-sm border border-border rounded-lg bg-background text-foreground hover:bg-muted focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer transition-colors">
-                <CalendarIcon className="h-4 w-4" />
-                <span className="sr-only">{t('goal.changeDate')}</span>
-              </button>
-            }
+            value={selectedDate}
+            onChange={(date) => date && onDateChange(date)}
+            placeholder={t('goal.changeDate')}
           />
         </div>
 
