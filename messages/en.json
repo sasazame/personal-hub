@@ -127,7 +127,20 @@
     "resetLinkSent": "Password reset link sent",
     "resetLinkSentMessage": "If an account exists with this email, you will receive a password reset link shortly",
     "backToLogin": "Back to Login",
-    "sendingResetLink": "Sending reset link..."
+    "sendingResetLink": "Sending reset link...",
+    "resetPasswordFailed": "Failed to reset password",
+    "invalidResetLink": "Invalid Reset Link",
+    "invalidOrExpiredToken": "The reset link is invalid or has expired",
+    "requestNewLink": "Request a new reset link",
+    "validatingToken": "Validating reset link...",
+    "setNewPassword": "Set New Password",
+    "setNewPasswordDescription": "Please enter your new password",
+    "newPassword": "New Password",
+    "passwordResetSuccess": "Password Reset Successful",
+    "passwordResetSuccessMessage": "Your password has been successfully reset",
+    "passwordResetFailed": "Failed to reset password",
+    "redirectingToLogin": "Redirecting to login page...",
+    "resettingPassword": "Resetting password..."
   },
   "input": {
     "placeholder": "Please enter {field}",

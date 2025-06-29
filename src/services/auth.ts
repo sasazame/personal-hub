@@ -4,7 +4,9 @@ import {
   RegisterRequest, 
   RegisterResponse, 
   User,
-  AuthError 
+  AuthError,
+  PasswordResetResponse,
+  ValidateTokenResponse
 } from '@/types/auth';
 import { getErrorMessage } from '@/utils/errorMessages';
 
@@ -141,7 +143,7 @@ export const authAPI = {
     return handleResponse<void>(response);
   },
 
-  async requestPasswordReset(email: string): Promise<void> {
+  async requestPasswordReset(email: string): Promise<PasswordResetResponse> {
     const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
       method: 'POST',
       headers: {
@@ -150,10 +152,10 @@ export const authAPI = {
       body: JSON.stringify({ email }),
     });
 
-    return handleResponse<void>(response);
+    return handleResponse<PasswordResetResponse>(response);
   },
 
-  async resetPassword(token: string, newPassword: string): Promise<void> {
+  async resetPassword(token: string, newPassword: string): Promise<PasswordResetResponse> {
     const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
       method: 'POST',
       headers: {
@@ -165,7 +167,18 @@ export const authAPI = {
       }),
     });
 
-    return handleResponse<void>(response);
+    return handleResponse<PasswordResetResponse>(response);
+  },
+
+  async validateResetToken(token: string): Promise<ValidateTokenResponse> {
+    const response = await fetch(`${API_BASE_URL}/auth/validate-reset-token?token=${encodeURIComponent(token)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return handleResponse<ValidateTokenResponse>(response);
   },
 };
 
