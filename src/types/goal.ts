@@ -11,6 +11,7 @@ export interface Goal {
   startDate: string;
   endDate: string;
   status: GoalStatus;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -32,6 +33,10 @@ export interface UpdateGoalDto {
   metricUnit?: string;
   targetValue: number;
   endDate: string;
+  goalType?: GoalType;
+  startDate?: string;
+  isActive?: boolean;
+  metricType?: MetricType;
 }
 
 export interface GoalProgress {
@@ -102,11 +107,14 @@ export interface GoalWithTracking extends Goal {
 }
 
 export interface ToggleAchievementResponse {
-  goalId: number;
-  periodType: string;
-  periodDate: string;
+  goalId: number | string;
+  goalType?: string;
+  periodType?: string;
+  targetDate?: string;
+  periodDate?: string;
   achieved: boolean;
-  progressId: number | null;
+  achievementId?: string | number;
+  progressId?: number | null;
 }
 
 export interface PagedResponse<T> {
@@ -119,4 +127,10 @@ export interface PagedResponse<T> {
 export interface UpdateProgressDto {
   value: number;
   note?: string;
+}
+
+export interface GoalWithStatus extends Goal {
+  completed: boolean;
+  currentStreak: number;
+  longestStreak: number;
 }

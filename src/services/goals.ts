@@ -11,7 +11,9 @@ import type {
   ToggleAchievementResponse,
   PagedResponse,
   UpdateProgressDto,
+  GoalWithStatus,
 } from '@/types/goal';
+import type { GoalFilter } from '@/components/goals/FilterTabs';
 
 export const goalsService = {
   createGoal: async (data: CreateGoalDto): Promise<Goal> => {
@@ -85,11 +87,45 @@ export const goalsService = {
     await api.post('/goals/reset-weekly');
   },
 
-  toggleAchievement: async (goalId: number): Promise<ToggleAchievementResponse> => {
+  toggleAchievement: async (goalId: number, date?: string): Promise<ToggleAchievementResponse> => {
     const response = await api.post<ToggleAchievementResponse>(
-      `/goals/${goalId}/toggle-achievement`
+      `/goals/${goalId}/achievements`,
+      { date: date || new Date().toISOString().split('T')[0] }
     );
     return response.data;
+  },
+
+  removeAchievement: async (goalId: number, date: string): Promise<void> => {
+    await api.delete(`/goals/${goalId}/achievements?date=${date}`);
+  },
+
+  toggleActive: async (goalId: number, isActive: boolean): Promise<Goal> => {
+    const response = await api.patch<Goal>(`/goals/${goalId}/active`, { isActive });
+    return response.data;
+  },
+
+  getGoalsByDateAndFilter: async (date: string, filter: GoalFilter = 'active'): Promise<GoalWithStatus[]> => {
+    const response = await api.get<Record<string, GoalWithStatus[]> | GoalWithStatus[]>(`/goals?date=${date}&filter=${filter}`);
+    // デバッグ用ログ
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Goals API response:', response.data);
+    }
+    
+    // APIレスポンスがグループ化されたオブジェクトの場合、配列に変換
+    const data = response.data;
+    if (Array.isArray(data)) {
+      return data;
+    } else if (data && typeof data === 'object') {
+      // annual, monthly, weekly, daily のグループから配列を結合
+      const allGoals: GoalWithStatus[] = [];
+      Object.values(data).forEach(goalGroup => {
+        if (Array.isArray(goalGroup)) {
+          allGoals.push(...goalGroup);
+        }
+      });
+      return allGoals;
+    }
+    return [];
   },
 
   getAchievementHistory: async (goalId: number): Promise<GoalProgress[]> => {
