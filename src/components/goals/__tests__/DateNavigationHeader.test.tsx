@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { DateNavigationHeader } from '../DateNavigationHeader';
 import { format, addDays, subDays } from 'date-fns';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 // Mock next-intl
 jest.mock('next-intl', () => ({
@@ -21,18 +22,26 @@ describe('DateNavigationHeader', () => {
   const mockOnDateChange = jest.fn();
   const testDate = new Date('2025-01-28');
 
+  const renderWithTheme = (ui: React.ReactElement) => {
+    return render(
+      <ThemeProvider>
+        {ui}
+      </ThemeProvider>
+    );
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders with the selected date', () => {
-    render(<DateNavigationHeader selectedDate={testDate} onDateChange={mockOnDateChange} />);
+    renderWithTheme(<DateNavigationHeader selectedDate={testDate} onDateChange={mockOnDateChange} />);
     
     expect(screen.getByText(format(testDate, 'EEEE, MMMM d, yyyy'))).toBeInTheDocument();
   });
 
   it('navigates to previous day when previous button clicked', () => {
-    render(<DateNavigationHeader selectedDate={testDate} onDateChange={mockOnDateChange} />);
+    renderWithTheme(<DateNavigationHeader selectedDate={testDate} onDateChange={mockOnDateChange} />);
     
     const prevButton = screen.getByLabelText('Previous day');
     fireEvent.click(prevButton);
@@ -41,7 +50,7 @@ describe('DateNavigationHeader', () => {
   });
 
   it('navigates to next day when next button clicked', () => {
-    render(<DateNavigationHeader selectedDate={testDate} onDateChange={mockOnDateChange} />);
+    renderWithTheme(<DateNavigationHeader selectedDate={testDate} onDateChange={mockOnDateChange} />);
     
     const nextButton = screen.getByLabelText('Next day');
     fireEvent.click(nextButton);
@@ -50,7 +59,7 @@ describe('DateNavigationHeader', () => {
   });
 
   it('navigates to today when today button clicked', () => {
-    render(<DateNavigationHeader selectedDate={testDate} onDateChange={mockOnDateChange} />);
+    renderWithTheme(<DateNavigationHeader selectedDate={testDate} onDateChange={mockOnDateChange} />);
     
     const todayButton = screen.getByText('Today');
     fireEvent.click(todayButton);
@@ -61,7 +70,7 @@ describe('DateNavigationHeader', () => {
   });
 
   it('displays keyboard shortcuts', () => {
-    render(<DateNavigationHeader selectedDate={testDate} onDateChange={mockOnDateChange} />);
+    renderWithTheme(<DateNavigationHeader selectedDate={testDate} onDateChange={mockOnDateChange} />);
     
     expect(screen.getByText('←')).toBeInTheDocument();
     expect(screen.getByText('→')).toBeInTheDocument();
@@ -69,7 +78,7 @@ describe('DateNavigationHeader', () => {
   });
 
   it('responds to keyboard shortcuts', () => {
-    render(<DateNavigationHeader selectedDate={testDate} onDateChange={mockOnDateChange} />);
+    renderWithTheme(<DateNavigationHeader selectedDate={testDate} onDateChange={mockOnDateChange} />);
     
     // Test left arrow
     fireEvent.keyDown(window, { key: 'ArrowLeft' });
@@ -85,7 +94,7 @@ describe('DateNavigationHeader', () => {
   });
 
   it('ignores keyboard shortcuts when input is focused', () => {
-    render(
+    renderWithTheme(
       <div>
         <DateNavigationHeader selectedDate={testDate} onDateChange={mockOnDateChange} />
         <input data-testid="test-input" />
