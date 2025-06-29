@@ -4,6 +4,7 @@ import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/cn';
+import { useTheme } from '@/hooks/useTheme';
 
 export interface MenuItem {
   label: string;
@@ -25,6 +26,8 @@ export function DropdownMenu({
   buttonClassName,
   menuClassName 
 }: DropdownMenuProps) {
+  const { theme } = useTheme();
+  
   return (
     <Menu as="div" className={cn('relative', className)}>
       {({ open }) => (
@@ -61,17 +64,32 @@ export function DropdownMenu({
                       <button
                         onClick={item.onClick}
                         className={cn(
-                          'group flex w-full items-center gap-2 px-4 py-2 text-sm transition-colors',
-                          active && 'bg-muted',
+                          'group flex w-full items-center gap-2 px-4 py-2 text-sm transition-colors duration-200 cursor-pointer focus:outline-none',
                           item.variant === 'danger' 
-                            ? 'text-destructive hover:bg-destructive/10' 
-                            : 'text-foreground hover:bg-muted'
+                            ? cn(
+                                'text-destructive',
+                                theme === 'dark' 
+                                  ? 'hover:bg-red-900/30 focus:bg-red-900/30' 
+                                  : 'hover:bg-red-50 focus:bg-red-50',
+                                active && (theme === 'dark' ? 'bg-red-900/30' : 'bg-red-50')
+                              )
+                            : cn(
+                                'text-foreground',
+                                theme === 'dark' 
+                                  ? 'hover:bg-gray-700 focus:bg-gray-700' 
+                                  : 'hover:bg-gray-100 focus:bg-gray-100',
+                                active && (theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100')
+                              )
                         )}
                       >
                         {item.icon && (
                           <span className={cn(
-                            'text-muted-foreground group-hover:text-foreground',
-                            item.variant === 'danger' && 'group-hover:text-destructive'
+                            'transition-colors duration-200',
+                            item.variant === 'danger' 
+                              ? 'text-destructive' 
+                              : theme === 'dark' 
+                                ? 'text-gray-400 group-hover:text-gray-200' 
+                                : 'text-gray-500 group-hover:text-gray-700'
                           )}>
                             {item.icon}
                           </span>
