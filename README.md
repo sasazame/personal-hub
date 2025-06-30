@@ -1,300 +1,132 @@
 # Personal Hub
 
-An integrated workspace application designed to enhance personal productivity
+[![Next.js](https://img.shields.io/badge/Next.js-15.3-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19.0-61dafb?logo=react)](https://react.dev/)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind-4.0-38bdf8?logo=tailwind-css)](https://tailwindcss.com/)
 
-## 🚀 Project Overview
+A modern, integrated workspace application designed to enhance personal productivity with seamless task management, calendar scheduling, and note-taking capabilities.
 
-### Technology Stack
-- **Framework**: Next.js 15 (App Router)
-- **Language**: TypeScript 5+
-- **UI Library**: React 19
-- **Styling**: Tailwind CSS 4
-- **State Management**: TanStack Query + React Hook Form
-- **Authentication**: OpenID Connect (OIDC) with JWT
-- **Testing**: Jest, React Testing Library, Playwright
-- **Tools**: ESLint, Prettier, Turbopack
+## ✨ Features
 
-### Key Features
-- ✅ **TODO Management**: CRUD operations, status management, priority settings, subtasks
-- ✅ **Calendar**: Event management, monthly view, color categorization, all-day/timed events
-- ✅ **Notes**: Rich text editor, category/tag classification, pinning, search
-- ✅ **Dashboard**: Real-time integrated view, progress tracking, analytics
-- ✅ **User Management**: Profile, OIDC authentication, settings
-- ✅ **UI/UX**: Responsive design, dark mode, accessibility support
+- **📝 TODO Management** - Advanced task tracking with priorities, subtasks, and status management
+- **📅 Calendar** - Event scheduling with drag-and-drop, color categorization, and recurring events
+- **📒 Notes** - Rich text editor with categories, tags, and full-text search
+- **📊 Dashboard** - Real-time overview of all activities with progress tracking
+- **🎯 Goals** - Goal setting and achievement tracking with calendar integration
+- **📈 Analytics** - Productivity insights and reporting
+- **🌓 Dark Mode** - Eye-friendly theme with system preference sync
+- **🌍 Internationalization** - English and Japanese language support
 
-## ⚡ Quick Start
+## 🚀 Quick Start
 
-### Prerequisites
-- Node.js 18+
-- npm 9+
-- Backend API (localhost:8080)
-
-### Setup Instructions
 ```bash
-# 1. Clone the repository
+# Clone the repository
 git clone https://github.com/sasazame/personal-hub.git
 cd personal-hub
 
-# 2. Install dependencies
+# Install dependencies
 npm install
 
-# 3. Start development server
+# Set up environment variables
+cp .env.example .env.local
+
+# Start development server
 npm run dev
 
-# 4. Open in browser
-open http://localhost:3000
+# Open http://localhost:3000
 ```
 
-### Development Workflow
+## 📋 Prerequisites
+
+- Node.js 18+ and npm 9+
+- Backend API running on `http://localhost:8080` ([personal-hub-backend](https://github.com/sasazame/personal-hub-backend))
+
+## 🛠️ Development
 
 ```bash
-# 1. Development (Fast reload with Turbopack)
-npm run dev
-# Use for: Quick iterations, component development, styling changes
-
-# 2. Production Preview (Optimized build)
-npm run preview
-# Use for: Integration testing, performance testing, final checks
-
-# 3. Production Build + Start (Separate commands)
-npm run build
-npm run start
-# Use for: Deployment preparation, production debugging
-```
-
-#### Workflow Recommendations
-- **開発中**: `npm run dev` で細かな変更を確認
-- **機能完成時**: `npm run preview` で結合テスト
-- **PR作成前**: `npm run build` でビルドエラーがないことを確認
-
-## 🛠️ Environment Setup
-
-### Environment Variables
-Create `.env.local` file:
-```bash
-# API Endpoint
-NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
-
-# Application Settings
-NEXT_PUBLIC_APP_NAME=Personal Hub
-```
-
-### Backend Integration
-The backend API must be running on localhost:8080.
-See [todo-app-backend](https://github.com/sasazame/todo-app-backend) for details.
-
-## 👨‍💻 Development Guide
-
-### Development Server
-```bash
-# Fast development server with Turbopack
+# Development with hot reload
 npm run dev
 
-# Production build
-npm run build
-
-# Start production server
-npm start
-```
-
-### Code Quality
-```bash
-# ESLint check
-npm run lint
-
-# Type check
+# Type checking
 npm run type-check
 
-# Run tests
-npm test
+# Linting
+npm run lint
 
-# E2E tests
-npm run test:e2e
-```
-
-### Branch Strategy
-```bash
-# New feature development
-git checkout -b feat/feature-name
-
-# Bug fixes
-git checkout -b fix/bug-description
-
-# Run tests locally (required before PR)
-npm run type-check && npm run lint && npm test && npm run build
-
-# Create pull request
-git push origin feat/feature-name
-gh pr create --assignee sasazame
-```
-
-## 🧩 Architecture
-
-### Directory Structure
-```
-src/
-├── app/                    # App Router (pages)
-│   ├── dashboard/         # Dashboard
-│   ├── todos/             # TODO management
-│   ├── calendar/          # Calendar
-│   ├── notes/             # Notes feature
-│   └── profile/           # User settings
-├── components/
-│   ├── ui/                # Basic UI components
-│   ├── todos/             # TODO-related components
-│   ├── calendar/          # Calendar-related
-│   ├── notes/             # Notes-related
-│   ├── dashboard/         # Dashboard-related
-│   ├── auth/              # Authentication-related
-│   └── layout/            # Layout
-├── hooks/                 # Custom hooks
-├── lib/                   # External library configurations
-├── services/              # API communication logic
-├── types/                 # Type definitions
-└── utils/                 # Helper functions
-```
-
-### Module Design
-- **todos/**: TODO functionality (fully implemented)
-- **calendar/**: Calendar and event management (fully implemented)
-- **notes/**: Notes functionality (fully implemented)
-- **dashboard/**: Real-time integrated dashboard (fully implemented)
-- **analytics/**: Analytics and reporting (planned)
-- **shared/**: Common components and utilities
-
-## 🔐 Authentication
-
-### OIDC Authentication
-The application uses OpenID Connect (OIDC) for authentication:
-- JWT tokens stored in localStorage
-- Automatic token refresh before expiration
-- Support for multiple OAuth providers (Google, GitHub)
-- Secure user session management
-
-## 🧪 Testing
-
-### Test Execution
-```bash
 # Unit tests
 npm test
 
-# Tests in watch mode
-npm run test:watch
-
-# Coverage
-npm run test:coverage
-
 # E2E tests
 npm run test:e2e
+
+# Production build
+npm run build
+npm start
 ```
 
-### Testing Strategy
-- **Unit Tests**: Components, hooks, utilities
-- **Integration Tests**: Feature interactions, API communication
-- **E2E Tests**: User flows, critical paths
+## 📁 Project Structure
 
-## 📡 API Integration
-
-### TanStack Query-based State Management
-```typescript
-// hooks/useTodos.ts
-export function useTodos(status?: TodoStatus) {
-  return useQuery({
-    queryKey: ['todos', status],
-    queryFn: () => todoApi.getList({ status }),
-    staleTime: 1000 * 60 * 5,
-  });
-}
-
-// hooks/useCalendar.ts
-export function useAllCalendarEvents() {
-  return useQuery({
-    queryKey: ['calendar', 'events', 'all'],
-    queryFn: () => calendarService.getAllEvents(),
-    staleTime: 1000 * 60 * 5,
-  });
-}
-
-// hooks/useNotes.ts
-export function useNotes(filters?: NoteFilters) {
-  return useQuery({
-    queryKey: ['notes', filters],
-    queryFn: () => notesService.getNotes(filters),
-    staleTime: 1000 * 60 * 5,
-  });
-}
+```
+src/
+├── app/              # Next.js App Router pages
+├── components/       # React components
+├── hooks/           # Custom React hooks
+├── services/        # API integration layer
+├── types/           # TypeScript type definitions
+├── utils/           # Utility functions
+└── lib/             # Third-party library configs
 ```
 
-## 🎨 Design System
+## 🔐 Environment Variables
 
-### Theme Configuration
-- **Color Palette**: Primary (Blue), Secondary (Gray), Accent colors
-- **Typography**: Inter font, unified hierarchy
-- **Spacing**: 8px grid system
-- **Responsive**: Mobile-first approach
+Create a `.env.local` file:
 
-### Component Design
-- **UI Components**: Reusable basic elements
-- **Feature Components**: Function-specific components
-- **Layout Components**: Page structure and navigation
+```env
+# Required
+NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
 
-## 🚧 Development Roadmap
-
-### Phase 1: Foundation Setup ✅
-- [x] Project structure and architecture design
-- [x] Full TODO functionality implementation
-- [x] Authentication system with OIDC
-- [x] Basic UI component library
-- [x] TypeScript type safety and testing foundation
-
-### Phase 2: New Feature Development ✅
-- [x] Calendar functionality (monthly view, event management)
-- [x] Notes feature (rich text editor, categories/tags)
-- [x] Dashboard (real-time integrated display)
-- [x] Cross-feature data integration
-- [x] Comprehensive test coverage
-
-### Phase 3: Optimization & Enhancement 🚧
-- [ ] Analytics and reporting features
-- [ ] Advanced search and filtering
-- [ ] Performance optimization
-- [ ] PWA support
-
-### Phase 4: Enterprise Features
-- [ ] Data export/import
-- [ ] External calendar integration (Google Calendar)
-- [ ] Notification and reminder system
-- [ ] Team features and sharing
-
-## 📝 Development Guidelines
-
-### Coding Standards
-- TypeScript strict mode
-- React functional components
-- Server Components first approach
-- Styling with Tailwind CSS
-
-### Commit Convention
+# OAuth (Optional)
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id
+NEXT_PUBLIC_GITHUB_CLIENT_ID=your-github-client-id
 ```
-<type>(<scope>): <subject>
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
+## 🚢 Deployment
+
+### Vercel (Recommended)
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/sasazame/personal-hub)
+
+1. Click the button above or run `vercel` in your terminal
+2. Set environment variables in Vercel dashboard
+3. Deploy!
+
+### Other Platforms
+
+See [deployment guide](./docs/deployment/README.md) for Cloudflare Pages, Netlify, and self-hosting options.
 
 ## 📚 Documentation
 
-For detailed development information, refer to `CLAUDE.md` and the `docs/` folder.
+- [Getting Started](./docs/getting-started/README.md)
+- [Development Guide](./docs/development/README.md)
+- [API Reference](./docs/api/README.md)
+- [Contributing Guidelines](./CONTRIBUTING.md)
 
 ## 🤝 Contributing
 
-1. Fork this repository
-2. Create a feature branch
-3. Commit your changes
-4. Run tests (required)
-5. Create a pull request
+Contributions are welcome! Please read our [Contributing Guidelines](./CONTRIBUTING.md) before submitting a PR.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/) and [React](https://react.dev/)
+- UI components inspired by [Tailwind UI](https://tailwindui.com/)
+- Icons from [Heroicons](https://heroicons.com/) and [Lucide](https://lucide.dev/)
 
 ---
 
-**Developer**: sasazame  
-**Last Updated**: June 2025
+**Developer**: [@sasazame](https://github.com/sasazame)  
+**Repository**: [personal-hub](https://github.com/sasazame/personal-hub)
