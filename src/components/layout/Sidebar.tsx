@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/cn';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTheme } from '@/hooks/useTheme';
+import { isFeatureEnabled } from '@/config/features';
 import { 
   Home, 
   CheckSquare, 
@@ -56,11 +57,11 @@ export function Sidebar() {
       label: t('nav.goals'),
       icon: <Target className="h-5 w-5" />
     },
-    {
+    ...(isFeatureEnabled('analytics') ? [{
       href: '/analytics',
       label: t('nav.analytics'),
       icon: <BarChart3 className="h-5 w-5" />
-    },
+    }] : []),
   ];
 
   const bottomNavItems: NavItem[] = [

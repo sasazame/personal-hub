@@ -12,6 +12,7 @@ import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
 import { useLogin, useAuth } from '@/hooks/useAuth';
 import { Icons } from '@/components/ui/icons';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { FeatureFlag } from '@/components/FeatureFlag';
 
 export default function LoginPage() {
   const t = useTranslations();
@@ -167,15 +168,17 @@ export default function LoginPage() {
                 {t('auth.continueWithGoogle')}
               </Button>
               
-              <Button
-                type="button"
-                onClick={() => loginWithOIDC('github')}
-                className="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold py-3 transition-all duration-300"
-                size="lg"
-                leftIcon={<Icons.gitHub className="h-5 w-5" />}
-              >
-                {t('auth.continueWithGitHub')}
-              </Button>
+              <FeatureFlag feature="githubOAuth">
+                <Button
+                  type="button"
+                  onClick={() => loginWithOIDC('github')}
+                  className="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold py-3 transition-all duration-300"
+                  size="lg"
+                  leftIcon={<Icons.gitHub className="h-5 w-5" />}
+                >
+                  {t('auth.continueWithGitHub')}
+                </Button>
+              </FeatureFlag>
             </div>
 
             <div className="text-center text-sm text-white/70">

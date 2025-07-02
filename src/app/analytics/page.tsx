@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { AuthGuard } from '@/components/auth';
 import { AppLayout } from '@/components/layout';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { withFeatureFlag } from '@/components/FeatureFlag';
 import {
   StatsCard,
   TodoStatusChart,
@@ -121,10 +122,22 @@ function AnalyticsPage() {
   );
 }
 
+const FeatureFlaggedAnalytics = withFeatureFlag(
+  'analytics',
+  <AppLayout>
+    <div className="flex items-center justify-center h-[calc(100vh-200px)]">
+      <div className="text-center space-y-4">
+        <h2 className="text-2xl font-semibold text-foreground">Analytics Coming Soon</h2>
+        <p className="text-muted-foreground">This feature is currently under development.</p>
+      </div>
+    </div>
+  </AppLayout>
+)(AnalyticsPage);
+
 export default function Analytics() {
   return (
     <AuthGuard>
-      <AnalyticsPage />
+      <FeatureFlaggedAnalytics />
     </AuthGuard>
   );
 }

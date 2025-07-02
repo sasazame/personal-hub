@@ -9,6 +9,7 @@ import { LogOut, User, Menu, X, Sparkles, Home, CheckSquare, Calendar, FileText,
 import { cn } from '@/lib/cn';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/hooks/useTheme';
+import { isFeatureEnabled } from '@/config/features';
 
 export function Header() {
   const t = useTranslations();
@@ -40,11 +41,11 @@ export function Header() {
       label: t('nav.notes'),
       icon: <FileText className="h-5 w-5" />
     },
-    {
+    ...(isFeatureEnabled('analytics') ? [{
       href: '/analytics',
       label: t('nav.analytics'),
       icon: <BarChart3 className="h-5 w-5" />
-    },
+    }] : []),
   ];
 
   const isActive = (href: string) => {
