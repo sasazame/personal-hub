@@ -146,9 +146,10 @@ function NotesPage() {
           </div>
           <Button 
             onClick={handleNewNote}
-            className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700"
+            gradient="purple"
+            size="lg"
+            leftIcon={<Plus className="w-5 h-5" />}
           >
-            <Plus className="w-5 h-5 mr-2" />
             {t('notes.newNote')}
           </Button>
         </div>

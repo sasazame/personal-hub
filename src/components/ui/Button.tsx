@@ -7,11 +7,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: 'bg-blue-600 text-white shadow-md hover:bg-blue-700 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] focus:ring-blue-500 border border-blue-700',
-        secondary: 'bg-gray-600 text-white shadow-md hover:bg-gray-700 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] focus:ring-gray-500 border border-gray-700',
-        ghost: 'text-foreground hover:bg-muted hover:text-foreground hover:shadow-sm hover:scale-[1.02] active:scale-[0.98] focus:ring-ring border border-transparent hover:border-border',
-        danger: 'bg-red-600 text-white shadow-md hover:bg-red-700 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] focus:ring-red-500 border border-red-700',
-        outline: 'border-2 border-blue-600 bg-white text-blue-600 hover:bg-blue-600 hover:text-white hover:shadow-md hover:scale-[1.02] active:scale-[0.98] focus:ring-blue-500',
+        primary: 'bg-blue-600 text-white shadow-lg hover:bg-blue-700 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] focus:ring-blue-500',
+        secondary: 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-md hover:bg-gray-200 dark:hover:bg-gray-700 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] focus:ring-gray-500',
+        ghost: 'text-foreground hover:bg-muted hover:text-foreground hover:shadow-md hover:scale-[1.02] active:scale-[0.98] focus:ring-ring',
+        danger: 'bg-red-600 text-white shadow-lg hover:bg-red-700 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] focus:ring-red-500',
+        outline: 'border-2 border-current bg-transparent hover:bg-gray-50 dark:hover:bg-gray-900 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] focus:ring-current',
       },
       size: {
         sm: 'h-8 px-3 text-sm',
@@ -33,7 +33,16 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
   children?: ReactNode;
+  gradient?: 'blue' | 'green' | 'purple' | 'indigo' | 'orange';
 }
+
+const gradientClasses = {
+  blue: 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl',
+  green: 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl',
+  purple: 'bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white shadow-lg hover:shadow-xl',
+  indigo: 'bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white shadow-lg hover:shadow-xl',
+  orange: 'bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white shadow-lg hover:shadow-xl',
+};
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ 
@@ -45,13 +54,18 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     rightIcon, 
     children, 
     disabled,
+    gradient,
     ...props 
   }, ref) => {
     const isDisabled = disabled || loading;
 
     return (
       <button
-        className={cn(buttonVariants({ variant, size }), className)}
+        className={cn(
+          buttonVariants({ variant, size }), 
+          gradient && gradientClasses[gradient],
+          className
+        )}
         ref={ref}
         disabled={isDisabled}
         {...props}
