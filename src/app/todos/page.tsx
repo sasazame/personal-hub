@@ -16,6 +16,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { Modal, Button } from '@/components/ui';
 import Link from 'next/link';
 import { Mail } from 'lucide-react';
+import { FeatureFlag } from '@/components/FeatureFlag';
 
 function TodoApp() {
   const t = useTranslations();
@@ -214,13 +215,15 @@ function TodoApp() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Link
-              href="/todos/gmail"
-              className="inline-flex items-center px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
-            >
-              <Mail className="w-5 h-5 mr-2" />
-              Gmail to Task
-            </Link>
+            <FeatureFlag feature="gmailIntegration">
+              <Link
+                href="/todos/gmail"
+                className="inline-flex items-center px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
+              >
+                <Mail className="w-5 h-5 mr-2" />
+                Gmail to Task
+              </Link>
+            </FeatureFlag>
             <button
               onClick={() => {
                 setParentIdForNewTodo(null);

@@ -8,6 +8,8 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Mail } from 'lucide-react';
+import { withFeatureFlag } from '@/components/FeatureFlag';
+import { redirect } from 'next/navigation';
 
 function GmailIntegrationPage() {
   usePageTitle('Gmail to Tasks - Personal Hub');
@@ -65,10 +67,34 @@ function GmailIntegrationPage() {
   );
 }
 
+const FeatureFlaggedGmailPage = withFeatureFlag(
+  'gmailIntegration',
+  <AppLayout>
+    <div className="max-w-2xl mx-auto py-8">
+      <Card className="border-dashed">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Mail className="h-5 w-5" />
+            Gmail Integration Temporarily Unavailable
+          </CardTitle>
+          <CardDescription>
+            This feature is currently under maintenance and will be available soon.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={() => window.history.back()}>
+            Go Back
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  </AppLayout>
+)(GmailIntegrationPage);
+
 export default function GmailIntegration() {
   return (
     <AuthGuard>
-      <GmailIntegrationPage />
+      <FeatureFlaggedGmailPage />
     </AuthGuard>
   );
 }
