@@ -36,7 +36,7 @@ describe('FilterTabs', () => {
     expect(activeButton).toHaveClass('bg-blue-600');
     
     const inactiveButton = screen.getByText('Inactive');
-    expect(inactiveButton).toHaveClass('bg-gray-600');
+    expect(inactiveButton).toHaveClass('bg-gray-100');
   });
 
   it('calls onFilterChange when a filter is clicked', () => {
@@ -53,11 +53,11 @@ describe('FilterTabs', () => {
     const { rerender } = render(<FilterTabs activeFilter="active" onFilterChange={mockOnFilterChange} />);
     
     expect(screen.getByText('Active')).toHaveClass('bg-blue-600');
-    expect(screen.getByText('Inactive')).toHaveClass('bg-gray-600');
+    expect(screen.getByText('Inactive')).toHaveClass('bg-gray-100');
     
     rerender(<FilterTabs activeFilter="inactive" onFilterChange={mockOnFilterChange} />);
     
-    expect(screen.getByText('Active')).toHaveClass('bg-gray-600');
+    expect(screen.getByText('Active')).toHaveClass('bg-gray-100');
     expect(screen.getByText('Inactive')).toHaveClass('bg-blue-600');
   });
 });

@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
-import { PlusIcon } from '@heroicons/react/24/solid';
+import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { DateNavigationHeader } from './DateNavigationHeader';
 import { FilterTabs, type GoalFilter } from './FilterTabs';
 import { GoalCard } from './GoalCard';
 import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
 import { GoalForm } from './GoalForm';
 import { useGoals } from '@/hooks/useGoals';
 import { useToggleAchievement } from '@/hooks/useToggleAchievement';
@@ -214,13 +215,14 @@ export function GoalsList() {
             {t('goal.subtitle')}
           </p>
         </div>
-        <button
+        <Button
           onClick={() => setShowCreateModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md hover:shadow-lg transition-all"
+          gradient="indigo"
+          size="lg"
+          leftIcon={<Plus className="w-5 h-5" />}
         >
-          <PlusIcon className="h-5 w-5" />
           {t('goal.createGoal')}
-        </button>
+        </Button>
       </div>
 
       <DateNavigationHeader

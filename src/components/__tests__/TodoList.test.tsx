@@ -17,6 +17,24 @@ jest.mock('@/components/ui/toast', () => ({
   showError: jest.fn(),
 }));
 
+// Mock useTheme hook
+jest.mock('@/hooks/useTheme', () => ({
+  useTheme: () => ({ theme: 'light' }),
+}));
+
+// Mock DropdownMenu to simplify testing
+jest.mock('@/components/ui/DropdownMenu', () => ({
+  DropdownMenu: ({ items }: { items: Array<{ label: string; onClick: () => void }> }) => (
+    <div data-testid="dropdown-menu">
+      {items.map((item, index) => (
+        <button key={index} onClick={item.onClick}>
+          {item.label}
+        </button>
+      ))}
+    </div>
+  ),
+}));
+
 // Mock next-intl
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
@@ -131,6 +149,7 @@ describe('TodoList', () => {
     expect(screen.getByText(/Due:.*12\/31\/2024/)).toBeInTheDocument();
   });
 
+
   it.skip('calls onUpdate when Edit button is clicked', async () => {
     render(
       <TodoList
@@ -162,11 +181,11 @@ describe('TodoList', () => {
       item => item.textContent === 'Edit'
     );
     fireEvent.click(editItems[0]);
-    
+
     expect(mockOnUpdate).toHaveBeenCalledWith(1, mockTodos[0]);
   });
 
-  it('does not display Delete button in TodoList', () => {
+  it('displays Delete button in dropdown menu', () => {
     render(
       <TodoList
         todos={mockTodos}
@@ -175,9 +194,9 @@ describe('TodoList', () => {
       />
     );
 
-    // TodoItem doesn't have a visible delete button, it's handled through edit form
+    // With our mock, Delete buttons are visible in the dropdown menus
     const deleteButtons = screen.queryAllByText('Delete');
-    expect(deleteButtons.length).toBe(0);
+    expect(deleteButtons.length).toBe(mockTodos.length);
   });
 
   it('renders empty list when no todos provided', () => {

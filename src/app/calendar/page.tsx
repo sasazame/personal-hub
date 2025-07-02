@@ -210,8 +210,12 @@ function CalendarPage() {
               <Settings className="w-4 h-4" />
               {t('calendar.googleSettings')}
             </Button>
-            <Button onClick={handleNewEvent} className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
-              <Plus className="w-5 h-5 mr-2" />
+            <Button 
+              onClick={handleNewEvent} 
+              gradient="green"
+              size="lg"
+              leftIcon={<Plus className="w-5 h-5" />}
+            >
               {t('calendar.newEvent')}
             </Button>
           </div>

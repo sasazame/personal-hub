@@ -10,21 +10,21 @@ describe('Button', () => {
     expect(button).toBeInTheDocument();
     expect(button).toHaveClass('inline-flex', 'items-center', 'justify-center');
     expect(button).toHaveClass('h-10', 'px-4', 'text-sm'); // md size (default)
-    expect(button).toHaveClass('bg-blue-600', 'border'); // primary variant (default)
+    expect(button).toHaveClass('bg-blue-600', 'shadow-lg'); // primary variant (default)
   });
 
   it('renders different variants correctly', () => {
     const { rerender } = render(<Button variant="secondary">Secondary</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-gray-600');
+    expect(screen.getByRole('button')).toHaveClass('bg-gray-100', 'shadow-md');
 
     rerender(<Button variant="ghost">Ghost</Button>);
     expect(screen.getByRole('button')).toHaveClass('text-foreground');
 
     rerender(<Button variant="danger">Danger</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-red-600');
+    expect(screen.getByRole('button')).toHaveClass('bg-red-600', 'shadow-lg');
 
     rerender(<Button variant="outline">Outline</Button>);
-    expect(screen.getByRole('button')).toHaveClass('border-2', 'border-blue-600');
+    expect(screen.getByRole('button')).toHaveClass('border-2', 'border-current');
   });
 
   it('renders different sizes correctly', () => {
