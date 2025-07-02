@@ -26,10 +26,19 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
   const queryClient = useQueryClient();
   const { theme } = useTheme();
   
+  // Check if todo has children
+  const { data: childrenCheck = [] } = useQuery({
+    queryKey: ['todos', todo.id, 'hasChildren'],
+    queryFn: () => todoApi.getChildren(todo.id),
+    enabled: level === 0, // Only check for parent todos
+  });
+
+  const hasChildren = childrenCheck.length > 0;
+
   const { data: children = [], isLoading } = useQuery({
     queryKey: ['todos', todo.id, 'children'],
     queryFn: () => todoApi.getChildren(todo.id),
-    enabled: showChildren,
+    enabled: showChildren && hasChildren,
   });
 
   // Mutation for quick status toggle
@@ -116,7 +125,7 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
           <div className="flex-1">
             <div className="flex items-start justify-between mb-2">
               <div className="flex items-center gap-2">
-                {children.length > 0 && level === 0 && (
+                {hasChildren && level === 0 && (
                   <button
                     onClick={() => setShowChildren(!showChildren)}
                     className="p-1 hover:bg-accent rounded transition-colors"

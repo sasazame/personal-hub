@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Mail } from 'lucide-react';
 import { withFeatureFlag } from '@/components/FeatureFlag';
-import { redirect } from 'next/navigation';
 
 function GmailIntegrationPage() {
   usePageTitle('Gmail to Tasks - Personal Hub');

@@ -1,4 +1,4 @@
-import { getFeatureFlags, isFeatureEnabled } from '../features';
+import { getFeatureFlags, isFeatureEnabled, FeatureFlags } from '../features';
 
 describe('Feature Flags', () => {
   const originalEnv = process.env;
@@ -47,8 +47,8 @@ describe('Feature Flags', () => {
       
       // Need to re-import to get fresh values
       jest.resetModules();
-      const { getFeatureFlags: getFlags } = require('../features');
-      const flags = getFlags();
+      const features = jest.requireActual('../features');
+      const flags = features.getFeatureFlags();
       
       expect(flags.todos).toBe(false);
       expect(flags.gmailIntegration).toBe(true);
@@ -74,15 +74,15 @@ describe('Feature Flags', () => {
       process.env.NEXT_PUBLIC_FEATURE_GMAIL_INTEGRATION = 'true';
       
       jest.resetModules();
-      const { isFeatureEnabled: isEnabled } = require('../features');
+      const features = jest.requireActual('../features');
       
-      expect(isEnabled('gmailIntegration')).toBe(true);
+      expect(features.isFeatureEnabled('gmailIntegration')).toBe(true);
     });
   });
 
   describe('runtime overrides', () => {
     it('should use runtime overrides when available', () => {
-      (window as any).__FEATURE_FLAGS__ = {
+      const mockFlags: FeatureFlags = {
         todos: false,
         calendar: false,
         notes: true,
@@ -98,13 +98,15 @@ describe('Feature Flags', () => {
         pwa: false,
         offlineMode: false,
       };
+      
+      (window as Window & { __FEATURE_FLAGS__?: FeatureFlags }).__FEATURE_FLAGS__ = mockFlags;
 
       const flags = getFeatureFlags();
       
       expect(flags.todos).toBe(false);
       expect(flags.gmailIntegration).toBe(true);
       
-      delete (window as any).__FEATURE_FLAGS__;
+      delete (window as Window & { __FEATURE_FLAGS__?: FeatureFlags }).__FEATURE_FLAGS__;
     });
   });
 });

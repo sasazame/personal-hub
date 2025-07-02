@@ -1,6 +1,47 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@/test/test-utils';
 import TodoList from '../TodoList';
 import { Todo } from '@/types/todo';
+import { todoApi } from '@/lib/api';
+
+// Mock the API
+jest.mock('@/lib/api', () => ({
+  todoApi: {
+    getChildren: jest.fn(),
+    toggleStatus: jest.fn(),
+  }
+}));
+
+// Mock toast
+jest.mock('@/components/ui/toast', () => ({
+  showSuccess: jest.fn(),
+  showError: jest.fn(),
+}));
+
+// Mock next-intl
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    const translations: Record<string, string> = {
+      'todo.showSubtasks': 'Show subtasks',
+      'todo.hideSubtasks': 'Hide subtasks',
+      'todo.loadingSubtasks': 'Loading subtasks...',
+      'todo.addSubtask': 'Add Subtask',
+      'todo.todoCompleted': 'Todo completed',
+      'todo.todoUpdated': 'Todo updated',
+      'todo.markComplete': 'Mark as complete',
+      'todo.markIncomplete': 'Mark as incomplete',
+      'todo.dueDateLabel': 'Due:',
+      'todo.statusOptions.TODO': 'To Do',
+      'todo.statusOptions.IN_PROGRESS': 'In Progress',
+      'todo.statusOptions.DONE': 'Done',
+      'todo.priorityOptions.LOW': 'Low',
+      'todo.priorityOptions.MEDIUM': 'Medium',
+      'todo.priorityOptions.HIGH': 'High',
+      'common.edit': 'Edit',
+      'errors.general': 'An error occurred',
+    };
+    return translations[key] || key;
+  },
+}));
 
 describe('TodoList', () => {
   const mockTodos: Todo[] = [
@@ -29,6 +70,8 @@ describe('TodoList', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Mock getChildren to return empty array by default
+    (todoApi.getChildren as jest.Mock).mockResolvedValue([]);
   });
 
   it('renders todo items correctly', () => {
@@ -54,8 +97,8 @@ describe('TodoList', () => {
       />
     );
 
-    expect(screen.getByText('TODO')).toBeInTheDocument();
-    expect(screen.getByText('IN PROGRESS')).toBeInTheDocument();
+    expect(screen.getByText('To Do')).toBeInTheDocument();
+    expect(screen.getByText('In Progress')).toBeInTheDocument();
   });
 
   it('displays correct priority indicators', () => {
@@ -67,8 +110,8 @@ describe('TodoList', () => {
       />
     );
 
-    expect(screen.getByText('HIGH')).toBeInTheDocument();
-    expect(screen.getByText('MEDIUM')).toBeInTheDocument();
+    expect(screen.getByText('High')).toBeInTheDocument();
+    expect(screen.getByText('Medium')).toBeInTheDocument();
   });
 
   it('displays due date when available', () => {
@@ -80,7 +123,7 @@ describe('TodoList', () => {
       />
     );
 
-    expect(screen.getByText(/Due: 12\/31\/2024/)).toBeInTheDocument();
+    expect(screen.getByText(/Due:.*12\/31\/2024/)).toBeInTheDocument();
   });
 
   it('calls onUpdate when Edit button is clicked', () => {
@@ -98,7 +141,7 @@ describe('TodoList', () => {
     expect(mockOnUpdate).toHaveBeenCalledWith(1, mockTodos[0]);
   });
 
-  it('calls onDelete when Delete button is clicked', () => {
+  it('does not display Delete button in TodoList', () => {
     render(
       <TodoList
         todos={mockTodos}
@@ -107,10 +150,9 @@ describe('TodoList', () => {
       />
     );
 
-    const deleteButtons = screen.getAllByText('Delete');
-    fireEvent.click(deleteButtons[0]);
-
-    expect(mockOnDelete).toHaveBeenCalledWith(1, mockTodos[0]);
+    // TodoItem doesn't have a visible delete button, it's handled through edit form
+    const deleteButtons = screen.queryAllByText('Delete');
+    expect(deleteButtons.length).toBe(0);
   });
 
   it('renders empty list when no todos provided', () => {
@@ -122,6 +164,7 @@ describe('TodoList', () => {
       />
     );
 
-    expect(container.firstChild?.childNodes.length).toBe(0);
+    const todoList = container.querySelector('.space-y-4');
+    expect(todoList?.children.length).toBe(0);
   });
 });

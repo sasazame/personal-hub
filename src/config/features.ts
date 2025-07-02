@@ -34,8 +34,11 @@ export interface FeatureFlags {
  */
 export function getFeatureFlags(): FeatureFlags {
   // Allow runtime override for testing
-  if (typeof window !== 'undefined' && (window as any).__FEATURE_FLAGS__) {
-    return (window as any).__FEATURE_FLAGS__;
+  if (typeof window !== 'undefined') {
+    const windowWithFlags = window as Window & { __FEATURE_FLAGS__?: FeatureFlags };
+    if (windowWithFlags.__FEATURE_FLAGS__) {
+      return windowWithFlags.__FEATURE_FLAGS__;
+    }
   }
 
   return {

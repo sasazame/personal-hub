@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import TodoItem from '@/components/TodoItem';
+import TodoList from '@/components/TodoList';
 import TodoForm from '@/components/TodoForm';
 import TodoEditForm from '@/components/TodoEditForm';
 import TodoStatusFilter from '@/components/TodoStatusFilter';
@@ -246,17 +246,12 @@ function TodoApp() {
             <p className="text-muted-foreground text-lg">{t('todo.noTodos')}</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {sortedTodos.filter(todo => !todo.parentId).map((todo) => (
-              <TodoItem
-                key={todo.id}
-                todo={todo}
-                onUpdate={handleUpdate}
-                onDelete={handleDelete}
-                onAddChild={handleAddChild}
-              />
-            ))}
-          </div>
+          <TodoList
+            todos={sortedTodos.filter(todo => !todo.parentId)}
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
+            onAddChild={handleAddChild}
+          />
         )}
 
         {isAddingTodo && (
