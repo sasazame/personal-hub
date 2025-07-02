@@ -164,6 +164,7 @@
     "todoPriority": "優先度",
     "dueDate": "期限",
     "dueDateLabel": "期限:",
+    "completedDateLabel": "完了日:",
     "createdAt": "作成日",
     "updatedAt": "更新日",
     "completed": "完了",
@@ -193,7 +194,9 @@
     "statusOptions": {
       "TODO": "TODO",
       "IN_PROGRESS": "進行中",
-      "DONE": "完了"
+      "DONE": "完了",
+      "NOT_STARTED": "未着手",
+      "COMPLETED": "完了"
     },
     "priorityOptions": {
       "LOW": "低",

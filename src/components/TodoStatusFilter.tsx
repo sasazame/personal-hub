@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { TodoStatus } from '@/types/todo';
 import { Button } from '@/components/ui';
+import { mapApiStatusToDisplay } from '@/utils/todoStatusMapper';
 
 interface TodoStatusFilterProps {
   selectedStatus: TodoStatus | 'ALL';
@@ -14,9 +15,9 @@ export default function TodoStatusFilter({ selectedStatus, onStatusChange }: Tod
 
   const statusOptions: { value: TodoStatus | 'ALL'; label: string }[] = [
     { value: 'ALL', label: t('todo.filter.all') },
-    { value: 'TODO', label: t('todo.statusOptions.TODO') },
-    { value: 'IN_PROGRESS', label: t('todo.statusOptions.IN_PROGRESS') },
-    { value: 'DONE', label: t('todo.statusOptions.DONE') },
+    { value: 'TODO', label: t(`todo.statusOptions.${mapApiStatusToDisplay('TODO')}`) },
+    { value: 'IN_PROGRESS', label: t(`todo.statusOptions.${mapApiStatusToDisplay('IN_PROGRESS')}`) },
+    { value: 'DONE', label: t(`todo.statusOptions.${mapApiStatusToDisplay('DONE')}`) },
   ];
 
   return (
