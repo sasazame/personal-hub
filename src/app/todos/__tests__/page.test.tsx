@@ -77,9 +77,12 @@ describe('TodosPage', () => {
       expect(screen.getByText('TODOs')).toBeInTheDocument();
     });
 
-    // Check that the Add TODO button has the + prefix
-    const addButton = screen.getByRole('button', { name: /\+ Add TODO/i });
+    // Check that the Add TODO button exists
+    const addButton = screen.getByRole('button', { name: /Add TODO/i });
     expect(addButton).toBeInTheDocument();
-    expect(addButton.textContent).toBe('+ Add TODO');
+    
+    // Check that the button contains the Plus icon
+    const plusIcon = addButton.querySelector('svg');
+    expect(plusIcon).toBeInTheDocument();
   });
 });

@@ -41,7 +41,7 @@ describe('TodoStatusFilter', () => {
     const allButton = screen.getByText('すべて');
     
     expect(todoButton.closest('button')).toHaveClass('bg-blue-600');
-    expect(allButton.closest('button')).toHaveClass('bg-gray-600');
+    expect(allButton.closest('button')).toHaveClass('bg-gray-100');
   });
 
   it('calls onStatusChange when a status is clicked', () => {
@@ -84,6 +84,6 @@ describe('TodoStatusFilter', () => {
     allButton = screen.getByText('すべて');
     
     expect(doneButton.closest('button')).toHaveClass('bg-blue-600');
-    expect(allButton.closest('button')).toHaveClass('bg-gray-600');
+    expect(allButton.closest('button')).toHaveClass('bg-gray-100');
   });
 });

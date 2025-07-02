@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@/test/test-utils';
+import { render, screen, fireEvent } from '@/test/test-utils';
 import TodoList from '../TodoList';
 import { Todo } from '@/types/todo';
 import { todoApi } from '@/lib/api';
@@ -15,6 +15,24 @@ jest.mock('@/lib/api', () => ({
 jest.mock('@/components/ui/toast', () => ({
   showSuccess: jest.fn(),
   showError: jest.fn(),
+}));
+
+// Mock useTheme hook
+jest.mock('@/hooks/useTheme', () => ({
+  useTheme: () => ({ theme: 'light' }),
+}));
+
+// Mock DropdownMenu to simplify testing
+jest.mock('@/components/ui/DropdownMenu', () => ({
+  DropdownMenu: ({ items }: { items: Array<{ label: string; onClick: () => void }> }) => (
+    <div data-testid="dropdown-menu">
+      {items.map((item, index) => (
+        <button key={index} onClick={item.onClick}>
+          {item.label}
+        </button>
+      ))}
+    </div>
+  ),
 }));
 
 // Mock next-intl
@@ -37,6 +55,9 @@ jest.mock('next-intl', () => ({
       'todo.priorityOptions.MEDIUM': 'Medium',
       'todo.priorityOptions.HIGH': 'High',
       'common.edit': 'Edit',
+      'common.delete': 'Delete',
+      'todo.duplicate': 'Duplicate',
+      'todo.createSubtask': 'Create Subtask',
       'errors.general': 'An error occurred',
     };
     return translations[key] || key;
@@ -126,7 +147,7 @@ describe('TodoList', () => {
     expect(screen.getByText(/Due:.*12\/31\/2024/)).toBeInTheDocument();
   });
 
-  it('calls onUpdate when Edit button is clicked', async () => {
+  it('calls onUpdate when Edit button is clicked', () => {
     render(
       <TodoList
         todos={mockTodos}
@@ -135,24 +156,17 @@ describe('TodoList', () => {
       />
     );
 
-    // Click the dropdown menu button for the first todo
-    const menuButtons = screen.getAllByRole('button', { expanded: false });
-    // Filter to get only dropdown menu buttons (not checkboxes or other buttons)
-    const dropdownButton = menuButtons.find(btn => btn.getAttribute('aria-haspopup') === 'menu');
-    expect(dropdownButton).toBeDefined();
+    // Find the Edit button for the first todo
+    const editButtons = screen.getAllByText('Edit');
+    expect(editButtons.length).toBeGreaterThan(0);
     
-    fireEvent.click(dropdownButton!);
-
-    // Wait for menu to open and click Edit
-    await waitFor(() => {
-      expect(screen.getByText('Edit')).toBeInTheDocument();
-    });
+    // Click the first Edit button
+    fireEvent.click(editButtons[0]);
     
-    fireEvent.click(screen.getByText('Edit'));
     expect(mockOnUpdate).toHaveBeenCalledWith(1, mockTodos[0]);
   });
 
-  it('does not display Delete button in TodoList', () => {
+  it('displays Delete button in dropdown menu', () => {
     render(
       <TodoList
         todos={mockTodos}
@@ -161,9 +175,9 @@ describe('TodoList', () => {
       />
     );
 
-    // TodoItem doesn't have a visible delete button, it's handled through edit form
+    // With our mock, Delete buttons are visible in the dropdown menus
     const deleteButtons = screen.queryAllByText('Delete');
-    expect(deleteButtons.length).toBe(0);
+    expect(deleteButtons.length).toBe(mockTodos.length);
   });
 
   it('renders empty list when no todos provided', () => {

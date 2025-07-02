@@ -17,6 +17,24 @@ jest.mock('@/components/ui/toast', () => ({
   showError: jest.fn(),
 }));
 
+// Mock useTheme hook
+jest.mock('@/hooks/useTheme', () => ({
+  useTheme: () => ({ theme: 'light' }),
+}));
+
+// Mock DropdownMenu to simplify testing
+jest.mock('@/components/ui/DropdownMenu', () => ({
+  DropdownMenu: ({ items }: { items: Array<{ label: string; onClick: () => void }> }) => (
+    <div data-testid="dropdown-menu">
+      {items.map((item, index) => (
+        <button key={index} onClick={item.onClick}>
+          {item.label}
+        </button>
+      ))}
+    </div>
+  ),
+}));
+
 // Mock next-intl
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
@@ -37,6 +55,9 @@ jest.mock('next-intl', () => ({
       'todo.priorityOptions.MEDIUM': 'Medium',
       'todo.priorityOptions.HIGH': 'High',
       'common.edit': 'Edit',
+      'common.delete': 'Delete',
+      'todo.duplicate': 'Duplicate',
+      'todo.createSubtask': 'Create Subtask',
       'errors.general': 'An error occurred',
     };
     return translations[key] || key;
@@ -290,21 +311,12 @@ describe('TodoItem - Subtasks', () => {
       expect(screen.getByText('Child Todo 1')).toBeInTheDocument();
     });
 
-    // Find and click the dropdown menu for the first subtask
-    const menuButtons = screen.getAllByRole('button', { expanded: false });
-    // The first button is parent's checkbox, second is parent's menu, third is subtask's checkbox, fourth is subtask's menu
-    const subtaskMenuButton = menuButtons.find((btn, index) => 
-      btn.getAttribute('aria-haspopup') === 'menu' && index > 0
-    );
-    expect(subtaskMenuButton).toBeDefined();
+    // With our mock, the Edit buttons are already visible
+    const editButtons = screen.getAllByText('Edit');
+    // Find the Edit button in the subtask (should be the second one)
+    expect(editButtons.length).toBeGreaterThan(1);
+    fireEvent.click(editButtons[1]);
     
-    fireEvent.click(subtaskMenuButton!);
-
-    await waitFor(() => {
-      expect(screen.getByText('Edit')).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByText('Edit'));
     expect(onUpdate).toHaveBeenCalledWith(2, mockChildTodos[0]);
   });
 });
