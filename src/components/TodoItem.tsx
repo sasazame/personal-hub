@@ -11,6 +11,7 @@ import { showSuccess, showError } from '@/components/ui/toast';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/cn';
 import { DropdownMenu, MenuItem } from '@/components/ui/DropdownMenu';
+import { mapApiStatusToDisplay, getStatusColorClass } from '@/utils/todoStatusMapper';
 
 interface TodoItemProps {
   todo: Todo;
@@ -26,6 +27,9 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
   const [isHoveringCheckbox, setIsHoveringCheckbox] = useState(false);
   const queryClient = useQueryClient();
   const { theme } = useTheme();
+  
+  // Check if todo is overdue
+  const isOverdue = todo.status !== 'DONE' && todo.dueDate && new Date(todo.dueDate) < new Date(new Date().setHours(0, 0, 0, 0));
   
   // Check if todo has children
   const { data: childrenCheck = [] } = useQuery({
@@ -129,14 +133,8 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
   };
 
   const getStatusColor = (status: Todo['status']) => {
-    switch (status) {
-      case 'TODO':
-        return 'bg-status-pending-bg text-status-pending-text';
-      case 'IN_PROGRESS':
-        return 'bg-status-in-progress-bg text-status-in-progress-text';
-      case 'DONE':
-        return 'bg-status-completed-bg text-status-completed-text';
-    }
+    const displayStatus = mapApiStatusToDisplay(status);
+    return getStatusColorClass(displayStatus);
   };
 
   const getPriorityColor = (priority: Todo['priority']) => {
@@ -153,9 +151,11 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
   return (
     <div className="space-y-2">
       <div
-        className={`bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all duration-200 ${
-          level > 0 ? 'ml-8 border-l-4 border-primary/30' : ''
-        }`}
+        className={cn(
+          'bg-card border rounded-lg shadow-sm hover:shadow-md transition-all duration-200',
+          level > 0 ? 'ml-8 border-l-4 border-primary/30' : '',
+          isOverdue ? 'border-red-500 border-2' : 'border-border'
+        )}
       >
         <div className="flex items-start p-4 gap-3">
           {/* Checkbox for completion */}
@@ -218,7 +218,7 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
                     todo.status
                   )}`}
                 >
-                  {t(`todo.statusOptions.${todo.status}`)}
+                  {t(`todo.statusOptions.${mapApiStatusToDisplay(todo.status)}`)}
                 </span>
                 <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(todo.priority)}`}>
                   {t(`todo.priorityOptions.${todo.priority}`)}
@@ -235,7 +235,12 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 {todo.dueDate && (
-                  <span>{t('todo.dueDateLabel')} {new Date(todo.dueDate).toLocaleDateString()}</span>
+                  <span className={isOverdue ? 'text-red-600 font-medium' : ''}>
+                    {t('todo.dueDateLabel')} {new Date(todo.dueDate).toLocaleDateString()}
+                  </span>
+                )}
+                {todo.status === 'DONE' && todo.updatedAt && (
+                  <span>{t('todo.completedDateLabel')} {new Date(todo.updatedAt).toLocaleDateString()}</span>
                 )}
                 {level === 0 && (
                   <Button

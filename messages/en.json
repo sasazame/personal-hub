@@ -164,6 +164,7 @@
     "todoPriority": "Priority",
     "dueDate": "Due Date",
     "dueDateLabel": "Due:",
+    "completedDateLabel": "Completed:",
     "createdAt": "Created At",
     "updatedAt": "Updated At",
     "completed": "Completed",
@@ -193,7 +194,9 @@
     "statusOptions": {
       "TODO": "TODO",
       "IN_PROGRESS": "In Progress",
-      "DONE": "Done"
+      "DONE": "Done",
+      "NOT_STARTED": "Not Started",
+      "COMPLETED": "Completed"
     },
     "priorityOptions": {
       "LOW": "Low",
