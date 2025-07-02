@@ -10,6 +10,7 @@ import { TextArea } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { Repeat, Calendar } from 'lucide-react';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
+import { mapApiStatusToDisplay } from '@/utils/todoStatusMapper';
 
 interface TodoFormProps {
   onSubmit: (data: CreateTodoDto) => void;
@@ -100,9 +101,9 @@ export default function TodoForm({ onSubmit, onCancel, isSubmitting, parentId }:
                 id="status"
                 className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
               >
-                <option value="TODO">{t('todo.statusOptions.TODO')}</option>
-                <option value="IN_PROGRESS">{t('todo.statusOptions.IN_PROGRESS')}</option>
-                <option value="DONE">{t('todo.statusOptions.DONE')}</option>
+                <option value="TODO">{t(`todo.statusOptions.${mapApiStatusToDisplay('TODO')}`)}</option>
+                <option value="IN_PROGRESS">{t(`todo.statusOptions.${mapApiStatusToDisplay('IN_PROGRESS')}`)}</option>
+                <option value="DONE">{t(`todo.statusOptions.${mapApiStatusToDisplay('DONE')}`)}</option>
               </select>
             </div>
 

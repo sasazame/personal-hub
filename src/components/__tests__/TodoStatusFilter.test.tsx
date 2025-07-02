@@ -9,6 +9,8 @@ jest.mock('next-intl', () => ({
       'todo.statusOptions.TODO': '未着手',
       'todo.statusOptions.IN_PROGRESS': '進行中',
       'todo.statusOptions.DONE': '完了',
+      'todo.statusOptions.NOT_STARTED': '未着手',
+      'todo.statusOptions.COMPLETED': '完了',
     };
     return translations[key] || key;
   },
