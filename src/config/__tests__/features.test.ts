@@ -20,7 +20,8 @@ describe('Feature Flags', () => {
       expect(flags.calendar).toBe(true);
       expect(flags.notes).toBe(true);
       expect(flags.goals).toBe(true);
-      expect(flags.analytics).toBe(true);
+      // Analytics is now disabled by default
+      expect(flags.analytics).toBe(false);
     });
 
     it('should disable integration features by default', () => {
@@ -28,6 +29,8 @@ describe('Feature Flags', () => {
       
       expect(flags.gmailIntegration).toBe(false);
       expect(flags.googleCalendarSync).toBe(false);
+      // GitHub OAuth is now disabled by default
+      expect(flags.githubOAuth).toBe(false);
     });
 
     it('should disable experimental features by default', () => {
@@ -63,6 +66,8 @@ describe('Feature Flags', () => {
     it('should return correct values for disabled features', () => {
       expect(isFeatureEnabled('gmailIntegration')).toBe(false);
       expect(isFeatureEnabled('pwa')).toBe(false);
+      expect(isFeatureEnabled('analytics')).toBe(false);
+      expect(isFeatureEnabled('githubOAuth')).toBe(false);
     });
 
     it('should handle environment overrides', () => {
@@ -82,11 +87,11 @@ describe('Feature Flags', () => {
         calendar: false,
         notes: true,
         goals: true,
-        analytics: true,
+        analytics: false,
         gmailIntegration: true,
         googleCalendarSync: false,
         googleOAuth: true,
-        githubOAuth: true,
+        githubOAuth: false,
         passwordReset: true,
         darkMode: true,
         internationalization: true,

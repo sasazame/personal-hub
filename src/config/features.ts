@@ -44,7 +44,7 @@ export function getFeatureFlags(): FeatureFlags {
     calendar: process.env.NEXT_PUBLIC_FEATURE_CALENDAR !== 'false',
     notes: process.env.NEXT_PUBLIC_FEATURE_NOTES !== 'false',
     goals: process.env.NEXT_PUBLIC_FEATURE_GOALS !== 'false',
-    analytics: process.env.NEXT_PUBLIC_FEATURE_ANALYTICS !== 'false',
+    analytics: process.env.NEXT_PUBLIC_FEATURE_ANALYTICS === 'true', // Disabled by default
     
     // Integration features
     gmailIntegration: process.env.NEXT_PUBLIC_FEATURE_GMAIL_INTEGRATION === 'true', // Disabled by default
@@ -52,7 +52,7 @@ export function getFeatureFlags(): FeatureFlags {
     
     // Auth features
     googleOAuth: process.env.NEXT_PUBLIC_FEATURE_GOOGLE_OAUTH !== 'false',
-    githubOAuth: process.env.NEXT_PUBLIC_FEATURE_GITHUB_OAUTH !== 'false',
+    githubOAuth: process.env.NEXT_PUBLIC_FEATURE_GITHUB_OAUTH === 'true', // Disabled by default
     passwordReset: process.env.NEXT_PUBLIC_FEATURE_PASSWORD_RESET !== 'false',
     
     // UI features
