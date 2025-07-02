@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { Todo } from '@/types/todo';
+import { Todo, CreateTodoDto } from '@/types/todo';
 import { todoApi } from '@/lib/api';
 import { Button } from '@/components/ui';
-import { Check, ChevronDown, ChevronRight, Edit2, Repeat, Link } from 'lucide-react';
+import { Check, ChevronDown, ChevronRight, Edit2, Repeat, Link, Copy, Trash2, Plus } from 'lucide-react';
 import { showSuccess, showError } from '@/components/ui/toast';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/cn';
+import { DropdownMenu, MenuItem } from '@/components/ui/DropdownMenu';
 
 interface TodoItemProps {
   todo: Todo;
@@ -59,11 +60,72 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
     },
   });
 
+  // Mutation for duplicating todo
+  const duplicateMutation = useMutation({
+    mutationFn: async () => {
+      const newTodo: CreateTodoDto = {
+        title: `${todo.title} (copy)`,
+        description: todo.description,
+        status: todo.status,
+        priority: todo.priority,
+        dueDate: todo.dueDate,
+      };
+      return await todoApi.create(newTodo);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['todos'] });
+      showSuccess(t('todo.todoDuplicated'));
+    },
+    onError: (error) => {
+      console.error('Failed to duplicate todo:', error);
+      showError(t('errors.general'));
+    },
+  });
+
   const handleToggleComplete = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
     toggleStatusMutation.mutate();
+  };
+
+  const handleDuplicate = () => {
+    duplicateMutation.mutate();
+  };
+
+  const getMenuItems = (): MenuItem[] => {
+    const items: MenuItem[] = [
+      {
+        label: t('common.edit'),
+        onClick: () => onUpdate(todo.id, todo),
+        icon: <Edit2 className="h-4 w-4" />,
+      },
+    ];
+
+    // Only show Create Subtask for parent todos
+    if (level === 0) {
+      items.push({
+        label: t('todo.createSubtask'),
+        onClick: () => onAddChild(todo.id),
+        icon: <Plus className="h-4 w-4" />,
+      });
+    }
+
+    items.push(
+      {
+        label: t('todo.duplicate'),
+        onClick: handleDuplicate,
+        icon: <Copy className="h-4 w-4" />,
+      },
+      {
+        label: t('common.delete'),
+        onClick: () => onDelete(todo.id, todo),
+        icon: <Trash2 className="h-4 w-4" />,
+        variant: 'danger',
+      }
+    );
+
+    return items;
   };
 
   const getStatusColor = (status: Todo['status']) => {
@@ -187,15 +249,11 @@ export default function TodoItem({ todo, onUpdate, onDelete, onAddChild, level =
                 )}
               </div>
               
-              {/* Edit button in bottom right */}
-              <Button
-                size="sm"
-                variant="primary"
-                onClick={() => onUpdate(todo.id, todo)}
-                leftIcon={<Edit2 className="w-3 h-3" />}
-              >
-                {t('common.edit')}
-              </Button>
+              {/* Dropdown menu in bottom right */}
+              <DropdownMenu
+                items={getMenuItems()}
+                buttonClassName="h-8"
+              />
             </div>
           </div>
         </div>

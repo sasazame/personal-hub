@@ -188,6 +188,8 @@
     "showSubtasks": "Show subtasks",
     "addSubtask": "Add Subtask",
     "loadingSubtasks": "Loading subtasks...",
+    "duplicate": "Duplicate",
+    "todoDuplicated": "TODO duplicated successfully",
     "statusOptions": {
       "TODO": "TODO",
       "IN_PROGRESS": "In Progress",

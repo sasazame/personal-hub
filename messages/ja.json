@@ -188,6 +188,8 @@
     "showSubtasks": "サブタスクを表示",
     "addSubtask": "サブタスクを追加",
     "loadingSubtasks": "サブタスクを読み込み中...",
+    "duplicate": "複製",
+    "todoDuplicated": "TODOを複製しました",
     "statusOptions": {
       "TODO": "TODO",
       "IN_PROGRESS": "進行中",

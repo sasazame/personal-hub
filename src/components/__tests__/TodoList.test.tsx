@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@/test/test-utils';
+import { render, screen, fireEvent, waitFor } from '@/test/test-utils';
 import TodoList from '../TodoList';
 import { Todo } from '@/types/todo';
 import { todoApi } from '@/lib/api';
@@ -126,7 +126,7 @@ describe('TodoList', () => {
     expect(screen.getByText(/Due:.*12\/31\/2024/)).toBeInTheDocument();
   });
 
-  it('calls onUpdate when Edit button is clicked', () => {
+  it('calls onUpdate when Edit button is clicked', async () => {
     render(
       <TodoList
         todos={mockTodos}
@@ -135,9 +135,20 @@ describe('TodoList', () => {
       />
     );
 
-    const editButtons = screen.getAllByText('Edit');
-    fireEvent.click(editButtons[0]);
+    // Click the dropdown menu button for the first todo
+    const menuButtons = screen.getAllByRole('button', { expanded: false });
+    // Filter to get only dropdown menu buttons (not checkboxes or other buttons)
+    const dropdownButton = menuButtons.find(btn => btn.getAttribute('aria-haspopup') === 'menu');
+    expect(dropdownButton).toBeDefined();
+    
+    fireEvent.click(dropdownButton!);
 
+    // Wait for menu to open and click Edit
+    await waitFor(() => {
+      expect(screen.getByText('Edit')).toBeInTheDocument();
+    });
+    
+    fireEvent.click(screen.getByText('Edit'));
     expect(mockOnUpdate).toHaveBeenCalledWith(1, mockTodos[0]);
   });
 

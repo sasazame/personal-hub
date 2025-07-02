@@ -290,10 +290,21 @@ describe('TodoItem - Subtasks', () => {
       expect(screen.getByText('Child Todo 1')).toBeInTheDocument();
     });
 
-    // Click edit on a subtask
-    const editButtons = screen.getAllByText('Edit');
-    fireEvent.click(editButtons[1]); // Click edit on first subtask
+    // Find and click the dropdown menu for the first subtask
+    const menuButtons = screen.getAllByRole('button', { expanded: false });
+    // The first button is parent's checkbox, second is parent's menu, third is subtask's checkbox, fourth is subtask's menu
+    const subtaskMenuButton = menuButtons.find((btn, index) => 
+      btn.getAttribute('aria-haspopup') === 'menu' && index > 0
+    );
+    expect(subtaskMenuButton).toBeDefined();
+    
+    fireEvent.click(subtaskMenuButton!);
 
+    await waitFor(() => {
+      expect(screen.getByText('Edit')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Edit'));
     expect(onUpdate).toHaveBeenCalledWith(2, mockChildTodos[0]);
   });
 });
