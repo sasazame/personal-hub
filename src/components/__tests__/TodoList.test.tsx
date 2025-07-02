@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@/test/test-utils';
+import { render, screen, fireEvent, waitFor } from '@/test/test-utils';
 import TodoList from '../TodoList';
 import { Todo } from '@/types/todo';
 import { todoApi } from '@/lib/api';
