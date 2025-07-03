@@ -19,7 +19,7 @@ test.describe('App E2E Tests', () => {
 
   test('should have proper page title', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveTitle(/TODO App/);
+    await expect(page).toHaveTitle(/Personal Hub/);
   });
 
   test('should show login page elements', async ({ page }) => {

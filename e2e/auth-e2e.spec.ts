@@ -48,7 +48,7 @@ test.describe('Auth E2E Tests', () => {
       
       // Wait for header to appear
       await page.waitForSelector('header', { timeout: 10000 });
-      await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
+      await expect(page.locator('header').filter({ hasText: 'Personal Hub' })).toBeVisible();
       
       console.log('Login test passed successfully');
     } catch (error) {
@@ -72,7 +72,7 @@ test.describe('Auth E2E Tests', () => {
       
       // Wait for header to appear
       await page.waitForSelector('header', { timeout: 10000 });
-      await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
+      await expect(page.locator('header').filter({ hasText: 'Personal Hub' })).toBeVisible();
       
       console.log('Login with unique user test passed successfully');
     } catch (error) {

@@ -1,7 +1,16 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import { login, TEST_USER, ensureLoggedOut } from './helpers/auth';
 
-test.describe('Todo App E2E Tests', () => {
+// Helper function to click kebab menu and select an option
+async function clickTodoMenuOption(page: Page, todoTitle: string, optionName: string) {
+  const todoContainer = page.locator('.bg-card').filter({ hasText: todoTitle });
+  // Click the kebab menu (ellipsis icon)
+  await todoContainer.locator('button svg').last().click();
+  // Click the menu option
+  await page.locator('button').filter({ hasText: optionName }).click();
+}
+
+test.describe('Personal Hub E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
     // Set English locale
     await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
@@ -89,15 +98,8 @@ test.describe('Todo App E2E Tests', () => {
     await expect(page.getByRole('heading', { name: 'Create New TODO' })).not.toBeVisible();
     await page.waitForSelector(`text=${todoTitle}`, { timeout: 10000 });
 
-    // Delete the todo - need to go through edit first
-    const todoContainer = page.locator('.bg-card').filter({ hasText: todoTitle });
-    await todoContainer.getByRole('button', { name: 'Edit' }).click();
-    
-    // Wait for edit form
-    await expect(page.locator('h2:has-text("Edit TODO")')).toBeVisible();
-    
-    // Click delete button in edit form
-    await page.getByRole('button', { name: 'Delete' }).click();
+    // Delete the todo using kebab menu
+    await clickTodoMenuOption(page, todoTitle, 'Delete');
 
     // Confirm deletion in the modal
     await expect(page.locator('h2:has-text("Delete TODO")')).toBeVisible();
@@ -145,15 +147,8 @@ test.describe('Todo App E2E Tests', () => {
     await expect(page.getByRole('heading', { name: 'Create New TODO' })).not.toBeVisible();
     await page.waitForSelector(`text=${todoTitle}`, { timeout: 10000 });
 
-    // Click edit first, then delete
-    const todoContainer = page.locator('.bg-card').filter({ hasText: todoTitle });
-    await todoContainer.getByRole('button', { name: 'Edit' }).click();
-    
-    // Wait for edit form
-    await expect(page.locator('h2:has-text("Edit TODO")')).toBeVisible();
-    
-    // Click delete button in edit form
-    await page.getByRole('button', { name: 'Delete' }).click();
+    // Click delete using kebab menu
+    await clickTodoMenuOption(page, todoTitle, 'Delete');
 
     // Verify delete modal appears
     await expect(page.locator('h2:has-text("Delete TODO")')).toBeVisible();

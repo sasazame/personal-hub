@@ -88,7 +88,7 @@ test.describe('Auth + TODO Integration E2E Tests', () => {
     // Wait for registration to complete and redirect to home (extended timeout)
     await page.waitForURL('/', { timeout: 20000 });
     await page.waitForSelector('header', { timeout: 10000 });
-    await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
+    await expect(page.locator('header').filter({ hasText: 'Personal Hub' })).toBeVisible();
 
     // Now test that authenticated user is redirected away from auth pages
     // Try to go to login page - should be redirected back to home
@@ -134,7 +134,7 @@ test.describe('Auth + TODO Integration E2E Tests', () => {
     await page.waitForSelector('header', { timeout: 10000 });
     
     // Check if user info is shown in header (but it might not show username/email)
-    await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
+    await expect(page.locator('header').filter({ hasText: 'Personal Hub' })).toBeVisible();
 
     // Logout - use more specific selector
     await page.getByRole('button', { name: 'Logout' }).first().click();
@@ -181,7 +181,7 @@ test.describe('Auth + TODO Integration E2E Tests', () => {
 
     // Wait for redirect to home page
     await page.waitForURL('/', { timeout: 10000 });
-    await expect(page.getByRole('heading', { name: 'TODO App' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Personal Hub' })).toBeVisible();
 
     // Create a todo
     await page.click('button:has-text("Add TODO")');

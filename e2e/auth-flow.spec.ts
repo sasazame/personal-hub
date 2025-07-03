@@ -43,8 +43,8 @@ test.describe('Authentication Flow', () => {
     // Wait for the app to fully load and check for the header
     await page.waitForSelector('header', { timeout: 10000 });
     
-    // Should see app header with TODO App text - using flexible selector
-    await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
+    // Should see app header with Personal Hub text - using flexible selector
+    await expect(page.locator('header').filter({ hasText: 'Personal Hub' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Logout' }).first()).toBeVisible();
   });
   
@@ -72,8 +72,8 @@ test.describe('Authentication Flow', () => {
     // Wait for the app to fully load and check for the header
     await page.waitForSelector('header', { timeout: 10000 });
     
-    // Should see app header with TODO App text - using flexible selector
-    await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
+    // Should see app header with Personal Hub text - using flexible selector
+    await expect(page.locator('header').filter({ hasText: 'Personal Hub' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Logout' }).first()).toBeVisible();
   });
 
@@ -89,7 +89,7 @@ test.describe('Authentication Flow', () => {
     // Wait for app to load
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('header', { timeout: 10000 });
-    await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
+    await expect(page.locator('header').filter({ hasText: 'Personal Hub' })).toBeVisible();
     
     // Logout
     await logout(page);
@@ -110,7 +110,7 @@ test.describe('Authentication Flow', () => {
     // Verify logged in
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('header', { timeout: 10000 });
-    await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
+    await expect(page.locator('header').filter({ hasText: 'Personal Hub' })).toBeVisible();
     
     // Reload page
     await page.reload();
@@ -121,7 +121,7 @@ test.describe('Authentication Flow', () => {
     
     // Should still be logged in
     await page.waitForSelector('header', { timeout: 10000 });
-    await expect(page.locator('header').filter({ hasText: 'TODO App' })).toBeVisible();
+    await expect(page.locator('header').filter({ hasText: 'Personal Hub' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Logout' }).first()).toBeVisible();
   });
 });
