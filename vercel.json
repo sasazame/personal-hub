@@ -1,5 +1,18 @@
 {
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "git": {
+    "deploymentEnabled": {
+      "production": true,
+      "main": true,
+      "staging": true,
+      "feature/*": false,
+      "fix/*": false,
+      "docs/*": false,
+      "chore/*": false,
+      "refactor/*": false,
+      "test/*": false
+    }
+  }
 }
