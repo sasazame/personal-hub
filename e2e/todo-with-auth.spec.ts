@@ -54,8 +54,8 @@ test.describe('Todo E2E Tests with Auth', () => {
     const currentUrl = page.url();
     expect(currentUrl).not.toContain('/login');
     
-    // Should see the TODO App heading
-    await expect(page.locator('h1:has-text("TODO App")')).toBeVisible();
+    // Should see the Personal Hub heading
+    await expect(page.locator('h1:has-text("Personal Hub")')).toBeVisible();
   });
 
   test('should show Add New Todo button', async ({ page }) => {

@@ -1,6 +1,15 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import { createUniqueTestUser } from './helpers/setup';
 import { login } from './helpers/auth';
+
+// Helper function to click kebab menu and select an option
+async function clickTodoMenuOption(page: Page, todoTitle: string, optionName: string) {
+  const todoContainer = page.locator('.bg-card').filter({ hasText: todoTitle });
+  // Click the kebab menu (ellipsis icon)
+  await todoContainer.locator('button svg').last().click();
+  // Click the menu option
+  await page.locator('button').filter({ hasText: optionName }).click();
+}
 
 test.describe('Todo Basic Operations', () => {
   test.beforeEach(async ({ page }) => {
@@ -78,16 +87,8 @@ test.describe('Todo Basic Operations', () => {
     // Wait for todo to appear
     await expect(page.locator('h3').filter({ hasText: title })).toBeVisible();
     
-    // Click edit button first (delete is available from edit form)
-    // Find the todo item container and click its edit button
-    const todoContainer = page.locator('.bg-card').filter({ hasText: title });
-    await todoContainer.getByRole('button', { name: 'Edit' }).click();
-    
-    // Wait for edit form
-    await expect(page.locator('h2:has-text("Edit TODO")')).toBeVisible();
-    
-    // Click delete button in edit form
-    await page.getByRole('button', { name: 'Delete' }).click();
+    // Delete the todo using kebab menu
+    await clickTodoMenuOption(page, title, 'Delete');
     
     // Confirm deletion - updated to match current modal
     await expect(page.locator('h2:has-text("Delete TODO")')).toBeVisible();
@@ -120,10 +121,8 @@ test.describe('Todo Basic Operations', () => {
     // Wait for todo to appear
     await expect(page.locator('h3').filter({ hasText: title })).toBeVisible();
     
-    // Click edit button
-    // Find the todo item container and click its edit button
-    const todoContainer = page.locator('.bg-card').filter({ hasText: title });
-    await todoContainer.getByRole('button', { name: 'Edit' }).click();
+    // Click edit using kebab menu
+    await clickTodoMenuOption(page, title, 'Edit');
     
     // Wait for edit form - updated to match current modal
     await expect(page.locator('h2:has-text("Edit TODO")')).toBeVisible();

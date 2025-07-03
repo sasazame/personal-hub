@@ -79,7 +79,7 @@ test.describe('CI Smoke Tests', () => {
       
       // Should redirect to home
       await expect(page).toHaveURL('/');
-      await expect(page.getByRole('heading', { name: 'TODO App' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Personal Hub' })).toBeVisible();
     });
   }
 });
