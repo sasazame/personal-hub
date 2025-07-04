@@ -1,10 +1,8 @@
 import { test, expect, devices } from '@playwright/test';
 import { login, TEST_USER, ensureLoggedOut } from './helpers/auth';
 
-// Test on iPhone 12
-test.describe('Mobile Tests - iPhone 12', () => {
-  test.use({ ...devices['iPhone 12'] });
-
+// Mobile and responsive viewport tests
+test.describe('Mobile and Responsive Tests', () => {
   test.beforeEach(async ({ page }) => {
     // Set English locale
     await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
@@ -14,6 +12,12 @@ test.describe('Mobile Tests - iPhone 12', () => {
   });
 
   test('should show mobile menu and navigate', async ({ page }) => {
+    // Skip this test on desktop browsers
+    const viewport = page.viewportSize();
+    if (viewport && viewport.width > 768) {
+      test.skip();
+    }
+
     // Login first
     await page.goto('/login');
     await login(page, TEST_USER.email, TEST_USER.password);
@@ -51,8 +55,10 @@ test.describe('Mobile Tests - iPhone 12', () => {
     const viewport = page.viewportSize();
     
     if (formBox && viewport) {
-      // Form should take most of the width with some padding
-      expect(formBox.width).toBeGreaterThan(viewport.width * 0.8);
+      // Form should take most of the width with some padding on mobile
+      if (viewport.width < 768) {
+        expect(formBox.width).toBeGreaterThan(viewport.width * 0.8);
+      }
     }
     
     // All form elements should be visible
@@ -81,8 +87,8 @@ test.describe('Mobile Tests - iPhone 12', () => {
     const cardBox = await todoCard.boundingBox();
     const viewport = page.viewportSize();
     
-    if (cardBox && viewport) {
-      // Card should take most of the width
+    if (cardBox && viewport && viewport.width < 768) {
+      // Card should take most of the width on mobile
       expect(cardBox.width).toBeGreaterThan(viewport.width * 0.85);
     }
   });
@@ -108,7 +114,9 @@ test.describe('Mobile Tests - iPhone 12', () => {
       expect(modalBox.width).toBeLessThanOrEqual(viewport.width);
       
       // Modal should have some padding from edges on mobile
-      expect(modalBox.x).toBeGreaterThan(0);
+      if (viewport.width < 768) {
+        expect(modalBox.x).toBeGreaterThan(0);
+      }
     }
     
     // Form elements should be accessible
@@ -118,18 +126,8 @@ test.describe('Mobile Tests - iPhone 12', () => {
     // Close modal
     await page.keyboard.press('Escape');
   });
-});
 
-// Test on Pixel 5
-test.describe('Mobile Tests - Pixel 5', () => {
-  test.use({ ...devices['Pixel 5'] });
-
-  test.beforeEach(async ({ page }) => {
-    await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
-    await ensureLoggedOut(page);
-  });
-
-  test('should handle responsive calendar on Android', async ({ page }) => {
+  test('should handle responsive calendar', async ({ page }) => {
     // Login and navigate to calendar
     await page.goto('/login');
     await login(page, TEST_USER.email, TEST_USER.password);
@@ -151,18 +149,14 @@ test.describe('Mobile Tests - Pixel 5', () => {
       expect(gridBox.width).toBeLessThanOrEqual(viewport.width);
     }
   });
-});
-
-// Test on iPad Mini (Tablet)
-test.describe('Tablet Tests - iPad Mini', () => {
-  test.use({ ...devices['iPad Mini'] });
-
-  test.beforeEach(async ({ page }) => {
-    await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
-    await ensureLoggedOut(page);
-  });
 
   test('should show optimized layout for tablets', async ({ page }) => {
+    const viewport = page.viewportSize();
+    // Skip if not tablet-sized
+    if (!viewport || viewport.width < 768 || viewport.width > 1024) {
+      test.skip();
+    }
+
     // Login
     await page.goto('/login');
     await login(page, TEST_USER.email, TEST_USER.password);
@@ -178,25 +172,20 @@ test.describe('Tablet Tests - iPad Mini', () => {
     // Content area should have more space on tablets
     const mainContent = page.locator('main').first();
     const contentBox = await mainContent.boundingBox();
-    const viewport = page.viewportSize();
     
     if (contentBox && viewport && sidebarVisible) {
       // Content should take remaining space after sidebar
       expect(contentBox.width).toBeLessThan(viewport.width * 0.8);
     }
   });
-});
-
-// Test on very small device (iPhone SE)
-test.describe('Small Device Tests - iPhone SE', () => {
-  test.use({ ...devices['iPhone SE'] });
-
-  test.beforeEach(async ({ page }) => {
-    await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
-    await ensureLoggedOut(page);
-  });
 
   test('should handle very small viewports', async ({ page }) => {
+    const viewport = page.viewportSize();
+    // Skip if viewport is not small
+    if (!viewport || viewport.width > 400) {
+      test.skip();
+    }
+
     await page.goto('/login');
     
     // All critical elements should still be visible
@@ -207,7 +196,6 @@ test.describe('Small Device Tests - iPhone SE', () => {
     // Text should not overflow
     const loginButton = page.getByRole('button', { name: 'Login' });
     const buttonBox = await loginButton.boundingBox();
-    const viewport = page.viewportSize();
     
     if (buttonBox && viewport) {
       // Button should fit within viewport
@@ -216,6 +204,12 @@ test.describe('Small Device Tests - iPhone SE', () => {
   });
 
   test('should handle text truncation on small screens', async ({ page }) => {
+    const viewport = page.viewportSize();
+    // Skip if viewport is not small
+    if (!viewport || viewport.width > 600) {
+      test.skip();
+    }
+
     // Login and navigate to todos
     await page.goto('/login');
     await login(page, TEST_USER.email, TEST_USER.password);
@@ -242,12 +236,47 @@ test.describe('Small Device Tests - iPhone SE', () => {
       expect(titleBox.width).toBeLessThanOrEqual(cardBox.width);
     }
   });
+
+  test('should handle touch scrolling and taps on mobile', async ({ page }) => {
+    const viewport = page.viewportSize();
+    // Skip if not mobile viewport
+    if (!viewport || viewport.width > 768) {
+      test.skip();
+    }
+
+    // Login
+    await page.goto('/login');
+    await login(page, TEST_USER.email, TEST_USER.password);
+    
+    // Go to dashboard
+    await page.goto('/dashboard');
+    
+    // Simulate touch scroll
+    await page.evaluate(() => {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    });
+    await page.waitForTimeout(1000);
+    
+    // Scroll back to top
+    await page.evaluate(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    await page.waitForTimeout(1000);
+    
+    // Tap on a card (simulate touch)
+    const firstCard = page.locator('.bg-card').first();
+    if (await firstCard.isVisible()) {
+      await firstCard.tap();
+      // Should navigate or open modal
+      await page.waitForTimeout(500);
+    }
+  });
 });
 
 // Test orientation changes
 test.describe('Orientation Tests', () => {
-  test('should handle orientation change on iPhone', async ({ browser }) => {
-    // Create context with iPhone 12 in portrait
+  test('should handle orientation change on mobile devices', async ({ browser }) => {
+    // Create context with mobile device in portrait
     const context = await browser.newContext({
       ...devices['iPhone 12'],
       viewport: { width: 390, height: 844 }
@@ -279,37 +308,36 @@ test.describe('Orientation Tests', () => {
   });
 });
 
-// Test touch interactions
-test.describe('Touch Interaction Tests', () => {
-  test.use({ ...devices['iPhone 12'] });
+// Responsive design breakpoint tests
+test.describe('Responsive Breakpoint Tests', () => {
+  const breakpoints = [
+    { name: 'Mobile', width: 375, height: 667 },
+    { name: 'Tablet', width: 768, height: 1024 },
+    { name: 'Desktop', width: 1280, height: 720 }
+  ];
 
-  test('should handle touch scrolling and taps', async ({ page }) => {
-    // Login
-    await page.goto('/login');
-    await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
-    await login(page, TEST_USER.email, TEST_USER.password);
-    
-    // Go to dashboard
-    await page.goto('/dashboard');
-    
-    // Simulate touch scroll
-    await page.evaluate(() => {
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  for (const { name, width, height } of breakpoints) {
+    test(`should render correctly at ${name} breakpoint`, async ({ page }) => {
+      await page.setViewportSize({ width, height });
+      await page.goto('/login');
+      
+      // Check that core elements are visible at all breakpoints
+      await expect(page.getByRole('heading', { name: 'Login' })).toBeVisible();
+      await expect(page.locator('input[type="email"]')).toBeVisible();
+      await expect(page.locator('input[type="password"]')).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
+      
+      // Form width should be appropriate for the breakpoint
+      const form = page.locator('form').first();
+      const formBox = await form.boundingBox();
+      
+      if (formBox) {
+        if (name === 'Mobile') {
+          expect(formBox.width).toBeGreaterThan(width * 0.8);
+        } else if (name === 'Desktop') {
+          expect(formBox.width).toBeLessThan(600);
+        }
+      }
     });
-    await page.waitForTimeout(1000);
-    
-    // Scroll back to top
-    await page.evaluate(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-    await page.waitForTimeout(1000);
-    
-    // Tap on a card (simulate touch)
-    const firstCard = page.locator('.bg-card').first();
-    if (await firstCard.isVisible()) {
-      await firstCard.tap();
-      // Should navigate or open modal
-      await page.waitForTimeout(500);
-    }
-  });
+  }
 });

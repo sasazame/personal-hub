@@ -1,18 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { login, TEST_USER, ensureLoggedOut } from './helpers/auth';
 
-// Define browser configurations
-const browsers = [
-  { name: 'Chromium', browserName: 'chromium' },
-  { name: 'Firefox', browserName: 'firefox' },
-  { name: 'WebKit (Safari)', browserName: 'webkit' }
-];
-
 // Core functionality tests across browsers
-browsers.forEach(({ name, browserName }) => {
-  test.describe(`Cross-Browser Tests - ${name}`, () => {
-    // Use specific browser for this test suite
-    test.use({ browserName: browserName as 'chromium' | 'firefox' | 'webkit' });
+test.describe('Cross-Browser Tests', () => {
 
     test.beforeEach(async ({ page }) => {
       // Set English locale
@@ -72,9 +62,9 @@ browsers.forEach(({ name, browserName }) => {
       
       // Create a todo
       await page.getByRole('button', { name: 'Add TODO' }).click();
-      const todoTitle = `Cross Browser Test ${name} ${Date.now()}`;
+      const todoTitle = `Cross Browser Test ${Date.now()}`;
       await page.fill('input[name="title"]', todoTitle);
-      await page.fill('textarea[name="description"]', `Testing on ${name}`);
+      await page.fill('textarea[name="description"]', 'Testing cross-browser compatibility');
       await page.getByRole('button', { name: 'Create' }).click();
       
       // Verify todo was created
@@ -210,38 +200,38 @@ browsers.forEach(({ name, browserName }) => {
       expect(hasAuthData).toBe(true);
     });
 
-    // Skip WebKit-specific tests that might not work in all environments
-    if (browserName !== 'webkit') {
-      test('should handle drag and drop operations', async ({ page }) => {
-        // Login
-        await page.goto('/login');
-        await login(page, TEST_USER.email, TEST_USER.password);
-        
-        // Test calendar drag and drop
-        await page.goto('/calendar');
-        await page.waitForLoadState('networkidle');
-        
-        // Create an event first
-        await page.getByRole('button', { name: 'New Event' }).click();
-        const eventTitle = `Drag Test ${name} ${Date.now()}`;
-        await page.fill('input[name="title"]', eventTitle);
-        await page.locator('input[name="allDay"]').check();
-        await page.getByRole('button', { name: 'Create' }).click();
-        
-        // Find the event
-        const event = page.locator('.text-xs.p-1.rounded').filter({ hasText: eventTitle });
-        await expect(event).toBeVisible();
-        
-        // Test drag functionality (basic check)
-        const eventBox = await event.boundingBox();
-        expect(eventBox).toBeTruthy();
-        
-        // Clean up
-        await event.click();
-        await page.getByRole('button', { name: 'Delete' }).click();
-        await page.getByRole('button', { name: 'Delete' }).click();
-      });
-    }
+    test('should handle drag and drop operations', async ({ page, browserName }) => {
+      // Skip WebKit-specific tests that might not work in all environments
+      test.skip(browserName === 'webkit', 'Skip drag and drop on WebKit');
+      
+      // Login
+      await page.goto('/login');
+      await login(page, TEST_USER.email, TEST_USER.password);
+      
+      // Test calendar drag and drop
+      await page.goto('/calendar');
+      await page.waitForLoadState('networkidle');
+      
+      // Create an event first
+      await page.getByRole('button', { name: 'New Event' }).click();
+      const eventTitle = `Drag Test ${Date.now()}`;
+      await page.fill('input[name="title"]', eventTitle);
+      await page.locator('input[name="allDay"]').check();
+      await page.getByRole('button', { name: 'Create' }).click();
+      
+      // Find the event
+      const event = page.locator('.text-xs.p-1.rounded').filter({ hasText: eventTitle });
+      await expect(event).toBeVisible();
+      
+      // Test drag functionality (basic check)
+      const eventBox = await event.boundingBox();
+      expect(eventBox).toBeTruthy();
+      
+      // Clean up
+      await event.click();
+      await page.getByRole('button', { name: 'Delete' }).click();
+      await page.getByRole('button', { name: 'Delete' }).click();
+    });
 
     test('should handle error states gracefully', async ({ page }) => {
       // Test network error handling
@@ -283,7 +273,6 @@ browsers.forEach(({ name, browserName }) => {
       expect(hasModernAPIs.localStorage).toBe(true);
       expect(hasModernAPIs.querySelector).toBe(true);
     });
-  });
 });
 
 // Browser-specific edge cases
