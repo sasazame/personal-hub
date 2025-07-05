@@ -5,8 +5,10 @@ import { conditionalChainSync } from '@/utils/conditionalHelpers';
 
 export function MSWInit() {
   useEffect(() => {
-    // Only enable MSW in CI or test environments
-    const shouldEnableMSW = process.env.NEXT_PUBLIC_CI === 'true' || process.env.NODE_ENV === 'test';
+    // Only enable MSW in CI or test environments or when explicitly enabled
+    const shouldEnableMSW = process.env.NEXT_PUBLIC_CI === 'true' || 
+                          process.env.NODE_ENV === 'test' || 
+                          process.env.NEXT_PUBLIC_USE_MSW === 'true';
     const isBrowser = typeof window !== 'undefined';
     
     conditionalChainSync([

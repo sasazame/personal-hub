@@ -12,7 +12,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   return (
-    <div className="min-h-screen bg-background">{/* Single color background like profile page */}
+    <div className="min-h-screen bg-background">{/* Theme-aware background using CSS variable */}
       
       <Header />
       <Sidebar />

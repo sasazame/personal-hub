@@ -64,7 +64,12 @@ export async function login(page: Page, email: string, password: string) {
     if (page.url().includes('/login')) {
       console.log('Still on login page after attempt. URL:', page.url());
       
-      // Check if backend is responding
+      // In test environment with MSW, don't check backend directly
+      if (process.env.CI || process.env.NEXT_PUBLIC_CI || process.env.NEXT_PUBLIC_USE_MSW) {
+        throw new Error('Login failed - check test user credentials and MSW handlers');
+      }
+      
+      // Only check backend in non-CI environments
       try {
         const response = await page.evaluate(async ([email, password]) => {
           const response = await fetch('http://localhost:8080/api/v1/auth/login', {
@@ -104,30 +109,7 @@ export async function ensureLoggedOut(page: Page) {
   // Set English locale
   await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
   
-  // Navigate to a safe page first to ensure localStorage is accessible
-  await page.goto('/');
-  
-  // Clear authentication state with error handling
-  try {
-    await page.evaluate(() => {
-      if (typeof localStorage !== 'undefined') {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
-      }
-    });
-  } catch (error) {
-    console.log('localStorage clear error (non-critical):', error);
-  }
-  
-  // Check if we're on a protected page and have logout button
-  const logoutButton = page.getByRole('button', { name: 'Logout' }).first();
-  if (await logoutButton.isVisible({ timeout: 2000 })) {
-    await logoutButton.click();
-    await page.waitForURL(/.*\/login/, { timeout: 5000 });
-  }
-  
-  // Final clear of all storage with error handling
+  // Clear authentication state first before navigation
   try {
     await page.evaluate(() => {
       if (typeof localStorage !== 'undefined') {
@@ -137,14 +119,35 @@ export async function ensureLoggedOut(page: Page) {
         sessionStorage.clear();
       }
     });
-  } catch (error) {
-    console.log('Storage clear error (non-critical):', error);
+  } catch {
+    // If we can't clear storage, navigate to login first
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.clear();
+      }
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.clear();
+      }
+    });
   }
   
-  // Ensure we're on login page
+  // Navigate to login page if not already there
   if (!page.url().includes('/login')) {
-    await page.goto('/login');
+    try {
+      await page.goto('/login', { waitUntil: 'domcontentloaded' });
+    } catch (error) {
+      // If navigation fails due to redirect, wait for it to complete
+      if (error instanceof Error && error.message.includes('interrupted')) {
+        await page.waitForURL(/.*\/login/, { timeout: 5000 });
+      } else {
+        throw error;
+      }
+    }
   }
+  
+  // Wait for login form to be ready
+  await page.waitForSelector('input[type="email"]', { timeout: 5000 });
 }
 
 // Test user credentials
@@ -156,9 +159,17 @@ export const TEST_USER = {
 
 // Helper to setup MSW if in CI environment
 export async function setupMockIfNeeded(page: Page) {
-  // In CI environment, ensure MSW is ready
-  if (process.env.CI) {
-    await page.waitForTimeout(2000); // Give MSW time to initialize
+  // Ensure MSW is ready
+  await page.waitForTimeout(2000); // Give MSW time to initialize
+  
+  // Wait for MSW to be active
+  try {
+    await page.waitForFunction(() => {
+      // Check if MSW is active by looking for the service worker
+      return navigator.serviceWorker?.controller?.scriptURL?.includes('mockServiceWorker.js');
+    }, { timeout: 5000 });
+  } catch {
+    console.log('MSW service worker not detected, continuing anyway');
   }
 }
 

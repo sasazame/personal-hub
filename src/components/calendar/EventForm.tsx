@@ -110,18 +110,49 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
     
     // For new events, use next 30-minute interval based on current time
     const now = new Date();
-    const startTime = getNext30MinInterval(now);
-    const endTime = new Date(startTime.getTime() + 30 * 60 * 1000); // 30 minutes after start
+    let startTime = getNext30MinInterval(now);
+    let endTime = new Date(startTime.getTime() + 30 * 60 * 1000); // 30 minutes after start
     
-    // If a specific date was clicked, use that date but with the calculated time
+    // If a specific date was clicked, use that date
     if (defaultDate) {
-      startTime.setFullYear(defaultDate.getFullYear());
-      startTime.setMonth(defaultDate.getMonth());
-      startTime.setDate(defaultDate.getDate());
+      // Check if this is an all-day event request
+      const isAllDayRequest = (defaultDate as Date & { isAllDayEvent?: boolean }).isAllDayEvent;
       
-      endTime.setFullYear(defaultDate.getFullYear());
-      endTime.setMonth(defaultDate.getMonth());
-      endTime.setDate(defaultDate.getDate());
+      // Check if this has drag selection times
+      const dragEndTime = (defaultDate as Date & { dragEndTime?: string }).dragEndTime;
+      
+      if (isAllDayRequest) {
+        // For all-day events, use the date only
+        return {
+          title: '',
+          description: '',
+          startDateTime: formatDateForInput(defaultDate),
+          endDateTime: formatDateForInput(defaultDate),
+          location: '',
+          allDay: true,
+          color: 'blue',
+          reminders: [],
+          recurrence: undefined,
+          syncToGoogle: true,
+        };
+      }
+      
+      if (dragEndTime) {
+        // This is a drag selection - use the exact times from the drag
+        startTime = new Date(defaultDate);
+        
+        // Parse the drag end time
+        const [endHour, endMinute] = dragEndTime.split(':').map(Number);
+        endTime = new Date(defaultDate);
+        endTime.setHours(endHour);
+        endTime.setMinutes(endMinute);
+        endTime.setSeconds(0);
+        endTime.setMilliseconds(0);
+      } else {
+        // Regular date click - use the provided time from defaultDate
+        startTime = new Date(defaultDate);
+        endTime = new Date(startTime.getTime() + 30 * 60 * 1000);
+      }
     }
     
     return {

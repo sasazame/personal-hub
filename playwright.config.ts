@@ -45,13 +45,10 @@ export default defineConfig({
   ],
 
   webServer: process.env.CI ? undefined : {
-    // ローカル環境のみ: プロダクションビルドしてサーバーを起動
-    command: 'npm run build && npm run start',
+    // ローカル環境: 開発サーバーを使用
+    command: 'NEXT_PUBLIC_USE_MSW=true npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: true,
-    timeout: 300 * 1000, // 5分に延長（ビルド時間を考慮）
-    env: {
-      PORT: '3000',
-    },
+    timeout: 60 * 1000, // 1分
   },
 });

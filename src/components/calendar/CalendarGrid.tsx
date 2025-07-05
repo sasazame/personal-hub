@@ -21,6 +21,7 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick, o
   const monthEnd = endOfMonth(currentDate);
   const { theme } = useTheme();
   const startDate = new Date(monthStart);
+  // Start from Sunday (getDay() returns 0 for Sunday)
   startDate.setDate(startDate.getDate() - monthStart.getDay());
   
   const endDate = new Date(monthEnd);
@@ -156,12 +157,15 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick, o
   };
 
   return (
-    <div className={cn(
-      "grid grid-cols-7 backdrop-blur-xl rounded-lg overflow-hidden border",
-      theme === 'dark' 
-        ? "bg-gray-800/20 border-gray-700/50"
-        : "bg-white/20 border-gray-300/50"
-    )}>
+    <div 
+      data-testid="calendar-grid"
+      className={cn(
+        "grid grid-cols-7 backdrop-blur-xl rounded-lg border",
+        theme === 'dark' 
+          ? "bg-gray-800/20 border-gray-700/50"
+          : "bg-white/20 border-gray-300/50",
+        "pb-1" // Add small padding at bottom to ensure last row colors are visible
+      )}>
       {/* Header */}
       {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
         <div
@@ -174,15 +178,15 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick, o
             // Sunday (index 0) - red background
             index === 0 && (theme === 'dark' 
               ? "bg-red-900/20" 
-              : "bg-red-50"),
+              : "bg-red-100"),
             // Saturday (index 6) - blue background
             index === 6 && (theme === 'dark' 
               ? "bg-blue-900/20" 
-              : "bg-blue-50"),
-            // Weekdays - normal background
+              : "bg-blue-100"),
+            // Weekdays - darker gray background to match weekly view
             index > 0 && index < 6 && (theme === 'dark'
               ? "bg-gray-800/30"
-              : "bg-white/30")
+              : "bg-gray-200/70")
           )}
         >
           {day}

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { navigateToProtectedRoute } from './helpers/wait-helpers';
 
 test.describe('CI Smoke Tests', () => {
   test.beforeEach(async ({ page }) => {
@@ -7,7 +8,7 @@ test.describe('CI Smoke Tests', () => {
   });
 
   test('should load the application', async ({ page }) => {
-    await page.goto('/');
+    await navigateToProtectedRoute(page, '/');
     
     // Should redirect to login when not authenticated
     await expect(page).toHaveURL(/.*\/login/);
