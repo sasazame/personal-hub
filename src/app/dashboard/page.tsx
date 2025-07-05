@@ -12,6 +12,7 @@ import { useGoals } from '@/hooks/useGoals';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { todoApi } from '@/lib/api';
 import { format } from 'date-fns';
+import { isFeatureEnabled } from '@/config/features';
 import { 
   CheckSquare, 
   Calendar, 
@@ -98,7 +99,7 @@ function DashboardPage() {
       stats: t('dashboard.recentNotesCount', { count: recentNotes.length }),
       count: recentNotes.length
     },
-    {
+    ...(isFeatureEnabled('analytics') ? [{
       title: 'Analytics',
       description: t('dashboard.productivityAnalysis'),
       icon: BarChart3,
@@ -106,8 +107,8 @@ function DashboardPage() {
       color: 'bg-orange-500',
       stats: t('dashboard.completionRatePercentage', { rate: completionRate }),
       count: completionRate
-    }
-  ];
+    }] : [])
+  ].flat();
 
   return (
     <AppLayout>

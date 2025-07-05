@@ -57,6 +57,11 @@ jest.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+// Mock features config to enable analytics
+jest.mock('@/config/features', () => ({
+  isFeatureEnabled: (feature: string) => feature === 'analytics' ? true : false,
+}));
+
 // Mock the hooks
 jest.mock('@/hooks/useCalendar', () => ({
   useTodaysEvents: () => ({
@@ -84,6 +89,24 @@ jest.mock('@/hooks/useNotes', () => ({
         tags: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+      },
+    ],
+    isLoading: false,
+  }),
+}));
+
+jest.mock('@/hooks/useGoals', () => ({
+  useGoals: () => ({
+    activeGoals: [
+      {
+        id: '1',
+        title: 'Test Goal',
+        goalType: 'DAILY',
+        progressPercentage: 75,
+        currentValue: 75,
+        targetValue: 100,
+        metricUnit: 'units',
+        endDate: new Date().toISOString(),
       },
     ],
     isLoading: false,
