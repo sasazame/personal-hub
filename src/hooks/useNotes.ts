@@ -1,58 +1,44 @@
-import { useQuery } from '@tanstack/react-query';
-import { CreateNoteDto, UpdateNoteDto, NoteFilters, Note } from '@/types/note';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { CreateNoteDto, UpdateNoteDto, NoteFilters } from '@/types/note';
 import { notesService } from '@/services/notes';
-import { createEntityHooks, createPaginatedEntityHooks } from './useEntityHooks';
 
-// Create the base entity hooks
-const entityHooks = createEntityHooks<Note, CreateNoteDto, UpdateNoteDto, NoteFilters>({
-  entityName: 'Note',
-  service: {
-    getAll: () => notesService.getAllNotes(),
-    getById: async (id: number) => {
-      const note = await notesService.getNote(id);
-      if (!note) {
-        throw new Error('Note not found');
+export function useNotes(filters?: NoteFilters) {
+  return useQuery({
+    queryKey: ['notes', 'all', filters],
+    queryFn: async () => {
+      // Handle search and tags filters
+      if (filters?.search) {
+        return notesService.searchNotes(filters.search);
       }
-      return note;
+      
+      if (filters?.tags && filters.tags.length > 0) {
+        // For simplicity, search by first tag
+        return notesService.getNotesByTag(filters.tags[0]);
+      }
+      
+      // Default: get all notes
+      return notesService.getAllNotes();
     },
-    create: (data: CreateNoteDto) => notesService.createNote(data),
-    update: (id: number, data: UpdateNoteDto) => notesService.updateNote(id, data),
-    delete: (id: number) => notesService.deleteNote(id),
-  },
-  queryKey: 'notes',
-  getFilters: async (filters: NoteFilters) => {
-    // Handle search and tags filters
-    if (filters?.search) {
-      return notesService.searchNotes(filters.search);
-    }
-    
-    if (filters?.tags && filters.tags.length > 0) {
-      // For simplicity, search by first tag
-      return notesService.getNotesByTag(filters.tags[0]);
-    }
-    
-    // Default: get all notes
-    return notesService.getAllNotes();
-  },
-  staleTime: 1000 * 60 * 5, // 5 minutes
-  additionalInvalidateKeys: [['notes']],
-});
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+}
 
-// Export the generated hooks with proper names
-export const useNotes = entityHooks.useNoteList;
-export const useNote = entityHooks.useNote;
-export const useCreateNote = entityHooks.useCreateNote;
-export const useUpdateNote = entityHooks.useUpdateNote;
-export const useDeleteNote = entityHooks.useDeleteNote;
+export function useNotesPaginated(page = 0, size = 10) {
+  return useQuery({
+    queryKey: ['notes', 'paginated', page, size],
+    queryFn: () => notesService.getNotes(page, size),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+}
 
-// Create paginated hook
-export const useNotesPaginated = createPaginatedEntityHooks<Note>(
-  'Notes',
-  'notes',
-  ({ page, size }: { page: number; size: number }) => notesService.getNotes(page, size)
-);
+export function useNote(id: number) {
+  return useQuery({
+    queryKey: ['note', id],
+    queryFn: () => notesService.getNote(id),
+    enabled: !!id,
+  });
+}
 
-// Additional custom hooks that don't fit the standard pattern
 export function useRecentNotes(limit?: number) {
   return useQuery({
     queryKey: ['notes', 'recent', limit],
@@ -78,19 +64,58 @@ export function useNoteTags() {
   });
 }
 
+export function useCreateNote() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (data: CreateNoteDto) => notesService.createNote(data),
+    onSuccess: () => {
+      // Invalidate all notes queries
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+    },
+  });
+}
+
+export function useUpdateNote() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: UpdateNoteDto }) => 
+      notesService.updateNote(id, data),
+    onSuccess: (updatedNote) => {
+      // Update the specific note in cache
+      queryClient.setQueryData(['note', updatedNote.id], updatedNote);
+      
+      // Invalidate notes queries
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+    },
+  });
+}
+
+export function useDeleteNote() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (id: number) => notesService.deleteNote(id),
+    onSuccess: (_, deletedId) => {
+      // Remove from specific note cache
+      queryClient.removeQueries({ queryKey: ['note', deletedId] });
+      
+      // Invalidate notes queries
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+    },
+  });
+}
+
 // Remove toggle pin functionality as it's not supported in backend
 export function useToggleNotePin() {
-  return {
-    mutate: () => {
-      // No-op since backend doesn't support pinning
+  return useMutation({
+    mutationFn: () => {
+      // No-op mutation since backend doesn't support pinning
       return Promise.resolve();
     },
-    mutateAsync: () => {
-      // No-op since backend doesn't support pinning
-      return Promise.resolve();
+    onSuccess: () => {
+      // Do nothing
     },
-    isLoading: false,
-    isError: false,
-    error: null,
-  };
+  });
 }

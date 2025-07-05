@@ -72,7 +72,7 @@ export function FormInput({
   ...inputProps
 }: FormInputProps) {
   // Don't pass label to Input since FormField handles it
-  const { label: _, ...inputPropsWithoutLabel } = inputProps as any;
+  const inputPropsWithoutLabel = inputProps;
   
   return (
     <FormField

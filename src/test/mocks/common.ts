@@ -29,10 +29,10 @@ export const createTranslationsMock = (translations: Record<string, string> = {}
     
     if (!value) {
       // Try to find nested value
-      let current: any = translations;
+      let current: unknown = translations;
       for (const k of keys) {
-        if (current && typeof current === 'object' && k in current) {
-          current = current[k];
+        if (current && typeof current === 'object' && k in (current as Record<string, unknown>)) {
+          current = (current as Record<string, unknown>)[k];
         } else {
           current = key; // Return key if not found
           break;

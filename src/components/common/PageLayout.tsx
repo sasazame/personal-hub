@@ -29,9 +29,7 @@ export function PageLayout({
   headerContent,
 }: PageLayoutProps) {
   // Set page title if provided
-  if (title) {
-    usePageTitle(title);
-  }
+  usePageTitle(title || '');
   
   const content = (
     <AppLayout>

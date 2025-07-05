@@ -33,7 +33,7 @@ export function useListFilters<T extends Record<string, unknown>>(
   const debouncedFilters = useMemo(() => {
     const combined = { ...filters };
     if (debouncedSearchQuery) {
-      (combined as any).search = debouncedSearchQuery;
+      (combined as T & { search: string }).search = debouncedSearchQuery;
     }
     return combined;
   }, [filters, debouncedSearchQuery]);

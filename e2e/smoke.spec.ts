@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { navigateToProtectedRoute } from './helpers/wait-helpers';
 
 test.describe('Smoke Tests', () => {
   test.beforeEach(async ({ page, context }) => {
@@ -12,7 +11,7 @@ test.describe('Smoke Tests', () => {
     await context.addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
   });
 
-  test('should load the application successfully', async ({ page, browserName, isMobile }) => {
+  test('should load the application successfully', async ({ page }) => {
     // Navigate to the application
     await page.goto('/');
     

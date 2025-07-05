@@ -13,7 +13,7 @@ interface TestWrapperProps {
   children: React.ReactNode;
   queryClient?: QueryClient;
   initialAuth?: {
-    user?: any;
+    user?: unknown;
     isAuthenticated?: boolean;
   };
 }
@@ -23,7 +23,6 @@ interface TestWrapperProps {
  */
 export function createHookWrapper({
   queryClient = createTestQueryClient(),
-  initialAuth = {},
 }: Partial<TestWrapperProps> = {}) {
   return function TestWrapper({ children }: { children: React.ReactNode }) {
     return (
@@ -46,7 +45,7 @@ export function renderHookWithProviders<TProps, TResult>(
   options?: RenderHookOptions<TProps> & {
     queryClient?: QueryClient;
     initialAuth?: {
-      user?: any;
+      user?: unknown;
       isAuthenticated?: boolean;
     };
   }
@@ -111,7 +110,7 @@ export async function testMutation<TData, TVariables, TError = unknown>(
 /**
  * Test a mutation hook with async
  */
-export async function testMutationAsync<TData, TVariables, TError = unknown>(
+export async function testMutationAsync<TData, TVariables>(
   result: {
     current: {
       mutateAsync: (variables: TVariables) => Promise<TData>;

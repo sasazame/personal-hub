@@ -45,11 +45,6 @@ export function createTestQueryClient(): QueryClient {
         retry: false,
       },
     },
-    logger: {
-      log: () => {},
-      warn: () => {},
-      error: () => {},
-    },
   });
 }
 
@@ -70,7 +65,7 @@ export async function waitForAsync() {
 /**
  * Mock fetch for API calls
  */
-export function mockFetch(responses: Array<{ url: string | RegExp; response: any; status?: number }>) {
+export function mockFetch(responses: Array<{ url: string | RegExp; response: unknown; status?: number }>) {
   global.fetch = jest.fn((url: RequestInfo | URL) => {
     const urlString = typeof url === 'string' ? url : url.toString();
     
@@ -179,7 +174,7 @@ export function setupBrowserMocks() {
 /**
  * Helper to test async errors
  */
-export async function expectAsyncError(fn: () => Promise<any>, errorMessage?: string) {
+export async function expectAsyncError(fn: () => Promise<unknown>, errorMessage?: string) {
   let error: Error | null = null;
   
   try {

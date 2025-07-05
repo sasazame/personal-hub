@@ -180,7 +180,7 @@ export const schemaFactories = {
     }
     
     // Apply all validations to the schema
-    let refinedSchema: any = formSchema;
+    let refinedSchema = formSchema as z.ZodSchema;
     
     for (const validation of customValidations) {
       refinedSchema = refinedSchema.refine(

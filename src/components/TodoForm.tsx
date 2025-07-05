@@ -8,7 +8,7 @@ import { Modal, ModalHeader, ModalTitle, ModalContent } from '@/components/ui';
 import { FormInput, FormTextArea, FormSelect, FormCheckbox } from '@/components/ui/FormField';
 import { Button } from '@/components/ui';
 import { Input } from '@/components/ui';
-import { Repeat, Calendar } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { mapApiStatusToDisplay } from '@/utils/todoStatusMapper';
 
@@ -39,7 +39,6 @@ export default function TodoForm({ onSubmit, onCancel, isSubmitting, parentId }:
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
   } = form;
 
   const { handleSubmit: handleFormSubmit, isSubmitting: isFormSubmitting } = useFormSubmit<CreateTodoDto>(

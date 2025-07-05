@@ -1,6 +1,5 @@
 import { AxiosInstance } from 'axios';
 import api from '@/lib/api';
-import apiClient from '@/lib/api-client';
 
 export interface BaseService<TEntity, TCreateDto, TUpdateDto> {
   getAll?: () => Promise<TEntity[]>;
@@ -27,13 +26,13 @@ export interface PagedResponse<T> {
   last: boolean;
 }
 
-export interface ServiceConfig<TEntity, TCreateDto, TUpdateDto> {
+export interface ServiceConfig<TEntity> {
   basePath: string;
   apiInstance?: AxiosInstance;
-  transformGet?: (data: any) => TEntity;
-  transformGetAll?: (data: any) => TEntity[];
-  transformCreate?: (data: any) => TEntity;
-  transformUpdate?: (data: any) => TEntity;
+  transformGet?: (data: unknown) => TEntity;
+  transformGetAll?: (data: unknown) => TEntity[];
+  transformCreate?: (data: unknown) => TEntity;
+  transformUpdate?: (data: unknown) => TEntity;
   includeDelete?: boolean;
   handleNotFound?: boolean;
 }
@@ -42,15 +41,15 @@ export interface ServiceConfig<TEntity, TCreateDto, TUpdateDto> {
  * Creates a base CRUD service for an entity
  */
 export function createBaseService<TEntity, TCreateDto = Partial<TEntity>, TUpdateDto = Partial<TEntity>>(
-  config: ServiceConfig<TEntity, TCreateDto, TUpdateDto>
+  config: ServiceConfig<TEntity>
 ): BaseService<TEntity, TCreateDto, TUpdateDto> {
   const {
     basePath,
     apiInstance = api,
-    transformGet = (data) => data,
-    transformGetAll = (data) => data,
-    transformCreate = (data) => data,
-    transformUpdate = (data) => data,
+    transformGet = (data) => data as TEntity,
+    transformGetAll = (data) => data as TEntity[],
+    transformCreate = (data) => data as TEntity,
+    transformUpdate = (data) => data as TEntity,
     includeDelete = true,
     handleNotFound = false,
   } = config;
@@ -67,7 +66,7 @@ export function createBaseService<TEntity, TCreateDto = Partial<TEntity>, TUpdat
         return transformGet(response.data);
       } catch (error) {
         if (handleNotFound && isNotFoundError(error)) {
-          return null as any;
+          return null as unknown as TEntity;
         }
         throw error;
       }
@@ -106,7 +105,7 @@ export function createPaginatedService<TEntity>(
       size = 20,
       sort?: string
     ): Promise<PagedResponse<TEntity>> {
-      const params: any = {
+      const params: Record<string, string> = {
         page: page.toString(),
         size: size.toString(),
       };
@@ -144,8 +143,8 @@ export function createPaginatedService<TEntity>(
 /**
  * Combines base and paginated services
  */
-export function createFullService<TEntity, TCreateDto = Partial<TEntity>, TUpdateDto = Partial<TEntity>>(
-  config: ServiceConfig<TEntity, TCreateDto, TUpdateDto> & { supportsPagination?: boolean }
+export function createFullService<TEntity>(
+  config: ServiceConfig<TEntity> & { supportsPagination?: boolean }
 ) {
   const baseService = createBaseService(config);
   
@@ -186,11 +185,11 @@ export interface FilterableService<TEntity, TFilters> {
   getFiltered(filters: TFilters): Promise<TEntity[]>;
 }
 
-export function addFilterSupport<TEntity, TFilters>(
-  baseService: BaseService<TEntity, any, any>,
+export function addFilterSupport<TEntity, TFilters, TCreateDto, TUpdateDto>(
+  baseService: BaseService<TEntity, TCreateDto, TUpdateDto>,
   basePath: string,
   apiInstance: AxiosInstance = api
-): BaseService<TEntity, any, any> & FilterableService<TEntity, TFilters> {
+): BaseService<TEntity, TCreateDto, TUpdateDto> & FilterableService<TEntity, TFilters> {
   return {
     ...baseService,
     async getFiltered(filters: TFilters): Promise<TEntity[]> {

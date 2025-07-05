@@ -6,7 +6,7 @@ import { Todo, TodoStatus, TodoPriority } from '@/types/todo';
 import { Note } from '@/types/note';
 import { Goal, GoalType, MetricType, GoalStatus } from '@/types/goal';
 import { CalendarEvent } from '@/types/calendar';
-import { User } from '@/types/auth';
+import { User } from '@/types/user';
 
 // Counter for unique IDs
 let idCounter = 1;
@@ -153,12 +153,13 @@ export function createMockCalendarEvents(count: number, overrides: Partial<Calen
  * Create a mock User
  */
 export function createMockUser(overrides: Partial<User> = {}): User {
-  const id = overrides.id ?? idCounter++;
+  const id = overrides.id ?? String(idCounter++);
   
   return {
     id,
+    username: `User ${id}`,
     email: `user${id}@example.com`,
-    name: `User ${id}`,
+    weekStartDay: 0,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     ...overrides,

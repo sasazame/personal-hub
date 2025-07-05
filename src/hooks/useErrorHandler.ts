@@ -9,7 +9,7 @@ import {
   isNetworkError,
   logError,
 } from '@/utils/errorHandlers';
-import { showError, showWarning } from '@/components/ui/toast';
+import { showError, showInfo } from '@/components/ui/toast';
 
 export interface UseErrorHandlerOptions {
   context?: string;
@@ -44,7 +44,7 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
     
     // Handle network errors
     if (isNetworkError(error)) {
-      showWarning(t('errors.network'));
+      showInfo(t('errors.network'));
       return;
     }
     
@@ -79,7 +79,7 @@ export function useFormErrorHandler(options: UseFormErrorHandlerOptions = {}) {
   
   const handleFormError = useCallback((error: unknown) => {
     if (typeof error === 'object' && error !== null) {
-      const apiError = error as any;
+      const apiError = error as { errors?: Record<string, string[]>; message?: string };
       
       // Handle validation errors
       if (apiError.errors && typeof apiError.errors === 'object') {
