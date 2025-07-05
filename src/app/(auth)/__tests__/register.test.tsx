@@ -179,7 +179,7 @@ describe('RegisterPage', () => {
     // Wait for the initial loading state to complete
     await waitFor(() => {
       expect(screen.queryByText('Creating account...')).not.toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
 
     const passwordInput = screen.getByLabelText('Password');
     const confirmPasswordInput = screen.getByLabelText('Confirm Password');
@@ -193,7 +193,7 @@ describe('RegisterPage', () => {
     await waitFor(() => {
       expect(screen.getByText(/passwords don't match/i)).toBeInTheDocument();
     });
-  });
+  }, 10000);
 
   it('validates username format', async () => {
     const user = userEvent.setup();

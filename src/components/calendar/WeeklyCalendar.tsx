@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { CalendarEvent, DragSelection } from '@/types/calendar';
 import { cn } from '@/lib/cn';
 import { useTheme } from '@/hooks/useTheme';
+import { calculateDragSelectionStyle } from '@/utils/calendar/dragSelectionStyles';
 
 interface WeeklyCalendarProps {
   currentDate: Date;
@@ -201,23 +202,16 @@ export function WeeklyCalendar({
       return null;
     }
 
-    const startTime = Math.min(dragStart.time, dragEnd.time);
-    const endTime = Math.max(dragStart.time, dragEnd.time) + TIME_SLOT_INTERVAL;
-    
-    const top = (startTime / 60) * HOUR_HEIGHT;
-    const height = ((endTime - startTime) / 60) * HOUR_HEIGHT;
-
-    return {
-      position: 'absolute',
-      top: `${top}px`,
-      height: `${height}px`,
-      left: '2px',
-      right: '2px',
-      backgroundColor: 'rgb(59 130 246 / 0.15)',
-      border: '2px solid rgb(59 130 246)',
-      borderRadius: '0.375rem',
-      pointerEvents: 'none'
-    };
+    return calculateDragSelectionStyle(
+      {
+        startTime: Math.min(dragStart.time, dragEnd.time),
+        endTime: Math.max(dragStart.time, dragEnd.time),
+      },
+      {
+        hourHeight: HOUR_HEIGHT,
+        timeSlotInterval: TIME_SLOT_INTERVAL,
+      }
+    );
   };
 
   const getCurrentTimePosition = () => {

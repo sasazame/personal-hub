@@ -5,12 +5,9 @@ import { Sidebar } from './Sidebar';
 import { Breadcrumb } from './Breadcrumb';
 import { PageTransition } from './PageTransition';
 import { cn } from '@/lib/cn';
+import { WithChildren } from '@/types/common-props';
 
-interface AppLayoutProps {
-  children: React.ReactNode;
-}
-
-export function AppLayout({ children }: AppLayoutProps) {
+export function AppLayout({ children }: WithChildren) {
   return (
     <div className="min-h-screen bg-background">{/* Theme-aware background using CSS variable */}
       

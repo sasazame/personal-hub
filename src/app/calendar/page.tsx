@@ -7,12 +7,12 @@ import { AppLayout } from '@/components/layout';
 import { Button, Modal } from '@/components/ui';
 import { CalendarGrid, EventForm, GoogleCalendarSettings, WeeklyCalendar } from '@/components/calendar';
 import { useCalendarEvents, useCreateCalendarEvent, useUpdateCalendarEvent, useDeleteCalendarEvent } from '@/hooks/useCalendar';
+import { useCalendarEventMutation } from '@/hooks/useCalendarEventMutation';
 import { CalendarEvent, CreateCalendarEventDto, UpdateCalendarEventDto, DragSelection, CalendarView } from '@/types/calendar';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { showSuccess, showError } from '@/components/ui/toast';
 import { format, addMonths, subMonths, addWeeks, subWeeks, startOfWeek, endOfWeek } from 'date-fns';
 import { ChevronLeft, ChevronRight, Plus, Settings, Calendar as CalendarIcon, CalendarDays } from 'lucide-react';
-import { formatLocalDateTime } from '@/utils/dateFormatting';
 
 function CalendarPage() {
   const t = useTranslations();
@@ -150,57 +150,10 @@ function CalendarPage() {
     setSelectedDate(null);
   };
 
+  const { handleEventDateChange: handleEventDateChangeBase } = useCalendarEventMutation();
+
   const handleEventDateChange = (eventId: number, newDate: Date) => {
-    const event = allEvents.find(e => e.id === eventId);
-    if (!event) return;
-
-    // Calculate the duration to maintain it
-    const originalStart = new Date(event.startDateTime);
-    const originalEnd = new Date(event.endDateTime);
-    const duration = originalEnd.getTime() - originalStart.getTime();
-
-    // For all-day events, set to midnight local time
-    if (event.allDay) {
-      const newStart = new Date(
-        newDate.getFullYear(),
-        newDate.getMonth(),
-        newDate.getDate(),
-        0, 0, 0, 0
-      );
-      const newEnd = new Date(newStart.getTime() + duration);
-
-      const updateData: UpdateCalendarEventDto = {
-        startDateTime: formatLocalDateTime(newStart),
-        endDateTime: formatLocalDateTime(newEnd),
-      };
-
-      updateMutation.mutate({ id: eventId, data: updateData }, {
-        onSuccess: () => {
-          showSuccess(t('calendar.eventUpdated'));
-        },
-        onError: (error) => {
-          showError(error instanceof Error ? error.message : t('calendar.updateFailed'));
-        },
-      });
-    } else {
-      // For timed events, preserve the local time
-      // newDate already has the correct local time from CalendarGrid
-      const newEnd = new Date(newDate.getTime() + duration);
-
-      const updateData: UpdateCalendarEventDto = {
-        startDateTime: formatLocalDateTime(newDate),
-        endDateTime: formatLocalDateTime(newEnd),
-      };
-
-      updateMutation.mutate({ id: eventId, data: updateData }, {
-        onSuccess: () => {
-          showSuccess(t('calendar.eventUpdated'));
-        },
-        onError: (error) => {
-          showError(error instanceof Error ? error.message : t('calendar.updateFailed'));
-        },
-      });
-    }
+    handleEventDateChangeBase({ eventId, newDate, events: allEvents });
   };
 
   if (isLoading) {

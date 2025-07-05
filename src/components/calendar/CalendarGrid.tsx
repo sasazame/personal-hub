@@ -5,6 +5,7 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSam
 import { cn } from '@/lib/cn';
 import { useTheme } from '@/hooks/useTheme';
 import { useState } from 'react';
+import { useEventDragAndDrop } from '@/hooks/useEventDragAndDrop';
 
 interface CalendarGridProps {
   currentDate: Date;
@@ -29,9 +30,16 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick, o
 
   const days = eachDayOfInterval({ start: startDate, end: endDate });
   
-  const [draggedEvent, setDraggedEvent] = useState<CalendarEvent | null>(null);
-  const [dragOverDate, setDragOverDate] = useState<Date | null>(null);
   const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
+  
+  const {
+    dragOverDate,
+    handleDragStart,
+    handleDragOver: baseDragOver,
+    handleDragEnter,
+    handleDragLeave,
+    handleDrop: baseDrop,
+  } = useEventDragAndDrop(onEventDateChange);
 
   const getEventsForDay = (date: Date) => {
     return safeEvents
@@ -87,11 +95,8 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick, o
     return expandedDates.has(dateKey);
   };
 
-  const handleDragStart = (e: React.DragEvent, event: CalendarEvent) => {
-    setDraggedEvent(event);
-    if (e.dataTransfer) {
-      e.dataTransfer.effectAllowed = 'move';
-    }
+  const handleDragStartWrapper = (e: React.DragEvent, event: CalendarEvent) => {
+    handleDragStart(e, event);
     // Add a visual effect to the dragged element
     if (e.currentTarget instanceof HTMLElement) {
       e.currentTarget.style.opacity = '0.5';
@@ -103,57 +108,15 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick, o
     if (e.currentTarget instanceof HTMLElement) {
       e.currentTarget.style.opacity = '1';
     }
-    setDraggedEvent(null);
-    setDragOverDate(null);
   };
 
   const handleDragOver = (e: React.DragEvent, date: Date) => {
-    e.preventDefault();
-    if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'move';
-    }
-    setDragOverDate(date);
-  };
-
-  const handleDragLeave = () => {
-    setDragOverDate(null);
+    baseDragOver(e);
+    handleDragEnter(date);
   };
 
   const handleDrop = (e: React.DragEvent, date: Date) => {
-    e.preventDefault();
-    
-    if (draggedEvent && draggedEvent.id && onEventDateChange) {
-      // Parse the original start time
-      const originalStart = new Date(draggedEvent.startDateTime);
-      
-      if (!draggedEvent.allDay) {
-        // For timed events, we need to preserve the exact time
-        // Extract time components from the original event
-        const hours = originalStart.getHours();
-        const minutes = originalStart.getMinutes();
-        
-        // Create new date with the target date's year, month, day
-        // but with the original event's time
-        const newStart = new Date(
-          date.getFullYear(),
-          date.getMonth(),
-          date.getDate(),
-          hours,
-          minutes,
-          0,
-          0
-        );
-        
-        onEventDateChange(draggedEvent.id, newStart);
-      } else {
-        // For all-day events, just use the date at midnight
-        const newStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
-        onEventDateChange(draggedEvent.id, newStart);
-      }
-    }
-    
-    setDraggedEvent(null);
-    setDragOverDate(null);
+    baseDrop(e, date);
   };
 
   return (
@@ -240,7 +203,7 @@ export function CalendarGrid({ currentDate, events, onDateClick, onEventClick, o
                 <div
                   key={event.id}
                   draggable={onEventDateChange !== undefined}
-                  onDragStart={(e) => handleDragStart(e, event)}
+                  onDragStart={(e) => handleDragStartWrapper(e, event)}
                   onDragEnd={handleDragEnd}
                   className={cn(
                     "text-xs p-1 rounded truncate cursor-pointer hover:opacity-80 transition-opacity",

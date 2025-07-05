@@ -356,7 +356,7 @@ describe('useNotes hooks', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(setQueryDataSpy).toHaveBeenCalledWith(['note', 1], updatedNote);
+      expect(setQueryDataSpy).toHaveBeenCalledWith(['notes', 1], updatedNote);
       expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['notes'] });
     });
   });

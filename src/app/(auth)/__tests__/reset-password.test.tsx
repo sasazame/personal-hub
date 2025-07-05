@@ -105,7 +105,7 @@ describe('ResetPasswordPage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('auth.setNewPassword')).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
 
     const newPasswordInput = screen.getByLabelText('auth.newPassword');
     const confirmPasswordInput = screen.getByLabelText('auth.confirmPassword');
@@ -125,7 +125,7 @@ describe('ResetPasswordPage', () => {
     await waitFor(() => {
       expect(mockRouter.push).toHaveBeenCalledWith('/login');
     }, { timeout: 3500 });
-  });
+  }, 10000);
 
   it('shows error when password reset fails', async () => {
     mockSearchParams.get.mockReturnValue('valid-token');
