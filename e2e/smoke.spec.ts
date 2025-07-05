@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { navigateToProtectedRoute } from './helpers/wait-helpers';
 
 test.describe('Smoke Tests', () => {
   test.beforeEach(async ({ page, context }) => {
@@ -13,12 +12,23 @@ test.describe('Smoke Tests', () => {
   });
 
   test('should load the application successfully', async ({ page }) => {
-    await navigateToProtectedRoute(page, '/');
+    // Navigate to the application
+    await page.goto('/');
+    
+    // Wait for any "Loading..." text to disappear (AuthGuard loading state)
+    await page.waitForFunction(() => {
+      const loadingElements = document.body.innerText.includes('Loading...');
+      return !loadingElements;
+    }, { timeout: 10000 });
     
     // Check basic page properties
     await expect(page).toHaveTitle(/Personal Hub/);
     
     // Since we're not authenticated, we should be redirected to login
+    // Wait for the URL to change to login page
+    await page.waitForURL(/\/login/, { timeout: 15000 });
+    
+    // Verify we're on the login page
     await expect(page).toHaveURL(/\/login/);
     
     // Check that login page loads properly - look for the login heading

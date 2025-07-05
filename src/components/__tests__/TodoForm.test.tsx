@@ -14,6 +14,7 @@ jest.mock('next-intl', () => ({
       'todo.todoStatus': 'Status',
       'todo.todoPriority': 'Priority',
       'todo.dueDate': 'Due Date',
+      'todo.todoDueDate': 'Due Date',
       'todo.statusOptions.TODO': 'TODO',
       'todo.statusOptions.IN_PROGRESS': 'In Progress',
       'todo.statusOptions.DONE': 'Done',
@@ -22,6 +23,10 @@ jest.mock('next-intl', () => ({
       'todo.priorityOptions.HIGH': 'High',
       'todo.createTodo': 'Create TODO',
       'todo.updateTodo': 'Update TODO',
+      'todo.addTodo': 'Add Todo',
+      'todo.addSubtask': 'Add Subtask',
+      'todo.newTodo': 'New Todo',
+      'todo.newSubtask': 'New Subtask',
       'todo.creating': 'Creating...',
       'todo.updating': 'Updating...',
       'common.cancel': 'Cancel',
@@ -47,11 +52,18 @@ describe('TodoForm', () => {
       />
     );
 
-    expect(screen.getByLabelText('Title *')).toBeInTheDocument();
-    expect(screen.getByLabelText('Description')).toBeInTheDocument();
-    expect(screen.getByLabelText('Status')).toBeInTheDocument();
-    expect(screen.getByLabelText('Priority')).toBeInTheDocument();
-    expect(screen.getByLabelText('Due Date')).toBeInTheDocument();
+    // Check that form fields are present by their role and name
+    expect(screen.getByRole('textbox', { name: /title/i })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /description/i })).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: /status/i })).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: /priority/i })).toBeInTheDocument();
+    
+    // Check labels are visible
+    expect(screen.getByText('Title')).toBeInTheDocument();
+    expect(screen.getByText('Description')).toBeInTheDocument();
+    expect(screen.getByText('Status')).toBeInTheDocument();
+    expect(screen.getByText('Priority')).toBeInTheDocument();
+    expect(screen.getByText('Due Date')).toBeInTheDocument();
   });
 
   it('shows validation error when title is empty', async () => {
@@ -62,7 +74,7 @@ describe('TodoForm', () => {
       />
     );
 
-    const submitButton = screen.getByText('Create TODO');
+    const submitButton = screen.getByText('Add Todo');
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -82,12 +94,12 @@ describe('TodoForm', () => {
       />
     );
 
-    await user.type(screen.getByLabelText('Title *'), 'New Todo');
-    await user.type(screen.getByLabelText('Description'), 'Todo description');
-    await user.selectOptions(screen.getByLabelText('Status'), 'IN_PROGRESS');
-    await user.selectOptions(screen.getByLabelText('Priority'), 'HIGH');
+    await user.type(screen.getByRole('textbox', { name: /title/i }), 'New Todo');
+    await user.type(screen.getByRole('textbox', { name: /description/i }), 'Todo description');
+    await user.selectOptions(screen.getByRole('combobox', { name: /status/i }), 'IN_PROGRESS');
+    await user.selectOptions(screen.getByRole('combobox', { name: /priority/i }), 'HIGH');
 
-    const submitButton = screen.getByText('Create TODO');
+    const submitButton = screen.getByText('Add Todo');
     await user.click(submitButton);
 
     await waitFor(() => {
@@ -125,7 +137,7 @@ describe('TodoForm', () => {
       />
     );
 
-    expect(screen.getByText('Creating...')).toBeDisabled();
+    expect(screen.getByText('Add Todo')).toBeDisabled();
     expect(screen.getByText('Cancel')).toBeDisabled();
   });
 
@@ -137,8 +149,8 @@ describe('TodoForm', () => {
       />
     );
 
-    expect(screen.getByLabelText('Status')).toHaveValue('TODO');
-    expect(screen.getByLabelText('Priority')).toHaveValue('MEDIUM');
+    expect(screen.getByRole('combobox', { name: /status/i })).toHaveValue('TODO');
+    expect(screen.getByRole('combobox', { name: /priority/i })).toHaveValue('MEDIUM');
   });
 
   it('has visible text in input fields', () => {
@@ -149,10 +161,11 @@ describe('TodoForm', () => {
       />
     );
 
-    const titleInput = screen.getByLabelText('Title *');
-    const descriptionTextarea = screen.getByLabelText('Description');
-    const statusSelect = screen.getByLabelText('Status');
-    const prioritySelect = screen.getByLabelText('Priority');
+    const titleInput = screen.getByRole('textbox', { name: /title/i });
+    const descriptionTextarea = screen.getByRole('textbox', { name: /description/i });
+    const statusSelect = screen.getByRole('combobox', { name: /status/i });
+    const prioritySelect = screen.getByRole('combobox', { name: /priority/i });
+    // Due date is a datetime-local input which doesn't have a role
     const dueDateInput = screen.getByLabelText('Due Date');
 
     expect(titleInput).toHaveClass('text-foreground');

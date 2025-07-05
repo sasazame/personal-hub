@@ -13,10 +13,9 @@ import {
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui';
 import type { ProductivityStats } from '@/types/analytics';
+import { ChartProps } from '@/types/common-props';
 
-interface ProductivityChartProps {
-  data: ProductivityStats;
-}
+type ProductivityChartProps = ChartProps<ProductivityStats>;
 
 export function ProductivityChart({ data }: ProductivityChartProps) {
   const t = useTranslations();

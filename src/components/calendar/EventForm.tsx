@@ -11,6 +11,8 @@ import { Switch } from '@/components/ui/switch';
 import { useGoogleAuth } from '@/hooks/useGoogleIntegration';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
 import { formatDateTimeForAPI } from '@/utils/dateFormatting';
+import { generateEventDefaultValues, DefaultDateOptions } from '@/utils/calendar/eventDefaults';
+import { getNext30MinInterval, formatDateTimeForInput } from '@/utils/calendar/dateTimeHelpers';
 
 // Schema and type will be created inside component to access translations
 
@@ -19,7 +21,7 @@ interface EventFormProps {
   onClose: () => void;
   onSubmit: (data: CreateCalendarEventDto) => void;
   event?: CalendarEvent;
-  defaultDate?: Date;
+  defaultDate?: Date & DefaultDateOptions;
   isSubmitting?: boolean;
   onDelete?: () => void;
 }
@@ -54,120 +56,7 @@ export function EventForm({ isOpen, onClose, onSubmit, event, defaultDate, isSub
     { value: 'orange', label: t('calendar.colors.orange'), class: 'bg-orange-500' },
   ];
   
-  // Helper to format datetime for input
-  const formatDateTimeForInput = (date: Date | string) => {
-    const d = typeof date === 'string' ? new Date(date) : date;
-    if (isNaN(d.getTime())) {
-      // Return current date if invalid
-      return new Date().toISOString();
-    }
-    // For DateTimeInput component, we need ISO string
-    return d.toISOString();
-  };
-  
-  // Helper to format date for HTML date input
-  const formatDateForInput = (date: Date | string) => {
-    const d = typeof date === 'string' ? new Date(date) : date;
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  // Helper to get next 30-minute interval
-  const getNext30MinInterval = (date: Date) => {
-    const minutes = date.getMinutes();
-    const hours = date.getHours();
-    
-    // Round up to next 30-minute interval
-    if (minutes === 0 || minutes === 30) {
-      // Already on a 30-minute mark, use it
-      return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes, 0, 0);
-    } else if (minutes < 30) {
-      // Round up to :30
-      return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, 30, 0, 0);
-    } else {
-      // Round up to next hour
-      return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours + 1, 0, 0, 0);
-    }
-  };
-
-  const getDefaultValues = () => {
-    if (event) {
-      return {
-        title: event.title,
-        description: event.description || '',
-        startDateTime: event.allDay ? formatDateForInput(event.startDateTime) : formatDateTimeForInput(event.startDateTime),
-        endDateTime: event.allDay ? formatDateForInput(event.endDateTime) : formatDateTimeForInput(event.endDateTime),
-        location: event.location || '',
-        allDay: event.allDay,
-        color: event.color || 'blue',
-        reminders: event.reminders || [],
-        recurrence: event.recurrence,
-        syncToGoogle: event.syncToGoogle ?? true,
-      };
-    }
-    
-    // For new events, use next 30-minute interval based on current time
-    const now = new Date();
-    let startTime = getNext30MinInterval(now);
-    let endTime = new Date(startTime.getTime() + 30 * 60 * 1000); // 30 minutes after start
-    
-    // If a specific date was clicked, use that date
-    if (defaultDate) {
-      // Check if this is an all-day event request
-      const isAllDayRequest = (defaultDate as Date & { isAllDayEvent?: boolean }).isAllDayEvent;
-      
-      // Check if this has drag selection times
-      const dragEndTime = (defaultDate as Date & { dragEndTime?: string }).dragEndTime;
-      
-      if (isAllDayRequest) {
-        // For all-day events, use the date only
-        return {
-          title: '',
-          description: '',
-          startDateTime: formatDateForInput(defaultDate),
-          endDateTime: formatDateForInput(defaultDate),
-          location: '',
-          allDay: true,
-          color: 'blue',
-          reminders: [],
-          recurrence: undefined,
-          syncToGoogle: true,
-        };
-      }
-      
-      if (dragEndTime) {
-        // This is a drag selection - use the exact times from the drag
-        startTime = new Date(defaultDate);
-        
-        // Parse the drag end time
-        const [endHour, endMinute] = dragEndTime.split(':').map(Number);
-        endTime = new Date(defaultDate);
-        endTime.setHours(endHour);
-        endTime.setMinutes(endMinute);
-        endTime.setSeconds(0);
-        endTime.setMilliseconds(0);
-      } else {
-        // Regular date click - use the provided time from defaultDate
-        startTime = new Date(defaultDate);
-        endTime = new Date(startTime.getTime() + 30 * 60 * 1000);
-      }
-    }
-    
-    return {
-      title: '',
-      description: '',
-      startDateTime: formatDateTimeForInput(startTime),
-      endDateTime: formatDateTimeForInput(endTime),
-      location: '',
-      allDay: false,
-      color: 'blue',
-      reminders: [],
-      recurrence: undefined,
-      syncToGoogle: true,
-    };
-  };
+  const getDefaultValues = () => generateEventDefaultValues(event, defaultDate);
 
   const form = useForm<EventFormData>({
     resolver: zodResolver(eventSchema),

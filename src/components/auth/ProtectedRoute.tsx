@@ -3,11 +3,10 @@
 import React from 'react';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { LoginButton } from './LoginButton';
+import { GuardProps } from '@/types/common-props';
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
+interface ProtectedRouteProps extends GuardProps {
   fallback?: React.ReactNode;
-  redirectTo?: string;
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({

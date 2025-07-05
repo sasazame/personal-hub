@@ -4,10 +4,9 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui';
 import type { StatusDistribution } from '@/types/analytics';
+import { ChartProps } from '@/types/common-props';
 
-interface TodoStatusChartProps {
-  data: StatusDistribution;
-}
+type TodoStatusChartProps = ChartProps<StatusDistribution>;
 
 const COLORS = {
   PENDING: '#FFA500',

@@ -5,13 +5,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { AuthProvider } from '@/types/auth-provider';
 import { Button } from '@/components/ui/Button';
 import { Icons } from '@/components/ui/icons';
+import { WithClassName, ButtonVariantProps } from '@/types/common-props';
 
-interface LoginButtonProps {
+interface LoginButtonProps extends WithClassName, ButtonVariantProps {
   provider?: AuthProvider;
-  className?: string;
   children?: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
 }
 
 export const LoginButton: React.FC<LoginButtonProps> = ({
