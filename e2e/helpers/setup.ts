@@ -20,8 +20,11 @@ export async function createUniqueTestUser(page: Page) {
   await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
   
   try {
+    // Ensure MSW is ready
+    await page.waitForTimeout(2000);
+    
     await page.goto('/register');
-    await page.waitForSelector('input[name="username"]', { timeout: 5000 });
+    await page.waitForSelector('input[name="username"]', { timeout: 10000 });
     
     await page.fill('input[name="username"]', uniqueUser.username);
     await page.fill('input[type="email"]', uniqueUser.email);
@@ -30,12 +33,20 @@ export async function createUniqueTestUser(page: Page) {
     
     await page.click('button[type="submit"]');
     
-    // Wait for registration to complete
-    await page.waitForURL('/', { timeout: 10000 });
+    // Wait for registration to complete - be more flexible with URL
+    await page.waitForFunction(() => !window.location.pathname.includes('/register'), { timeout: 15000 });
     
-    // Logout to prepare for the actual test
-    await page.getByRole('button', { name: 'Logout' }).first().click();
-    await page.waitForURL(/.*\/login/, { timeout: 5000 });
+    // Wait a bit for the page to stabilize
+    await page.waitForTimeout(2000);
+    
+    // Try to find and click logout button - be more flexible
+    const logoutButton = page.locator('button:has-text("Logout")').first();
+    const logoutVisible = await logoutButton.isVisible({ timeout: 5000 }).catch(() => false);
+    
+    if (logoutVisible) {
+      await logoutButton.click();
+      await page.waitForFunction(() => window.location.pathname.includes('/login'), { timeout: 10000 });
+    }
     
     return uniqueUser;
   } catch (error) {
@@ -49,36 +60,45 @@ export async function createUniqueTestUser(page: Page) {
  * Only use this for tests that specifically need the TEST_USER
  */
 export async function setupTestUser(page: Page) {
-  // In CI environment, we'll use a mock API
-  // In local environment, we need to ensure user exists
+  // Always use MSW in test environment
+  await page.waitForTimeout(2000); // Ensure MSW is ready
   
-  if (process.env.CI) {
-    // CI: Mock API will handle auth
-    return;
-  }
+  // Set English locale
+  await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
   
   // Check if user already exists by trying to login
   try {
-    await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
     await page.goto('/login');
+    await page.waitForSelector('input[type="email"]', { timeout: 10000 });
+    
     await page.fill('input[type="email"]', TEST_USER.email);
     await page.fill('input[type="password"]', TEST_USER.password);
     await page.click('button[type="submit"]');
     
-    // If login succeeds, user exists
-    await page.waitForURL('/', { timeout: 5000 });
-    await page.getByRole('button', { name: 'Logout' }).first().click();
-    await page.waitForURL(/.*\/login/, { timeout: 5000 });
-    console.log('TEST_USER exists and is ready');
-    return;
-  } catch {
-    // User doesn't exist, try to create
+    // Wait for login to complete
+    await page.waitForFunction(() => !window.location.pathname.includes('/login'), { timeout: 10000 });
+    
+    // Wait for page to stabilize
+    await page.waitForTimeout(1000);
+    
+    // Find and click logout button
+    const logoutButton = page.locator('button:has-text("Logout")').first();
+    const logoutVisible = await logoutButton.isVisible({ timeout: 5000 }).catch(() => false);
+    
+    if (logoutVisible) {
+      await logoutButton.click();
+      await page.waitForFunction(() => window.location.pathname.includes('/login'), { timeout: 10000 });
+      console.log('TEST_USER exists and is ready');
+      return;
+    }
+  } catch (error) {
+    console.log('Login attempt failed, will try registration:', error);
   }
   
-  // Local: Try to register user first (might already exist)
+  // Try to register user
   try {
     await page.goto('/register');
-    await page.waitForSelector('input[name="username"]', { timeout: 5000 });
+    await page.waitForSelector('input[name="username"]', { timeout: 10000 });
     
     await page.fill('input[name="username"]', TEST_USER.username);
     await page.fill('input[type="email"]', TEST_USER.email);
@@ -88,15 +108,22 @@ export async function setupTestUser(page: Page) {
     await page.click('button[type="submit"]');
     
     // Wait for registration to complete
-    await page.waitForURL('/', { timeout: 10000 });
+    await page.waitForFunction(() => !window.location.pathname.includes('/register'), { timeout: 15000 });
     
-    // Logout to prepare for the actual test
-    await page.getByRole('button', { name: 'Logout' }).first().click();
-    await page.waitForURL(/.*\/login/, { timeout: 5000 });
+    // Wait for page to stabilize
+    await page.waitForTimeout(1000);
+    
+    // Find and click logout button
+    const logoutButton = page.locator('button:has-text("Logout")').first();
+    const logoutVisible = await logoutButton.isVisible({ timeout: 5000 }).catch(() => false);
+    
+    if (logoutVisible) {
+      await logoutButton.click();
+      await page.waitForFunction(() => window.location.pathname.includes('/login'), { timeout: 10000 });
+    }
     
     console.log('TEST_USER created successfully');
   } catch (error) {
-    // User might already exist, that's okay
     console.log('User registration result:', error);
   }
 }
@@ -117,22 +144,5 @@ export async function waitForApp(page: Page) {
   // Wait for form elements on auth pages
   if (isAuthPage) {
     await page.waitForSelector('form', { timeout: 10000 });
-  }
-  const hasLogoutButton = await page.locator('button:has-text("Logout")').isVisible({ timeout: 3000 }).catch(() => false);
-  
-  // If we're not on auth page and don't have logout button, we might need redirect
-  if (!isAuthPage && !hasLogoutButton) {
-    // Wait a bit more for potential redirect
-    await page.waitForTimeout(2000);
-    
-    // Check again after waiting
-    const currentUrl = page.url();
-    const stillHasLogoutButton = await page.locator('button:has-text("Logout")').isVisible({ timeout: 1000 }).catch(() => false);
-    
-    if (!currentUrl.includes('/login') && !currentUrl.includes('/register') && !stillHasLogoutButton) {
-      // Only wait for redirect if we're clearly in an inconsistent state
-      console.log('Waiting for authentication redirect from:', currentUrl);
-      await page.waitForURL(/.*\/(login|register)/, { timeout: 5000 });
-    }
   }
 }

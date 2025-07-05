@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/base-test';
 import { setupTestUser, createUniqueTestUser } from './helpers/setup';
 import { ensureLoggedOut, login, TEST_USER } from './helpers/auth';
 

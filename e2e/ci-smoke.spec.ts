@@ -1,13 +1,19 @@
 import { test, expect } from '@playwright/test';
+import { navigateToProtectedRoute } from './helpers/wait-helpers';
 
 test.describe('CI Smoke Tests', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, context }) => {
+    // Clear all cookies and localStorage to ensure clean state
+    await context.clearCookies();
+    await page.goto('/');
+    await page.evaluate(() => localStorage.clear());
+    
     // Set English locale
     await page.context().addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
   });
 
   test('should load the application', async ({ page }) => {
-    await page.goto('/');
+    await navigateToProtectedRoute(page, '/');
     
     // Should redirect to login when not authenticated
     await expect(page).toHaveURL(/.*\/login/);
@@ -38,12 +44,20 @@ test.describe('CI Smoke Tests', () => {
   test('should navigate between login and register', async ({ page }) => {
     await page.goto('/login');
     
-    // Click register link
-    await page.getByRole('link', { name: /Register/i }).click();
+    // Click register link and wait for navigation
+    await Promise.all([
+      page.waitForURL(/.*\/register/),
+      page.getByRole('link', { name: /Register/i }).click()
+    ]);
+    
     await expect(page).toHaveURL(/.*\/register/);
     
-    // Click login link
-    await page.getByRole('link', { name: /Login/i }).click();
+    // Click login link and wait for navigation
+    await Promise.all([
+      page.waitForURL(/.*\/login/),
+      page.getByRole('link', { name: /Login/i }).click()
+    ]);
+    
     await expect(page).toHaveURL(/.*\/login/);
   });
 
@@ -68,18 +82,41 @@ test.describe('CI Smoke Tests', () => {
     await expect(page.getByText(/Username must be at least 3 characters/i)).toBeVisible();
   });
 
-  if (process.env.CI) {
-    test('should handle mock login', async ({ page }) => {
-      await page.goto('/login');
-      
-      // Use mock credentials
-      await page.fill('input[name="email"]', 'test@example.com');
-      await page.fill('input[name="password"]', 'Test123');
-      await page.click('button[type="submit"]');
-      
-      // Should redirect to home
-      await expect(page).toHaveURL('/');
-      await expect(page.getByRole('heading', { name: 'Personal Hub' })).toBeVisible();
-    });
-  }
+  test('should handle mock login @ci', async ({ page }) => {
+    // Skip this test if not in CI mode
+    test.skip(!process.env.CI, 'This test only runs in CI mode');
+    
+    await page.goto('/login');
+    
+    // Wait for login form to be ready
+    await page.waitForSelector('input[name="email"]', { state: 'visible' });
+    
+    // Use mock credentials
+    await page.fill('input[name="email"]', 'test@example.com');
+    await page.fill('input[name="password"]', 'Test123');
+    
+    // Click login button
+    const loginButton = page.getByRole('button', { name: /login/i });
+    await loginButton.click();
+    
+    // Wait for either navigation or error message
+    await Promise.race([
+      page.waitForURL('/', { timeout: 15000 }),
+      page.waitForSelector('.text-red-500', { timeout: 15000 }) // Error message selector
+    ]);
+    
+    // If we successfully navigated, verify we're on the dashboard
+    if (page.url().endsWith('/')) {
+      // Check for dashboard content
+      await expect(page.getByText('Welcome to Personal Hub')).toBeVisible({ timeout: 10000 });
+    } else {
+      // If login failed, log the error for debugging
+      const errorElement = await page.$('.text-red-500');
+      if (errorElement) {
+        const errorText = await errorElement.textContent();
+        console.error('Login failed with error:', errorText);
+      }
+      throw new Error('Mock login failed - check MSW handlers and credentials');
+    }
+  });
 });

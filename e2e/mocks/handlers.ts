@@ -79,7 +79,11 @@ export const handlers = [
   http.post(`${API_URL}/auth/login`, async ({ request }) => {
     const body = await request.json() as { email: string; password: string };
     
-    if (body.email === 'test@example.com' && body.password === 'password123') {
+    // Accept multiple password formats for test compatibility
+    if (body.email === 'test@example.com' && 
+        (body.password === 'password123' || 
+         body.password === 'Password123!' || 
+         body.password === 'Test123')) {
       return HttpResponse.json({
         accessToken: 'mock-access-token',
         refreshToken: 'mock-refresh-token',

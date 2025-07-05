@@ -1,21 +1,33 @@
 import { test, expect } from '@playwright/test';
+import { navigateToProtectedRoute } from './helpers/wait-helpers';
 
 test.describe('Smoke Tests', () => {
-  test('should load the application successfully', async ({ page }) => {
+  test.beforeEach(async ({ page, context }) => {
+    // Clear all cookies and localStorage to ensure clean state
+    await context.clearCookies();
     await page.goto('/');
+    await page.evaluate(() => localStorage.clear());
     
-    // Wait for DOM to be ready (networkidle is discouraged)
-    await page.waitForLoadState('domcontentloaded');
+    // Set English locale for consistent test assertions
+    await context.addCookies([{ name: 'locale', value: 'en', domain: 'localhost', path: '/' }]);
+  });
+
+  test('should load the application successfully', async ({ page }) => {
+    await navigateToProtectedRoute(page, '/');
     
     // Check basic page properties
     await expect(page).toHaveTitle(/Personal Hub/);
     
-    // Log current page content for debugging
-    console.log('Page URL:', page.url());
-    console.log('Page title:', await page.title());
+    // Since we're not authenticated, we should be redirected to login
+    await expect(page).toHaveURL(/\/login/);
     
-    // Wait for React hydration
-    await page.waitForTimeout(5000);
+    // Check that login page loads properly - look for the login heading
+    await expect(page.getByRole('heading', { name: 'Login' })).toBeVisible();
+    
+    // Also verify the login form elements are present
+    await expect(page.locator('input[name="email"]')).toBeVisible();
+    await expect(page.locator('input[name="password"]')).toBeVisible();
+    await expect(page.getByRole('button', { name: /login/i })).toBeVisible();
     
     // Check that the page doesn't show critical errors
     await expect(page.locator('body')).not.toContainText('Application error');
@@ -25,6 +37,6 @@ test.describe('Smoke Tests', () => {
     // Basic success: page loads and has content
     const hasContent = await page.locator('body').textContent();
     expect(hasContent).toBeTruthy();
-    expect(hasContent!.length).toBeGreaterThan(10); // Page has some content
+    expect(hasContent!.length).toBeGreaterThan(10);
   });
 });

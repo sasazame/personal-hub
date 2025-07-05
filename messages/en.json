@@ -305,6 +305,41 @@
       "purple": "Purple",
       "orange": "Orange"
     },
+    "weeklyView": "Weekly View",
+    "monthlyView": "Monthly View",
+    "viewMode": {
+      "monthly": "Monthly",
+      "weekly": "Weekly"
+    },
+    "dragToCreate": "Drag to create event",
+    "dragInstruction": "Click and drag to select time range",
+    "weekStartsOn": "Week starts on",
+    "weekdays": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
+    },
+    "weekdaysShort": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "time": {
+      "am": "AM",
+      "pm": "PM",
+      "hour": "hour",
+      "hours": "hours",
+      "minute": "minute",
+      "minutes": "minutes"
+    },
     "location": "Location",
     "locationPlaceholder": "Enter location",
     "googleSettings": "Google Settings",

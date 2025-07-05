@@ -1,6 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/base-test';
 import { login, logout, ensureLoggedOut, TEST_USER } from './helpers/auth';
 import { setupTestUser, waitForApp, createUniqueTestUser } from './helpers/setup';
+import { navigateToProtectedRoute } from './helpers/wait-helpers';
 
 test.describe('Authentication Flow', () => {
   test.beforeEach(async ({ page }) => {
@@ -11,8 +12,7 @@ test.describe('Authentication Flow', () => {
 
   test('should redirect unauthenticated users to login', async ({ page }) => {
     // Try to access protected route
-    await page.goto('/');
-    await waitForApp(page);
+    await navigateToProtectedRoute(page, '/');
     
     // Should be redirected to login
     await expect(page).toHaveURL(/.*\/login/);

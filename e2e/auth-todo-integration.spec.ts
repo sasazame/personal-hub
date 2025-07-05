@@ -1,4 +1,5 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from './fixtures/base-test';
+import { Page } from '@playwright/test';
 
 // Helper function to create a unique test user
 async function createTestUser(page: Page) {

@@ -61,3 +61,20 @@ export interface CalendarViewProps {
   onEventClick: (event: CalendarEvent) => void;
   onDateClick?: (date: Date) => void;
 }
+
+export interface DragSelection {
+  date: Date;
+  startTime: string; // HH:mm format
+  endTime: string; // HH:mm format
+}
+
+export interface WeeklyViewProps extends CalendarViewProps {
+  onDragSelection?: (selection: DragSelection) => void;
+  weekStartsOn?: 0 | 1; // 0 = Sunday, 1 = Monday
+}
+
+export interface TimeSlot {
+  date: Date;
+  time: string; // HH:mm format
+  events: CalendarEvent[];
+}
