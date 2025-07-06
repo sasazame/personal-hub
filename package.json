@@ -19,7 +19,7 @@
     "test:e2e:mock": "CI=true playwright test",
     "test:e2e:ci": "playwright test --config=playwright.config.ci.ts",
     "test:e2e:smoke": "playwright test smoke.spec.ts",
-    "test:e2e:ci-smoke": "CI=true playwright test ci-smoke.spec.ts",
+    "test:e2e:ci-smoke": "CI=true playwright test ci-smoke.spec.ts --config=playwright.config.ci-smoke.ts",
     "test:e2e:auth": "playwright test auth-e2e.spec.ts",
     "test:e2e:app": "playwright test app-e2e.spec.ts",
     "test:e2e:ui": "playwright test --ui",

@@ -155,31 +155,12 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium
 
-    - name: Start application and test
-      run: |
-        # Start the application in background
-        npm run start &
-        APP_PID=$!
-        
-        # Wait for app to be ready
-        echo "Waiting for app to start..."
-        for i in {1..30}; do
-          if curl -f http://localhost:3000 >/dev/null 2>&1; then
-            echo "App is ready"
-            break
-          fi
-          echo "Waiting... ($i/30)"
-          sleep 2
-        done
-        
-        # Run tests
-        npm run test:e2e:ci-smoke
-        
-        # Cleanup
-        kill $APP_PID || true
+    - name: Run E2E tests
+      run: npm run test:e2e:ci-smoke
       env:
         CI: true
-        NEXT_PUBLIC_CI: true
+        NEXT_PUBLIC_USE_MSW: 'true'
+        NODE_ENV: test
         NEXT_PUBLIC_API_URL: http://localhost:8080/api/v1
 
     - name: Upload Playwright report

@@ -12,10 +12,9 @@ import {
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui';
 import type { PriorityDistribution } from '@/types/analytics';
+import { ChartProps } from '@/types/common-props';
 
-interface PriorityChartProps {
-  data: PriorityDistribution;
-}
+type PriorityChartProps = ChartProps<PriorityDistribution>;
 
 
 const PRIORITY_COLORS = {

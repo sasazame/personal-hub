@@ -12,10 +12,9 @@ import {
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui';
 import type { TodoActivity } from '@/types/analytics';
+import { ChartProps } from '@/types/common-props';
 
-interface TodoActivityChartProps {
-  data: TodoActivity;
-}
+type TodoActivityChartProps = ChartProps<TodoActivity>;
 
 export function TodoActivityChart({ data }: TodoActivityChartProps) {
   const t = useTranslations();

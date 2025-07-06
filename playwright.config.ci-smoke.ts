@@ -1,5 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
+/**
+ * CI-specific configuration for smoke tests
+ * Only runs on Chromium to match CI browser installation
+ */
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -19,15 +23,12 @@ export default defineConfig({
     },
   ],
 
-  // CI環境では開発サーバーを手動で起動
   webServer: {
     command: 'npm run dev',
     url: 'http://localhost:3000',
-    reuseExistingServer: false,
+    reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
     env: {
-      CI: 'true',
-      NEXT_PUBLIC_CI: 'true',
       NEXT_PUBLIC_USE_MSW: 'true',
     },
   },

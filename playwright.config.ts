@@ -44,7 +44,18 @@ export default defineConfig({
     },
   ],
 
-  webServer: process.env.CI ? undefined : {
+  webServer: process.env.CI ? {
+    // CI環境: MSWを有効化して開発サーバーを起動
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: false,
+    timeout: 120 * 1000,
+    env: {
+      CI: 'true',
+      NEXT_PUBLIC_CI: 'true',
+      NEXT_PUBLIC_USE_MSW: 'true',
+    },
+  } : {
     // ローカル環境: 開発サーバーを使用
     command: 'NEXT_PUBLIC_USE_MSW=true npm run dev',
     url: 'http://localhost:3000',

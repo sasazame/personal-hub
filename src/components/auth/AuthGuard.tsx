@@ -3,11 +3,10 @@
 import { useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { GuardProps } from '@/types/common-props';
 
-interface AuthGuardProps {
-  children: ReactNode;
+interface AuthGuardProps extends GuardProps {
   fallback?: ReactNode;
-  redirectTo?: string;
 }
 
 export function AuthGuard({ 
@@ -43,10 +42,7 @@ export function AuthGuard({
   return <>{children}</>;
 }
 
-interface GuestGuardProps {
-  children: ReactNode;
-  redirectTo?: string;
-}
+type GuestGuardProps = GuardProps;
 
 export function GuestGuard({ 
   children, 

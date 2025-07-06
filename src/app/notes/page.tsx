@@ -41,7 +41,7 @@ function NotesPage() {
         showSuccess(t('notes.noteCreated'));
         setIsFormOpen(false);
       },
-      onError: (error) => {
+      onError: (error: Error) => {
         showError(error instanceof Error ? error.message : t('notes.createFailed'));
       },
     });
@@ -56,7 +56,7 @@ function NotesPage() {
           setSelectedNote(null);
           setViewingNote(null);
         },
-        onError: (error) => {
+        onError: (error: Error) => {
           showError(error instanceof Error ? error.message : t('notes.updateFailed'));
         },
       });
@@ -71,7 +71,7 @@ function NotesPage() {
           setNoteToDelete(null);
           setViewingNote(null);
         },
-        onError: (error) => {
+        onError: (error: Error) => {
           showError(error instanceof Error ? error.message : t('notes.deleteFailed'));
         },
       });
