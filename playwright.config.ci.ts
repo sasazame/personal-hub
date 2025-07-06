@@ -28,6 +28,7 @@ export default defineConfig({
     env: {
       CI: 'true',
       NEXT_PUBLIC_CI: 'true',
+      NEXT_PUBLIC_USE_MSW: 'true',
     },
   },
 });

@@ -86,10 +86,48 @@ test.describe('CI Smoke Tests', () => {
     // Skip this test if not in CI mode
     test.skip(!process.env.CI, 'This test only runs in CI mode');
     
+    // Add console logging
+    page.on('console', msg => {
+      if (msg.type() === 'error') {
+        console.error('PAGE ERROR:', msg.text());
+      }
+    });
+    
+    // Monitor network requests
+    page.on('request', request => {
+      if (request.url().includes('/auth/login')) {
+        console.log('Login request:', request.method(), request.url());
+      }
+    });
+    
+    page.on('response', response => {
+      if (response.url().includes('/auth/login')) {
+        console.log('Login response:', response.status(), response.url());
+      }
+    });
+    
     await page.goto('/login');
     
     // Wait for login form to be ready
     await page.waitForSelector('input[name="email"]', { state: 'visible' });
+    
+    // Check if MSW is initialized
+    const mswReady = await page.evaluate(() => {
+      return new Promise((resolve) => {
+        // Check if service worker is registered
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(registrations => {
+            const hasMSW = registrations.some(reg => reg.active?.scriptURL.includes('mockServiceWorker'));
+            console.log('MSW service worker registered:', hasMSW);
+            resolve(hasMSW);
+          });
+        } else {
+          resolve(false);
+        }
+      });
+    });
+    
+    console.log('MSW ready:', mswReady);
     
     // Use mock credentials
     await page.fill('input[name="email"]', 'test@example.com');
@@ -100,23 +138,42 @@ test.describe('CI Smoke Tests', () => {
     await loginButton.click();
     
     // Wait for either navigation or error message
-    await Promise.race([
-      page.waitForURL('/', { timeout: 15000 }),
-      page.waitForSelector('.text-red-500', { timeout: 15000 }) // Error message selector
+    const result = await Promise.race([
+      page.waitForURL('/', { timeout: 15000 }).then(() => 'success'),
+      page.waitForSelector('.text-red-500', { timeout: 15000 }).then(() => 'error'),
+      page.waitForTimeout(15000).then(() => 'timeout')
     ]);
     
+    console.log('Login result:', result);
+    console.log('Current URL:', page.url());
+    
+    // Check localStorage for auth data
+    const authData = await page.evaluate(() => ({
+      accessToken: localStorage.getItem('accessToken'),
+      user: localStorage.getItem('user')
+    }));
+    console.log('Auth data:', authData);
+    
     // If we successfully navigated, verify we're on the dashboard
-    if (page.url().endsWith('/')) {
-      // Check for dashboard content
-      await expect(page.getByText('Welcome to Personal Hub')).toBeVisible({ timeout: 10000 });
-    } else {
+    if (result === 'success') {
+      // Verify we navigated away from login page
+      expect(page.url()).not.toContain('/login');
+      
+      // Verify auth data was stored
+      expect(authData.accessToken).toBe('mock-access-token');
+      expect(authData.user).toBeTruthy();
+      
+      console.log('Login test passed - successfully authenticated and navigated');
+    } else if (result === 'error') {
       // If login failed, log the error for debugging
       const errorElement = await page.$('.text-red-500');
       if (errorElement) {
         const errorText = await errorElement.textContent();
         console.error('Login failed with error:', errorText);
       }
-      throw new Error('Mock login failed - check MSW handlers and credentials');
+      throw new Error('Mock login failed - authentication error displayed');
+    } else {
+      throw new Error(`Mock login failed with result: ${result} - request timed out`);
     }
   });
 });
