@@ -15,14 +15,14 @@ const getTagColorStyle = (tag: string, isSelected: boolean) => {
   if (!isSelected) return {};
   
   const tagColorMap: { [key: string]: { bg: string; text: string } } = {
-    Ideas: { bg: 'rgb(243 232 255)', text: 'rgb(109 40 217)' },
-    Discoveries: { bg: 'rgb(219 234 254)', text: 'rgb(29 78 216)' },
-    Emotions: { bg: 'rgb(252 231 243)', text: 'rgb(190 24 93)' },
-    Log: { bg: 'rgb(220 252 231)', text: 'rgb(21 128 61)' },
+    Ideas: { bg: 'var(--tag-ideas-bg)', text: 'var(--tag-ideas-text)' },
+    Discoveries: { bg: 'var(--tag-discoveries-bg)', text: 'var(--tag-discoveries-text)' },
+    Emotions: { bg: 'var(--tag-emotions-bg)', text: 'var(--tag-emotions-text)' },
+    Log: { bg: 'var(--tag-log-bg)', text: 'var(--tag-log-text)' },
     Other: { bg: 'var(--color-neutral-100)', text: 'var(--color-neutral-700)' },
   };
   
-  const colors = tagColorMap[tag] || { bg: 'var(--color-neutral-100)', text: 'var(--color-neutral-700)' };
+  const colors = tagColorMap[tag] || { bg: 'var(--tag-default-bg)', text: 'var(--tag-default-text)' };
   return {
     backgroundColor: colors.bg,
     color: colors.text,
@@ -133,7 +133,7 @@ export function MomentQuickForm({ onSubmit, isSubmitting }: MomentQuickFormProps
                 <span
                   key={tag}
                   className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium"
-                  style={{ backgroundColor: 'rgb(199 210 254)', color: 'rgb(67 56 202)' }}
+                  style={{ backgroundColor: 'var(--tag-custom-bg)', color: 'var(--tag-custom-text)' }}
                 >
                   <Hash className="w-3 h-3" />
                   {tag}

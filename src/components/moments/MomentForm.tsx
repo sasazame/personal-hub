@@ -129,6 +129,14 @@ export function MomentForm({ isOpen, onClose, onSubmit, moment, isSubmitting }: 
     }
   };
 
+  const getSubmitButtonText = () => {
+    const isLoading = isFormSubmitting || isSubmitting;
+    if (moment) {
+      return isLoading ? t('moments.updating') : t('moments.update');
+    }
+    return isLoading ? t('moments.creating') : t('moments.create');
+  };
+
   return (
     <Modal open={isOpen} onClose={handleClose} size="md">
       <div className="p-6">
@@ -255,7 +263,7 @@ export function MomentForm({ isOpen, onClose, onSubmit, moment, isSubmitting }: 
               type="submit"
               disabled={isFormSubmitting || isSubmitting}
             >
-              {(isFormSubmitting || isSubmitting) ? (moment ? t('moments.updating') : t('moments.creating')) : moment ? t('moments.update') : t('moments.create')}
+              {getSubmitButtonText()}
             </Button>
           </div>
         </form>

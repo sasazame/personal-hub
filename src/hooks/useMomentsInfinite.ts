@@ -37,15 +37,22 @@ export function useMomentsInfinite(filters?: MomentFilters) {
         return response;
       }
       
-      // For other filters, we need to get all and manually paginate
-      // This is not ideal but works with the current API
+      // LIMITATION: For search and tag filters, we fetch all moments and manually paginate
+      // This approach has several issues:
+      // 1. Performance: Fetches all data upfront instead of paginating server-side
+      // 2. Memory: Large datasets can cause memory issues
+      // 3. getAllMoments() has a hardcoded limit of 1000 moments
+      // TODO: Implement server-side pagination for search and tag endpoints
       let allMoments = [];
       
       if (filters?.search && filters?.tags && filters.tags.length > 0) {
+        // LIMITATION: Only uses the first tag when multiple tags are provided
+        // TODO: Implement multi-tag filtering support in the backend
         allMoments = await momentsService.searchMoments(filters.search, filters.tags[0]);
       } else if (filters?.search) {
         allMoments = await momentsService.searchMoments(filters.search);
       } else if (filters?.tags && filters.tags.length > 0) {
+        // LIMITATION: Only uses the first tag when multiple tags are provided
         allMoments = await momentsService.getMomentsByTag(filters.tags[0]);
       } else {
         allMoments = await momentsService.getAllMoments();

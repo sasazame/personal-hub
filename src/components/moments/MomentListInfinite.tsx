@@ -7,6 +7,7 @@ import { format, isToday, isYesterday, formatDistanceToNow } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { Edit, Trash2, Tag, Clock, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { groupMomentsByDate, getSortedDateKeys } from '@/utils/momentUtils';
 
 interface MomentListInfiniteProps {
   pages?: Array<{
@@ -83,18 +84,10 @@ export function MomentListInfinite({
   }
 
   // Group moments by date
-  const groupedMoments = moments.reduce((groups, moment) => {
-    const date = moment.createdAt ? new Date(moment.createdAt) : new Date();
-    const dateKey = format(date, 'yyyy-MM-dd');
-    if (!groups[dateKey]) {
-      groups[dateKey] = [];
-    }
-    groups[dateKey].push(moment);
-    return groups;
-  }, {} as Record<string, Moment[]>);
+  const groupedMoments = groupMomentsByDate(moments);
 
   // Sort dates in descending order
-  const sortedDates = Object.keys(groupedMoments).sort((a, b) => b.localeCompare(a));
+  const sortedDates = getSortedDateKeys(groupedMoments);
 
   const formatDateHeader = (dateString: string) => {
     const date = new Date(dateString);
@@ -117,14 +110,14 @@ export function MomentListInfinite({
 
   const getTagColorStyle = (tag: string) => {
     const colorMap: { [key: string]: { bg: string; text: string } } = {
-      Ideas: { bg: 'rgb(243 232 255)', text: 'rgb(109 40 217)' },
-      Discoveries: { bg: 'rgb(219 234 254)', text: 'rgb(29 78 216)' },
-      Emotions: { bg: 'rgb(252 231 243)', text: 'rgb(190 24 93)' },
-      Log: { bg: 'rgb(220 252 231)', text: 'rgb(21 128 61)' },
+      Ideas: { bg: 'var(--tag-ideas-bg)', text: 'var(--tag-ideas-text)' },
+      Discoveries: { bg: 'var(--tag-discoveries-bg)', text: 'var(--tag-discoveries-text)' },
+      Emotions: { bg: 'var(--tag-emotions-bg)', text: 'var(--tag-emotions-text)' },
+      Log: { bg: 'var(--tag-log-bg)', text: 'var(--tag-log-text)' },
       Other: { bg: 'var(--color-neutral-100)', text: 'var(--color-neutral-700)' },
     };
     
-    const colors = colorMap[tag] || { bg: 'rgb(254 215 170)', text: 'rgb(194 65 12)' };
+    const colors = colorMap[tag] || { bg: 'var(--tag-default-bg)', text: 'var(--tag-default-text)' };
     return {
       backgroundColor: colors.bg,
       color: colors.text,

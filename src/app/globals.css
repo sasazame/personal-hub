@@ -184,6 +184,20 @@
   --status-in-progress-text: var(--color-primary-700);
   --status-completed-bg: var(--color-success-50);
   --status-completed-text: var(--color-success-900);
+
+  /* Tag Colors */
+  --tag-ideas-bg: #f3e8ff;
+  --tag-ideas-text: #6d28d9;
+  --tag-discoveries-bg: #dbeafe;
+  --tag-discoveries-text: #1d4ed8;
+  --tag-emotions-bg: #fce7f3;
+  --tag-emotions-text: #be185d;
+  --tag-log-bg: #dcfce7;
+  --tag-log-text: #15803d;
+  --tag-default-bg: #fed7aa;
+  --tag-default-text: #c2410c;
+  --tag-custom-bg: #c7d2fe;
+  --tag-custom-text: #4338ca;
 }
 
 [data-theme="dark"] {
@@ -225,6 +239,20 @@
   --status-in-progress-text: #93c5fd;
   --status-completed-bg: #14532d;
   --status-completed-text: #86efac;
+
+  /* Tag Colors - Dark Mode */
+  --tag-ideas-bg: #4c1d95;
+  --tag-ideas-text: #ddd6fe;
+  --tag-discoveries-bg: #1e3a8a;
+  --tag-discoveries-text: #bfdbfe;
+  --tag-emotions-bg: #831843;
+  --tag-emotions-text: #fbcfe8;
+  --tag-log-bg: #14532d;
+  --tag-log-text: #bbf7d0;
+  --tag-default-bg: #7c2d12;
+  --tag-default-text: #fed7aa;
+  --tag-custom-bg: #312e81;
+  --tag-custom-text: #c7d2fe;
 
   /* Additional theme colors for dark mode */
   --color-background: #0f172a;

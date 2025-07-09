@@ -5,6 +5,7 @@ import { Card } from '@/components/ui';
 import { format, isToday, isYesterday, formatDistanceToNow } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { Edit, Trash2, Tag, Clock } from 'lucide-react';
+import { groupMomentsByDate, getSortedDateKeys } from '@/utils/momentUtils';
 
 interface MomentListProps {
   moments: Moment[];
@@ -26,18 +27,10 @@ export function MomentList({ moments, onMomentClick, onEditMoment, onDeleteMomen
   }
 
   // Group moments by date
-  const groupedMoments = moments.reduce((groups, moment) => {
-    const date = moment.createdAt ? new Date(moment.createdAt) : new Date();
-    const dateKey = format(date, 'yyyy-MM-dd');
-    if (!groups[dateKey]) {
-      groups[dateKey] = [];
-    }
-    groups[dateKey].push(moment);
-    return groups;
-  }, {} as Record<string, Moment[]>);
+  const groupedMoments = groupMomentsByDate(moments);
 
   // Sort dates in descending order
-  const sortedDates = Object.keys(groupedMoments).sort((a, b) => b.localeCompare(a));
+  const sortedDates = getSortedDateKeys(groupedMoments);
 
   const formatDateHeader = (dateString: string) => {
     const date = new Date(dateString);

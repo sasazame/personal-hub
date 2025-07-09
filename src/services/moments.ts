@@ -18,6 +18,9 @@ export const momentsService = {
   },
 
   // Get all moments as array (for compatibility)
+  // LIMITATION: This method has a hardcoded limit of 1000 moments
+  // This can cause issues with large datasets where moments beyond the 1000th won't be retrieved
+  // TODO: Consider implementing a paginated approach or remove this limitation
   async getAllMoments(): Promise<Moment[]> {
     const response = await this.getMoments(0, 1000);
     return response.content;

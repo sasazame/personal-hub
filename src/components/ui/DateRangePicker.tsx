@@ -53,9 +53,18 @@ export function DateRangePicker({
 
   const handleApply = () => {
     if (isEnabled && localStartDate && localEndDate) {
+      const start = new Date(localStartDate);
+      const end = new Date(localEndDate);
+      
+      // Validate that end date is not before start date
+      if (end < start) {
+        alert(t('validation.endDateBeforeStartDate'));
+        return;
+      }
+      
       onChange({
-        startDate: new Date(localStartDate),
-        endDate: new Date(localEndDate),
+        startDate: start,
+        endDate: end,
       });
     } else {
       onChange({
@@ -143,7 +152,14 @@ export function DateRangePicker({
                   <input
                     type="date"
                     value={localStartDate}
-                    onChange={(e) => setLocalStartDate(e.target.value)}
+                    onChange={(e) => {
+                      setLocalStartDate(e.target.value);
+                      // Auto-adjust end date if it's before the new start date
+                      if (localEndDate && new Date(e.target.value) > new Date(localEndDate)) {
+                        setLocalEndDate(e.target.value);
+                      }
+                    }}
+                    max={localEndDate || undefined}
                     className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                 </div>
@@ -155,7 +171,14 @@ export function DateRangePicker({
                   <input
                     type="date"
                     value={localEndDate}
-                    onChange={(e) => setLocalEndDate(e.target.value)}
+                    onChange={(e) => {
+                      setLocalEndDate(e.target.value);
+                      // Auto-adjust start date if it's after the new end date
+                      if (localStartDate && new Date(e.target.value) < new Date(localStartDate)) {
+                        setLocalStartDate(e.target.value);
+                      }
+                    }}
+                    min={localStartDate || undefined}
                     className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                 </div>
