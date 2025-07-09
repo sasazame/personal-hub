@@ -259,7 +259,8 @@
     "email": "有効なメールアドレスを入力してください",
     "minLength": "最低{min}文字必要です",
     "maxLength": "最大{max}文字まで可能です",
-    "passwordStrength": "パスワードは8文字以上で、大文字・小文字・数字を含む必要があります"
+    "passwordStrength": "パスワードは8文字以上で、大文字・小文字・数字を含む必要があります",
+    "endDateBeforeStartDate": "終了日は開始日より後に設定してください"
   },
   "passwordStrength": {
     "label": "パスワード強度",

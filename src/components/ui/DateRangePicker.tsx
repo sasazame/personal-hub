@@ -29,6 +29,7 @@ export function DateRangePicker({
     endDate ? format(endDate, 'yyyy-MM-dd') : ''
   );
   const [isEnabled, setIsEnabled] = useState(!!startDate || !!endDate);
+  const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -58,15 +59,17 @@ export function DateRangePicker({
       
       // Validate that end date is not before start date
       if (end < start) {
-        alert(t('validation.endDateBeforeStartDate'));
+        setError(t('validation.endDateBeforeStartDate'));
         return;
       }
       
+      setError(null);
       onChange({
         startDate: start,
         endDate: end,
       });
     } else {
+      setError(null);
       onChange({
         startDate: undefined,
         endDate: undefined,
@@ -90,6 +93,7 @@ export function DateRangePicker({
     setLocalStartDate('');
     setLocalEndDate('');
     setIsEnabled(false);
+    setError(null);
     onChange({
       startDate: undefined,
       endDate: undefined,
@@ -154,6 +158,7 @@ export function DateRangePicker({
                     value={localStartDate}
                     onChange={(e) => {
                       setLocalStartDate(e.target.value);
+                      setError(null); // Clear error when user changes date
                       // Auto-adjust end date if it's before the new start date
                       if (localEndDate && new Date(e.target.value) > new Date(localEndDate)) {
                         setLocalEndDate(e.target.value);
@@ -173,6 +178,7 @@ export function DateRangePicker({
                     value={localEndDate}
                     onChange={(e) => {
                       setLocalEndDate(e.target.value);
+                      setError(null); // Clear error when user changes date
                       // Auto-adjust start date if it's after the new end date
                       if (localStartDate && new Date(e.target.value) < new Date(localStartDate)) {
                         setLocalStartDate(e.target.value);
@@ -183,6 +189,12 @@ export function DateRangePicker({
                   />
                 </div>
               </>
+            )}
+
+            {error && (
+              <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
+                {error}
+              </div>
             )}
 
             <div className="flex gap-2 justify-end pt-2 border-t border-border">

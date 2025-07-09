@@ -48,7 +48,7 @@ function MomentsPage() {
     isFetchingNextPage,
     isLoading,
     error 
-  } = useMomentsInfinite(currentFilters);
+  } = useMomentsInfinite({ filters: currentFilters });
   
   const { data: tags = [] } = useMomentTags();
   const createMutation = useCreateMoment();

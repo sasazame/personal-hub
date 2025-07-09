@@ -2,7 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { Moment, MomentFilters } from '@/types/moment';
 import { momentsService } from '@/services/moments';
 
-const PAGE_SIZE = 50;
+const DEFAULT_PAGE_SIZE = 50;
 
 interface PagedResponse {
   content: Moment[];
@@ -21,9 +21,14 @@ interface PagedResponse {
   last: boolean;
 }
 
-export function useMomentsInfinite(filters?: MomentFilters) {
+interface UseMomentsInfiniteOptions {
+  filters?: MomentFilters;
+  pageSize?: number;
+}
+
+export function useMomentsInfinite({ filters, pageSize = DEFAULT_PAGE_SIZE }: UseMomentsInfiniteOptions = {}) {
   return useInfiniteQuery<PagedResponse>({
-    queryKey: ['moments', 'infinite', filters],
+    queryKey: ['moments', 'infinite', filters, pageSize],
     initialPageParam: 0,
     queryFn: async ({ pageParam }) => {
       // If we have date range filters, use the paginated endpoint
@@ -32,7 +37,7 @@ export function useMomentsInfinite(filters?: MomentFilters) {
           filters.startDate,
           filters.endDate,
           pageParam as number,
-          PAGE_SIZE
+          pageSize
         );
         return response;
       }
@@ -59,17 +64,17 @@ export function useMomentsInfinite(filters?: MomentFilters) {
       }
       
       // Manually paginate
-      const start = (pageParam as number) * PAGE_SIZE;
-      const end = start + PAGE_SIZE;
+      const start = (pageParam as number) * pageSize;
+      const end = start + pageSize;
       const content = allMoments.slice(start, end);
       
       return {
         content,
         totalElements: allMoments.length,
-        totalPages: Math.ceil(allMoments.length / PAGE_SIZE),
+        totalPages: Math.ceil(allMoments.length / pageSize),
         pageable: {
           pageNumber: pageParam as number,
-          pageSize: PAGE_SIZE,
+          pageSize: pageSize,
           sort: {
             sorted: true,
             direction: 'desc',

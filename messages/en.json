@@ -259,7 +259,8 @@
     "email": "Please enter a valid email address",
     "minLength": "Minimum {min} characters required",
     "maxLength": "Maximum {max} characters allowed",
-    "passwordStrength": "Password must be at least 8 characters long and contain uppercase, lowercase, and numbers"
+    "passwordStrength": "Password must be at least 8 characters long and contain uppercase, lowercase, and numbers",
+    "endDateBeforeStartDate": "End date cannot be before start date"
   },
   "passwordStrength": {
     "label": "Password Strength",

@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui';
 import { CreateMomentDto, DEFAULT_MOMENT_TAGS } from '@/types/moment';
 import { Send, Tag, Hash } from 'lucide-react';
+import { getTagColorStyle as getTagColorStyleUtil } from '@/utils/momentUtils';
 
 interface MomentQuickFormProps {
   onSubmit: (data: CreateMomentDto) => void;
@@ -13,20 +14,7 @@ interface MomentQuickFormProps {
 
 const getTagColorStyle = (tag: string, isSelected: boolean) => {
   if (!isSelected) return {};
-  
-  const tagColorMap: { [key: string]: { bg: string; text: string } } = {
-    Ideas: { bg: 'var(--tag-ideas-bg)', text: 'var(--tag-ideas-text)' },
-    Discoveries: { bg: 'var(--tag-discoveries-bg)', text: 'var(--tag-discoveries-text)' },
-    Emotions: { bg: 'var(--tag-emotions-bg)', text: 'var(--tag-emotions-text)' },
-    Log: { bg: 'var(--tag-log-bg)', text: 'var(--tag-log-text)' },
-    Other: { bg: 'var(--color-neutral-100)', text: 'var(--color-neutral-700)' },
-  };
-  
-  const colors = tagColorMap[tag] || { bg: 'var(--tag-default-bg)', text: 'var(--tag-default-text)' };
-  return {
-    backgroundColor: colors.bg,
-    color: colors.text,
-  };
+  return getTagColorStyleUtil(tag);
 };
 
 export function MomentQuickForm({ onSubmit, isSubmitting }: MomentQuickFormProps) {

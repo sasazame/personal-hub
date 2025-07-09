@@ -9,6 +9,7 @@ import { Moment, CreateMomentDto, DEFAULT_MOMENT_TAGS } from '@/types/moment';
 import { Button, TextArea, Modal } from '@/components/ui';
 import { X, Plus, Tag } from 'lucide-react';
 import { useFormSubmit } from '@/hooks/useFormSubmit';
+import { getTagColorClasses } from '@/utils/momentUtils';
 
 interface MomentFormProps {
   isOpen: boolean;
@@ -111,23 +112,6 @@ export function MomentForm({ isOpen, onClose, onSubmit, moment, isSubmitting }: 
     }
   };
 
-  const getTagColor = (tag: string) => {
-    switch (tag) {
-      case 'Ideas':
-        return 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800';
-      case 'Discoveries':
-        return 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800';
-      case 'Emotions':
-        return 'bg-pink-100 dark:bg-pink-900 text-pink-700 dark:text-pink-300 hover:bg-pink-200 dark:hover:bg-pink-800';
-      case 'Log':
-        return 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800';
-      case 'Other':
-        return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700';
-      default:
-        // Custom tags
-        return 'bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300';
-    }
-  };
 
   const getSubmitButtonText = () => {
     const isLoading = isFormSubmitting || isSubmitting;
@@ -175,7 +159,7 @@ export function MomentForm({ isOpen, onClose, onSubmit, moment, isSubmitting }: 
                   onClick={() => toggleTag(tag)}
                   className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-colors ${
                     tags.includes(tag) 
-                      ? getTagColor(tag) + ' ring-2 ring-offset-1 ring-blue-500 dark:ring-blue-400'
+                      ? getTagColorClasses(tag, true) + ' ring-2 ring-offset-1 ring-blue-500 dark:ring-blue-400'
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                   }`}
                 >
@@ -191,7 +175,7 @@ export function MomentForm({ isOpen, onClose, onSubmit, moment, isSubmitting }: 
                 {tags.filter(tag => !(DEFAULT_MOMENT_TAGS as readonly string[]).includes(tag)).map((tag) => (
                   <span
                     key={tag}
-                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm ${getTagColor(tag)}`}
+                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm ${getTagColorClasses(tag)}`}
                   >
                     <Tag className="w-3 h-3" />
                     {tag}

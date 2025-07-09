@@ -3,11 +3,9 @@
 import { useEffect, useRef } from 'react';
 import { Moment } from '@/types/moment';
 import { Card } from '@/components/ui';
-import { format, isToday, isYesterday, formatDistanceToNow } from 'date-fns';
-import { ja } from 'date-fns/locale';
 import { Edit, Trash2, Tag, Clock, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { groupMomentsByDate, getSortedDateKeys } from '@/utils/momentUtils';
+import { groupMomentsByDate, getSortedDateKeys, formatDateHeader, formatTime, getTagColorStyle } from '@/utils/momentUtils';
 
 interface MomentListInfiniteProps {
   pages?: Array<{
@@ -89,40 +87,7 @@ export function MomentListInfinite({
   // Sort dates in descending order
   const sortedDates = getSortedDateKeys(groupedMoments);
 
-  const formatDateHeader = (dateString: string) => {
-    const date = new Date(dateString);
-    if (isToday(date)) {
-      return t('common.today');
-    }
-    if (isYesterday(date)) {
-      return t('common.yesterday');
-    }
-    return format(date, 'M月d日 (E)', { locale: ja });
-  };
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    if (isToday(date)) {
-      return formatDistanceToNow(date, { addSuffix: true, locale: ja });
-    }
-    return format(date, 'HH:mm');
-  };
-
-  const getTagColorStyle = (tag: string) => {
-    const colorMap: { [key: string]: { bg: string; text: string } } = {
-      Ideas: { bg: 'var(--tag-ideas-bg)', text: 'var(--tag-ideas-text)' },
-      Discoveries: { bg: 'var(--tag-discoveries-bg)', text: 'var(--tag-discoveries-text)' },
-      Emotions: { bg: 'var(--tag-emotions-bg)', text: 'var(--tag-emotions-text)' },
-      Log: { bg: 'var(--tag-log-bg)', text: 'var(--tag-log-text)' },
-      Other: { bg: 'var(--color-neutral-100)', text: 'var(--color-neutral-700)' },
-    };
-    
-    const colors = colorMap[tag] || { bg: 'var(--tag-default-bg)', text: 'var(--tag-default-text)' };
-    return {
-      backgroundColor: colors.bg,
-      color: colors.text,
-    };
-  };
 
   return (
     <div className="space-y-6">
@@ -130,7 +95,7 @@ export function MomentListInfinite({
         <div key={dateKey}>
           {/* Date Header */}
           <h3 className="text-lg font-semibold text-foreground mb-3 sticky top-0 bg-background z-10 py-2">
-            {formatDateHeader(dateKey)}
+            {formatDateHeader(dateKey, t)}
           </h3>
           
           {/* Moments for this date */}
