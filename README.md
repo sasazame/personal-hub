@@ -12,6 +12,7 @@ A modern, integrated workspace application designed to enhance personal producti
 - **📝 TODO Management** - Advanced task tracking with priorities, subtasks, and status management
 - **📅 Calendar** - Event scheduling with drag-and-drop, color categorization, and recurring events
 - **📒 Notes** - Rich text editor with categories, tags, and full-text search
+- **⏰ Moments** - Timeline-based capture of thoughts, ideas, and discoveries with smart tagging
 - **📊 Dashboard** - Real-time overview of all activities with progress tracking
 - **🎯 Goals** - Goal setting and achievement tracking with calendar integration
 - **📈 Analytics** - Productivity insights and reporting
