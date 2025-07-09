@@ -68,7 +68,7 @@ function MomentsPage() {
   };
 
   const handleUpdateMoment = (data: UpdateMomentDto) => {
-    if (selectedMoment && selectedMoment.id) {
+    if (selectedMoment?.id) {
       updateMutation.mutate({ id: selectedMoment.id, data }, {
         onSuccess: () => {
           showSuccess(t('moments.momentUpdated'));
@@ -84,7 +84,7 @@ function MomentsPage() {
   };
 
   const handleDeleteMoment = () => {
-    if (momentToDelete && momentToDelete.id) {
+    if (momentToDelete?.id) {
       deleteMutation.mutate(momentToDelete.id, {
         onSuccess: () => {
           showSuccess(t('moments.momentDeleted'));
