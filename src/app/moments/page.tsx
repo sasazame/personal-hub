@@ -270,7 +270,7 @@ function MomentsPage() {
               <p className="text-muted-foreground">
                 {t('moments.confirmDelete')}
               </p>
-              <div className="text-sm bg-gray-50 dark:bg-gray-800 rounded p-3 mt-2">
+              <div className="text-sm bg-muted rounded p-3 mt-2">
                 &quot;{momentToDelete.content.substring(0, PREVIEW_LENGTH)}{momentToDelete.content.length > PREVIEW_LENGTH ? '...' : ''}&quot;
               </div>
               <div className="flex gap-3 justify-end">

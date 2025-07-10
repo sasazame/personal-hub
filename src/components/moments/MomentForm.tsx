@@ -159,8 +159,8 @@ export function MomentForm({ isOpen, onClose, onSubmit, moment, isSubmitting }: 
                   onClick={() => toggleTag(tag)}
                   className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-colors ${
                     tags.includes(tag) 
-                      ? getTagColorClasses(tag, true) + ' ring-2 ring-offset-1 ring-blue-500 dark:ring-blue-400'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                      ? getTagColorClasses(tag, true) + ' ring-2 ring-offset-1 ring-primary'
+                      : 'bg-muted text-muted-foreground hover:bg-accent'
                   }`}
                 >
                   <Tag className="w-3 h-3" />
@@ -226,7 +226,7 @@ export function MomentForm({ isOpen, onClose, onSubmit, moment, isSubmitting }: 
               <button
                 type="button"
                 onClick={() => setShowCustomTagInput(true)}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm bg-muted text-muted-foreground hover:bg-accent transition-colors"
               >
                 <Plus className="w-3 h-3" />
                 {t('moments.addCustomTag')}

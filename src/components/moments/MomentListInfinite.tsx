@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { Moment } from '@/types/moment';
 import { Card } from '@/components/ui';
 import { Edit, Trash2, Tag, Clock, Loader2 } from 'lucide-react';
@@ -37,6 +37,26 @@ export function MomentListInfinite({
 
   // Flatten all moments from pages
   const moments = pages.flatMap(page => page.content || []);
+
+  // Group moments by date and sort them
+  const { groupedMoments, sortedDates } = useMemo(() => {
+    if (!moments || moments.length === 0) {
+      return { groupedMoments: {}, sortedDates: [] };
+    }
+    
+    const grouped = groupMomentsByDate(moments);
+    const sorted = getSortedDateKeys(grouped);
+    
+    // Pre-sort moments within each date group
+    const sortedGrouped: Record<string, Moment[]> = {};
+    for (const dateKey of sorted) {
+      sortedGrouped[dateKey] = grouped[dateKey].sort((a, b) => 
+        new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime()
+      );
+    }
+    
+    return { groupedMoments: sortedGrouped, sortedDates: sorted };
+  }, [moments]);
 
   // Set up intersection observer for infinite scrolling
   useEffect(() => {
@@ -81,11 +101,6 @@ export function MomentListInfinite({
     );
   }
 
-  // Group moments by date
-  const groupedMoments = groupMomentsByDate(moments);
-
-  // Sort dates in descending order
-  const sortedDates = getSortedDateKeys(groupedMoments);
 
 
 
@@ -100,9 +115,7 @@ export function MomentListInfinite({
           
           {/* Moments for this date */}
           <div className="space-y-3">
-            {groupedMoments[dateKey]
-              .sort((a, b) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime())
-              .map((moment) => (
+            {groupedMoments[dateKey].map((moment) => (
                 <Card 
                   key={moment.id} 
                   className="p-4 cursor-pointer hover:shadow-md transition-all group relative timeline-card"

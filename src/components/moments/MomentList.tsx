@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Moment } from '@/types/moment';
 import { Card } from '@/components/ui';
 import { Edit, Trash2, Tag, Clock } from 'lucide-react';
@@ -13,6 +14,26 @@ interface MomentListProps {
 }
 
 export function MomentList({ moments, onMomentClick, onEditMoment, onDeleteMoment }: MomentListProps) {
+  // Group moments by date and sort them
+  const { groupedMoments, sortedDates } = useMemo(() => {
+    if (!moments || !Array.isArray(moments) || moments.length === 0) {
+      return { groupedMoments: {}, sortedDates: [] };
+    }
+    
+    const grouped = groupMomentsByDate(moments);
+    const sorted = getSortedDateKeys(grouped);
+    
+    // Pre-sort moments within each date group
+    const sortedGrouped: Record<string, Moment[]> = {};
+    for (const dateKey of sorted) {
+      sortedGrouped[dateKey] = grouped[dateKey].sort((a, b) => 
+        new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime()
+      );
+    }
+    
+    return { groupedMoments: sortedGrouped, sortedDates: sorted };
+  }, [moments]);
+
   if (!moments || !Array.isArray(moments) || moments.length === 0) {
     return (
       <div className="text-center py-12">
@@ -23,12 +44,6 @@ export function MomentList({ moments, onMomentClick, onEditMoment, onDeleteMomen
       </div>
     );
   }
-
-  // Group moments by date
-  const groupedMoments = groupMomentsByDate(moments);
-
-  // Sort dates in descending order
-  const sortedDates = getSortedDateKeys(groupedMoments);
 
 
 
@@ -43,9 +58,7 @@ export function MomentList({ moments, onMomentClick, onEditMoment, onDeleteMomen
           
           {/* Moments for this date */}
           <div className="space-y-3">
-            {groupedMoments[dateKey]
-              .sort((a, b) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime())
-              .map((moment) => (
+            {groupedMoments[dateKey].map((moment) => (
                 <Card 
                   key={moment.id} 
                   className="p-4 cursor-pointer hover:shadow-md transition-all group relative timeline-card"
@@ -88,7 +101,7 @@ export function MomentList({ moments, onMomentClick, onEditMoment, onDeleteMomen
                           e.stopPropagation();
                           onEditMoment(moment);
                         }}
-                        className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-400 hover:text-blue-500"
+                        className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-primary"
                         title="編集"
                       >
                         <Edit className="w-4 h-4" />
@@ -99,7 +112,7 @@ export function MomentList({ moments, onMomentClick, onEditMoment, onDeleteMomen
                           e.stopPropagation();
                           onDeleteMoment(moment);
                         }}
-                        className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-400 hover:text-red-500"
+                        className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-destructive"
                         title="削除"
                       >
                         <Trash2 className="w-4 h-4" />

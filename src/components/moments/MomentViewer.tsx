@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { Edit, Trash2, Tag, Clock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { getTagColorClasses } from '@/utils/momentUtils';
 
 interface MomentViewerProps {
   isOpen: boolean;
@@ -20,23 +21,6 @@ export function MomentViewer({ isOpen, onClose, moment, onEdit, onDelete }: Mome
 
   if (!moment) return null;
 
-  const getTagColor = (tag: string) => {
-    switch (tag) {
-      case 'Ideas':
-        return 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300';
-      case 'Discoveries':
-        return 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300';
-      case 'Emotions':
-        return 'bg-pink-100 dark:bg-pink-900 text-pink-700 dark:text-pink-300';
-      case 'Log':
-        return 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300';
-      case 'Other':
-        return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300';
-      default:
-        // Custom tags
-        return 'bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300';
-    }
-  };
 
   return (
     <Modal open={isOpen} onClose={onClose} size="md">
@@ -92,7 +76,7 @@ export function MomentViewer({ isOpen, onClose, moment, onEdit, onDelete }: Mome
               {moment.tags.map((tag) => (
                 <span
                   key={tag}
-                  className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm ${getTagColor(tag)}`}
+                  className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm ${getTagColorClasses(tag)}`}
                 >
                   <Tag className="w-4 h-4" />
                   {tag}
