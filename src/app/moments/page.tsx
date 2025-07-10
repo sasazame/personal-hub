@@ -19,10 +19,11 @@ import { showSuccess, showError } from '@/components/ui/toast';
 import { Plus, Search, Tag } from 'lucide-react';
 import { format } from 'date-fns';
 
+const PREVIEW_LENGTH = 100;
+
 function MomentsPage() {
   const t = useTranslations();
   usePageTitle('Moments - Personal Hub');
-  const [filters] = useState<MomentFilters>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedMoment, setSelectedMoment] = useState<Moment | null>(null);
@@ -31,8 +32,7 @@ function MomentsPage() {
   const [selectedTag, setSelectedTag] = useState<string>('');
   const [dateRange, setDateRange] = useState<{ startDate?: Date; endDate?: Date }>({});
 
-  const currentFilters = {
-    ...filters,
+  const currentFilters: MomentFilters = {
     ...(dateRange.startDate && dateRange.endDate ? {
       startDate: dateRange.startDate.toISOString(),
       endDate: dateRange.endDate.toISOString(),
@@ -62,7 +62,7 @@ function MomentsPage() {
         setIsFormOpen(false);
       },
       onError: (error: Error) => {
-        showError(error instanceof Error ? error.message : t('moments.createFailed'));
+        showError(error.message || t('moments.createFailed'));
       },
     });
   };
@@ -77,7 +77,7 @@ function MomentsPage() {
           setViewingMoment(null);
         },
         onError: (error: Error) => {
-          showError(error instanceof Error ? error.message : t('moments.updateFailed'));
+          showError(error.message || t('moments.updateFailed'));
         },
       });
     }
@@ -92,7 +92,7 @@ function MomentsPage() {
           setViewingMoment(null);
         },
         onError: (error: Error) => {
-          showError(error instanceof Error ? error.message : t('moments.deleteFailed'));
+          showError(error.message || t('moments.deleteFailed'));
         },
       });
     }
@@ -271,7 +271,7 @@ function MomentsPage() {
                 {t('moments.confirmDelete')}
               </p>
               <div className="text-sm bg-gray-50 dark:bg-gray-800 rounded p-3 mt-2">
-                &quot;{momentToDelete.content.substring(0, 100)}{momentToDelete.content.length > 100 ? '...' : ''}&quot;
+                &quot;{momentToDelete.content.substring(0, PREVIEW_LENGTH)}{momentToDelete.content.length > PREVIEW_LENGTH ? '...' : ''}&quot;
               </div>
               <div className="flex gap-3 justify-end">
                 <Button
