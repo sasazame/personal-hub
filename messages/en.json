@@ -19,7 +19,19 @@
     "upload": "Upload",
     "language": "Language",
     "theme": "Theme",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "add": "Add",
+    "hint": "Tip: Press Ctrl+Enter to submit",
+    "selectDateRange": "Select date range",
+    "enableDateFilter": "Enable date filter",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "apply": "Apply",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "loadingMore": "Loading more...",
+    "created": "Created",
+    "updated": "Updated"
   },
   "app": {
     "title": "Personal Hub",
@@ -33,6 +45,7 @@
     "calendar": "Calendar",
     "notes": "Notes",
     "goals": "Goals",
+    "moments": "Moments",
     "analytics": "Analytics",
     "tags": "Tags",
     "starred": "Starred",
@@ -246,7 +259,8 @@
     "email": "Please enter a valid email address",
     "minLength": "Minimum {min} characters required",
     "maxLength": "Maximum {max} characters allowed",
-    "passwordStrength": "Password must be at least 8 characters long and contain uppercase, lowercase, and numbers"
+    "passwordStrength": "Password must be at least 8 characters long and contain uppercase, lowercase, and numbers",
+    "endDateBeforeStartDate": "End date cannot be before start date"
   },
   "passwordStrength": {
     "label": "Password Strength",
@@ -481,6 +495,58 @@
       "memo": "Memo",
       "other": "Other"
     }
+  },
+  "moments": {
+    "title": "Moments",
+    "subtitle": "Capture your thoughts and ideas",
+    "addMoment": "Add Moment",
+    "editMoment": "Edit Moment",
+    "deleteMoment": "Delete Moment",
+    "momentContent": "Content",
+    "momentContentPlaceholder": "What's on your mind?",
+    "tagsLabel": "Tags",
+    "newMoment": "New Moment",
+    "searchPlaceholder": "Search moments...",
+    "allTags": "All Tags",
+    "momentCreated": "Moment created successfully",
+    "momentUpdated": "Moment updated successfully",
+    "momentDeleted": "Moment deleted successfully",
+    "createFailed": "Failed to create moment",
+    "updateFailed": "Failed to update moment",
+    "deleteFailed": "Failed to delete moment",
+    "countMoments": "{count, plural, =0 {No moments} one {# moment} other {# moments}}",
+    "searchResults": "Search results for '{query}'",
+    "tagFilter": "Tag: {tag}",
+    "confirmDelete": "Are you sure you want to delete this moment?",
+    "momentDetails": "Moment Details",
+    "contentRequired": "Content is required",
+    "creating": "Creating...",
+    "updating": "Updating...",
+    "create": "Create",
+    "update": "Update",
+    "todaysSummary": "You've captured {count, plural, =0 {no moments} one {# moment} other {# moments}} today",
+    "viewTodays": "View Today's",
+    "addCustomTag": "Add Custom Tag",
+    "customTagPlaceholder": "Enter #tag",
+    "selectDateRange": "Select date range",
+    "created": "Created",
+    "updated": "Updated",
+    "dateFilter": {
+      "all": "All Time",
+      "today": "Today",
+      "week": "This Week",
+      "month": "This Month"
+    },
+    "tags": {
+      "ideas": "Ideas",
+      "discoveries": "Discoveries",
+      "emotions": "Emotions",
+      "log": "Log",
+      "other": "Other"
+    },
+    "noMoments": "No moments yet",
+    "startRecording": "Start recording a new moment",
+    "noMoreMoments": "No more moments"
   },
   "recurring": {
     "title": "Recurring Task",

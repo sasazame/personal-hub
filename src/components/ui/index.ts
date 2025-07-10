@@ -36,3 +36,4 @@ export { PasswordStrength } from './PasswordStrength';
 export { LanguageSwitcher } from './LanguageSwitcher';
 export { DateTimeInput } from './DateTimeInput';
 export { DatePicker } from './DatePicker';
+export { DateRangePicker } from './DateRangePicker';

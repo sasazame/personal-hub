@@ -16,7 +16,8 @@ import {
   Calendar,
   FileText,
   BarChart3,
-  Target
+  Target,
+  Clock
 } from 'lucide-react';
 
 interface NavItem {
@@ -51,6 +52,11 @@ export function Sidebar() {
       href: '/notes',
       label: t('nav.notes'),
       icon: <FileText className="h-5 w-5" />
+    },
+    {
+      href: '/moments',
+      label: t('nav.moments'),
+      icon: <Clock className="h-5 w-5" />
     },
     {
       href: '/goals',

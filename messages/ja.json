@@ -19,7 +19,19 @@
     "upload": "アップロード",
     "language": "言語",
     "theme": "テーマ",
-    "deleting": "削除中..."
+    "deleting": "削除中...",
+    "add": "追加",
+    "hint": "ヒント: Ctrl+Enterで送信",
+    "selectDateRange": "期間を選択",
+    "enableDateFilter": "期間フィルターを有効にする",
+    "startDate": "開始日",
+    "endDate": "終了日",
+    "apply": "適用",
+    "today": "今日",
+    "yesterday": "昨日",
+    "loadingMore": "読み込み中...",
+    "created": "作成日",
+    "updated": "更新日"
   },
   "app": {
     "title": "Personal Hub",
@@ -33,6 +45,7 @@
     "calendar": "カレンダー",
     "notes": "メモ",
     "goals": "目標",
+    "moments": "モーメント",
     "analytics": "分析",
     "tags": "タグ",
     "starred": "スター付き",
@@ -246,7 +259,8 @@
     "email": "有効なメールアドレスを入力してください",
     "minLength": "最低{min}文字必要です",
     "maxLength": "最大{max}文字まで可能です",
-    "passwordStrength": "パスワードは8文字以上で、大文字・小文字・数字を含む必要があります"
+    "passwordStrength": "パスワードは8文字以上で、大文字・小文字・数字を含む必要があります",
+    "endDateBeforeStartDate": "終了日は開始日より後に設定してください"
   },
   "passwordStrength": {
     "label": "パスワード強度",
@@ -481,6 +495,58 @@
       "memo": "メモ",
       "other": "その他"
     }
+  },
+  "moments": {
+    "title": "モーメント",
+    "subtitle": "あなたの瞬間を記録",
+    "addMoment": "モーメントを追加",
+    "editMoment": "モーメントを編集",
+    "deleteMoment": "モーメントを削除",
+    "momentContent": "内容",
+    "momentContentPlaceholder": "今、どんなことを考えていますか？",
+    "tagsLabel": "タグ",
+    "newMoment": "新しいモーメント",
+    "searchPlaceholder": "モーメントを検索...",
+    "allTags": "すべてのタグ",
+    "momentCreated": "モーメントを記録しました",
+    "momentUpdated": "モーメントを更新しました",
+    "momentDeleted": "モーメントを削除しました",
+    "createFailed": "モーメントの記録に失敗しました",
+    "updateFailed": "モーメントの更新に失敗しました",
+    "deleteFailed": "モーメントの削除に失敗しました",
+    "countMoments": "{count, plural, =0 {モーメントなし} other {#件のモーメント}}",
+    "searchResults": "'{query}'の検索結果",
+    "tagFilter": "タグ: {tag}",
+    "confirmDelete": "このモーメントを削除してもよろしいですか？",
+    "momentDetails": "モーメントの詳細",
+    "contentRequired": "内容は必須です",
+    "creating": "記録中...",
+    "updating": "更新中...",
+    "create": "記録",
+    "update": "更新",
+    "todaysSummary": "今日は{count}件のモーメントを記録しました",
+    "viewTodays": "今日のモーメントを見る",
+    "addCustomTag": "カスタムタグを追加",
+    "customTagPlaceholder": "#タグ名を入力",
+    "selectDateRange": "期間を選択",
+    "created": "作成",
+    "updated": "更新",
+    "dateFilter": {
+      "all": "すべて",
+      "today": "今日",
+      "week": "今週",
+      "month": "今月"
+    },
+    "tags": {
+      "ideas": "アイデア",
+      "discoveries": "発見",
+      "emotions": "感情",
+      "log": "記録",
+      "other": "その他"
+    },
+    "noMoments": "モーメントがありません",
+    "startRecording": "新しいモーメントを記録して始めましょう",
+    "noMoreMoments": "これ以上モーメントはありません"
   },
   "recurring": {
     "title": "繰り返しタスク",
