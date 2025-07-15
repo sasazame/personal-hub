@@ -17,7 +17,8 @@ import {
   FileText,
   BarChart3,
   Target,
-  Clock
+  Clock,
+  Timer
 } from 'lucide-react';
 
 interface NavItem {
@@ -62,6 +63,11 @@ export function Sidebar() {
       href: '/goals',
       label: t('nav.goals'),
       icon: <Target className="h-5 w-5" />
+    },
+    {
+      href: '/pomodoro',
+      label: t('nav.pomodoro'),
+      icon: <Timer className="h-5 w-5" />
     },
     ...(isFeatureEnabled('analytics') ? [{
       href: '/analytics',

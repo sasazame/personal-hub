@@ -46,6 +46,7 @@
     "notes": "Notes",
     "goals": "Goals",
     "moments": "Moments",
+    "pomodoro": "Pomodoro",
     "analytics": "Analytics",
     "tags": "Tags",
     "starred": "Starred",
@@ -96,7 +97,9 @@
     "manageGoals": "Manage Goals",
     "nearCompletion": "Near Completion",
     "dailyGoals": "Daily Goals",
-    "avgProgress": "Avg Progress"
+    "avgProgress": "Avg Progress",
+    "pomodoroDescription": "Focus timer with task tracking",
+    "pomodoroStats": "{sessions} sessions, {minutes} minutes"
   },
   "auth": {
     "login": "Login",
@@ -866,6 +869,114 @@
         "title": "Contact Us",
         "content": "If you have any questions about this Privacy Policy, please contact us through the project's GitHub repository."
       }
+    }
+  },
+  "pomodoro": {
+    "title": "Pomodoro Timer",
+    "description": "Focus on your work with the Pomodoro technique",
+    "loading": "Loading...",
+    "noActiveSession": "No active session",
+    "startSessionPrompt": "Start a new Pomodoro session to begin focusing",
+    "startNewSession": "Start New Session",
+    "startSession": "Start Session",
+    "creating": "Creating...",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "stop": "Stop",
+    "skip": "Skip",
+    "cycle": "Cycle",
+    "tasks": "Tasks",
+    "taskPlaceholder": "What are you working on?",
+    "addTask": "Add task...",
+    "newTask": "New task",
+    "search": "Search",
+    "pending": "Pending",
+    "taskRequired": "Please enter a task description",
+    "deleteTask": "Delete Task",
+    "confirmDeleteTask": "Are you sure you want to delete this task: {description}?",
+    "delete": "Delete",
+    "selectFromTodos": "Select from TODOs",
+    "noTasks": "No tasks added yet",
+    "linkedToTodo": "Linked",
+    "confirmRemoveTask": "Are you sure you want to remove this task?",
+    "selectTodo": "Select a TODO",
+    "searchTodos": "Search TODOs...",
+    "noTodosFound": "No TODOs found",
+    "noAvailableTodos": "No available TODOs",
+    "cancel": "Cancel",
+    "minutes": "minutes",
+    "sessionType": {
+      "work": "Work",
+      "short_break": "Short Break",
+      "long_break": "Long Break"
+    },
+    "todoStatus": {
+      "todo": "To Do",
+      "pending": "Pending",
+      "in_progress": "In Progress"
+    },
+    "config": {
+      "title": "Pomodoro Settings",
+      "loading": "Loading settings...",
+      "workDuration": "Work Duration",
+      "shortBreakDuration": "Short Break",
+      "longBreakDuration": "Long Break",
+      "cyclesBeforeLongBreak": "Cycles Before Long Break",
+      "alarmSound": "Alarm Sound",
+      "volume": "Volume",
+      "autoStartBreaks": "Auto-start breaks",
+      "autoStartWork": "Auto-start work sessions",
+      "minutes": "minutes",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "saveSuccess": "Settings saved successfully",
+      "saveError": "Failed to save settings"
+    },
+    "history": {
+      "title": "Session History",
+      "loading": "Loading history...",
+      "noHistory": "No session history yet",
+      "minutes": "min",
+      "tasksCompleted": "Tasks",
+      "tasksCount": "Tasks count",
+      "cyclesCompleted": "Cycles completed",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {current} of {total}",
+      "showMore": "Show more",
+      "sessionType": {
+        "work": "Work",
+        "short_break": "Short Break",
+        "long_break": "Long Break"
+      },
+      "status": {
+        "active": "Active",
+        "paused": "Paused",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      }
+    },
+    "templates": {
+      "title": "Task Templates",
+      "manageTemplates": "Manage task templates",
+      "createFromCurrent": "Create from current tasks",
+      "templateNamePlaceholder": "Template name...",
+      "saveCurrentAsTemplate": "Save current tasks as template",
+      "savedTemplates": "Saved templates",
+      "noTemplates": "No templates saved yet",
+      "templateNameRequired": "Please enter a template name",
+      "noTasksToSave": "No tasks to save as template",
+      "templateCreated": "Template created successfully",
+      "templateUpdated": "Template updated successfully",
+      "templateDeleted": "Template deleted",
+      "templateApplied": "Template applied",
+      "addTask": "Add task",
+      "save": "Save",
+      "cancel": "Cancel",
+      "close": "Close",
+      "useTemplate": "Use this template"
     }
   }
 }
