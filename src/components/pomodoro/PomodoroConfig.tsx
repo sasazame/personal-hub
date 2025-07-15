@@ -27,6 +27,13 @@ export function PomodoroConfig() {
   const updateConfig = useUpdateConfig();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Helper function to parse and validate numeric input
+  const parseNumericInput = (value: string, min: number, max: number, defaultValue: number): number => {
+    const parsed = parseInt(value, 10);
+    if (isNaN(parsed)) return defaultValue;
+    return Math.max(min, Math.min(max, parsed));
+  };
+
   const [formData, setFormData] = useState({
     workDuration: 25,
     shortBreakDuration: 5,
@@ -70,7 +77,10 @@ export function PomodoroConfig() {
     if (audioRef.current) {
       audioRef.current.src = `/sounds/${formData.alarmSound}.mp3`;
       audioRef.current.volume = formData.alarmVolume / 100;
-      audioRef.current.play().catch(console.error);
+      audioRef.current.play().catch((error) => {
+        console.error('Failed to preview alarm sound:', error);
+        alert('Unable to play sound. Please check your browser settings for autoplay permissions.');
+      });
     }
   };
 
@@ -105,7 +115,7 @@ export function PomodoroConfig() {
                         max="120"
                         label={t('workDuration')}
                         value={formData.workDuration}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, workDuration: parseInt(e.target.value) || 25 })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, workDuration: parseNumericInput(e.target.value, 1, 120, 25) })}
                       />
                     </div>
                     <span className="text-sm text-muted-foreground mt-6">{t('minutes')}</span>
@@ -121,7 +131,7 @@ export function PomodoroConfig() {
                         max="60"
                         label={t('shortBreakDuration')}
                         value={formData.shortBreakDuration}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, shortBreakDuration: parseInt(e.target.value) || 5 })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, shortBreakDuration: parseNumericInput(e.target.value, 1, 60, 5) })}
                       />
                     </div>
                     <span className="text-sm text-muted-foreground mt-6">{t('minutes')}</span>
@@ -137,7 +147,7 @@ export function PomodoroConfig() {
                         max="60"
                         label={t('longBreakDuration')}
                         value={formData.longBreakDuration}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, longBreakDuration: parseInt(e.target.value) || 15 })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, longBreakDuration: parseNumericInput(e.target.value, 1, 60, 15) })}
                       />
                     </div>
                     <span className="text-sm text-muted-foreground mt-6">{t('minutes')}</span>
@@ -152,7 +162,7 @@ export function PomodoroConfig() {
                       max="10"
                       label={t('cyclesBeforeLongBreak')}
                       value={formData.cyclesBeforeLongBreak}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, cyclesBeforeLongBreak: parseInt(e.target.value) || 4 })}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, cyclesBeforeLongBreak: parseNumericInput(e.target.value, 1, 10, 4) })}
                     />
                   </div>
                 </div>
@@ -191,7 +201,7 @@ export function PomodoroConfig() {
                     <input
                       type="range"
                       value={formData.alarmVolume}
-                      onChange={(e) => setFormData({ ...formData, alarmVolume: parseInt(e.target.value) })}
+                      onChange={(e) => setFormData({ ...formData, alarmVolume: parseNumericInput(e.target.value, 0, 100, 50) })}
                       min="0"
                       max="100"
                       step="5"

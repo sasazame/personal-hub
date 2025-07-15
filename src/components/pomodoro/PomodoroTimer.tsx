@@ -59,7 +59,16 @@ export function PomodoroTimer({ onComplete }: PomodoroTimerProps) {
     if (audioRef.current && config?.alarmSound && config?.soundEnabled) {
       const volume = config.soundVolume ?? 50;
       audioRef.current.volume = Math.max(0, Math.min(1, volume / 100));
-      audioRef.current.play().catch(console.error);
+      audioRef.current.play().catch((error) => {
+        console.error('Failed to play alarm sound:', error);
+        // Fallback: Use browser notification API if available
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('Pomodoro Timer', {
+            body: 'Timer completed!',
+            icon: '/favicon.ico'
+          });
+        }
+      });
     }
     
     setIsRunning(false);

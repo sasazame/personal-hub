@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSessionHistory } from '@/hooks/usePomodoro';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -23,55 +23,55 @@ export function PomodoroHistory({ showTaskDetails = false }: PomodoroHistoryProp
   const [sessionTasks, setSessionTasks] = useState<Record<string, PomodoroTask[]>>({});
   const [loadingTasks, setLoadingTasks] = useState<Set<string>>(new Set());
 
+  // Memoized fetchTasks function
+  const fetchTasks = useCallback(async (sessions: PomodoroSession[]) => {
+    const sessionsToFetch = sessions.filter(
+      (session: PomodoroSession) => 
+        !sessionTasks[session.id] && 
+        !loadingTasks.has(session.id)
+    );
+
+    if (sessionsToFetch.length === 0) return;
+
+    setLoadingTasks(prev => {
+      const next = new Set(prev);
+      sessionsToFetch.forEach((s: PomodoroSession) => next.add(s.id));
+      return next;
+    });
+
+    const taskPromises = sessionsToFetch.map(async (session: PomodoroSession) => {
+      try {
+        const tasks = await pomodoroService.getSessionTasks(session.id);
+        return { sessionId: session.id, tasks };
+      } catch (error) {
+        console.error(`Failed to fetch tasks for session ${session.id}:`, error);
+        // TODO: Show user notification about failed task loading
+        return { sessionId: session.id, tasks: [], error: true };
+      }
+    });
+
+    const results = await Promise.all(taskPromises);
+    
+    setSessionTasks(prev => {
+      const next = { ...prev };
+      results.forEach(({ sessionId, tasks }) => {
+        next[sessionId] = tasks;
+      });
+      return next;
+    });
+
+    setLoadingTasks(prev => {
+      const next = new Set(prev);
+      sessionsToFetch.forEach((s: PomodoroSession) => next.delete(s.id));
+      return next;
+    });
+  }, [sessionTasks, loadingTasks]);
+
   // Fetch tasks for visible sessions
   useEffect(() => {
     if (!data || !showTaskDetails) return;
-
-    const fetchTasks = async () => {
-      const sessionsToFetch = data.content.filter(
-        (session: PomodoroSession) => 
-          !sessionTasks[session.id] && 
-          !loadingTasks.has(session.id)
-      );
-
-      if (sessionsToFetch.length === 0) return;
-
-      setLoadingTasks(prev => {
-        const next = new Set(prev);
-        sessionsToFetch.forEach((s: PomodoroSession) => next.add(s.id));
-        return next;
-      });
-
-      const taskPromises = sessionsToFetch.map(async (session: PomodoroSession) => {
-        try {
-          const tasks = await pomodoroService.getSessionTasks(session.id);
-          return { sessionId: session.id, tasks };
-        } catch (error) {
-          console.error(`Failed to fetch tasks for session ${session.id}:`, error);
-          return { sessionId: session.id, tasks: [] };
-        }
-      });
-
-      const results = await Promise.all(taskPromises);
-      
-      setSessionTasks(prev => {
-        const next = { ...prev };
-        results.forEach(({ sessionId, tasks }) => {
-          next[sessionId] = tasks;
-        });
-        return next;
-      });
-
-      setLoadingTasks(prev => {
-        const next = new Set(prev);
-        sessionsToFetch.forEach((s: PomodoroSession) => next.delete(s.id));
-        return next;
-      });
-    };
-
-    fetchTasks();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, showTaskDetails]); // Intentionally omitting sessionTasks and loadingTasks to prevent infinite loops
+    fetchTasks(data.content);
+  }, [data, showTaskDetails, fetchTasks]);
 
   const formatDuration = (minutes: number) => {
     if (minutes < 60) {

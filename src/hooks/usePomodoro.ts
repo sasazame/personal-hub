@@ -21,10 +21,13 @@ export function usePomodoroStats() {
   today.setHours(0, 0, 0, 0);
 
   const { data: response, ...rest } = useQuery({
-    queryKey: ['pomodoro', 'sessions'],
+    queryKey: ['pomodoro', 'sessions', 'today', today.toISOString()],
     queryFn: async () => {
-      return await pomodoroService.getSessionHistory(0, 100);
+      // Optimize by fetching fewer sessions initially
+      // Most users won't have more than 20 sessions in a day
+      return await pomodoroService.getSessionHistory(0, 20);
     },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
   // Extract sessions from paginated response
@@ -220,7 +223,8 @@ export function useLastSession() {
       try {
         const activeSession = await pomodoroService.getActiveSession();
         if (activeSession) return activeSession;
-      } catch {
+      } catch (error) {
+        console.error('Failed to fetch active session:', error);
         // Continue to get last session from history
       }
       

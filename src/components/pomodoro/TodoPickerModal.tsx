@@ -13,7 +13,7 @@ import { cn } from '@/lib/cn';
 interface TodoPickerModalProps {
   open: boolean;
   onClose: () => void;
-  onSelect: (todoId: string, todoTitle: string) => void;
+  onSelect: (todoId: number, todoTitle: string) => void;
 }
 
 export function TodoPickerModal({ open, onClose, onSelect }: TodoPickerModalProps) {
@@ -71,7 +71,7 @@ export function TodoPickerModal({ open, onClose, onSelect }: TodoPickerModalProp
                       "w-full justify-start text-left",
                       "hover:bg-muted"
                     )}
-                    onClick={() => handleSelect(todo.id.toString(), todo.title)}
+                    onClick={() => handleSelect(todo.id, todo.title)}
                   >
                     <div className="flex-1 truncate">
                       <div className="font-medium">{todo.title}</div>

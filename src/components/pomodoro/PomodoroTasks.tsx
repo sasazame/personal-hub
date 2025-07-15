@@ -5,13 +5,14 @@ import { PomodoroTask } from '@/types/pomodoro';
 import { useAddTask, useUpdateTask, useRemoveTask } from '@/hooks/usePomodoro';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
-import { showError } from '@/components/ui/toast';
-import { Trash2, Plus, List } from 'lucide-react';
+import { showError, showSuccess } from '@/components/ui/toast';
+import { Trash2, List, Link } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { TodoPickerModal } from './TodoPickerModal';
 import { TaskTemplates } from './TaskTemplates';
+import { TaskCreationForm } from './TaskCreationForm';
+import { createPomodoroTask, createTasksFromTemplate } from '@/utils/pomodoroHelpers';
 import { cn } from '@/lib/cn';
 
 interface PomodoroTasksProps {
@@ -23,7 +24,6 @@ interface PomodoroTasksProps {
 
 export function PomodoroTasks({ sessionId, tasks, isActiveSession = false, onCreateSession }: PomodoroTasksProps) {
   const t = useTranslations('pomodoro');
-  const [newTaskDescription, setNewTaskDescription] = useState('');
   const [showTodoPicker, setShowTodoPicker] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<PomodoroTask | null>(null);
   
@@ -31,29 +31,15 @@ export function PomodoroTasks({ sessionId, tasks, isActiveSession = false, onCre
   const updateTask = useUpdateTask();
   const removeTask = useRemoveTask();
 
-  const handleAddTask = () => {
-    if (!newTaskDescription.trim()) {
-      showError(t('taskRequired'));
-      return;
-    }
-    
-    if (!sessionId) {
-      if (onCreateSession) {
-        // Create session with initial task
-        onCreateSession(newTaskDescription);
-        setNewTaskDescription('');
-      } else {
-        showError(t('noActiveSession'));
-      }
-      return;
-    }
-    
-    addTask.mutate({
-      sessionId,
-      description: newTaskDescription
+  const handleAddTask = (description: string) => {
+    const taskData = createPomodoroTask(sessionId, description, {
+      onNoSession: onCreateSession,
+      onError: (msg) => showError(t(msg))
     });
     
-    setNewTaskDescription('');
+    if (taskData) {
+      addTask.mutate(taskData);
+    }
   };
 
   const handleToggleTask = (task: PomodoroTask) => {
@@ -83,18 +69,16 @@ export function PomodoroTasks({ sessionId, tasks, isActiveSession = false, onCre
     });
   };
 
-  const handleSelectTodo = (todoId: string, todoTitle: string) => {
-    if (!sessionId) {
-      showError(t('noActiveSession'));
-      return;
-    }
-    
-    addTask.mutate({
-      sessionId: sessionId!,
-      description: todoTitle,
-      todoId: parseInt(todoId)
+  const handleSelectTodo = (todoId: number, todoTitle: string) => {
+    const taskData = createPomodoroTask(sessionId, todoTitle, {
+      todoId,
+      onError: (msg) => showError(t(msg))
     });
-    setShowTodoPicker(false);
+    
+    if (taskData) {
+      addTask.mutate(taskData);
+      setShowTodoPicker(false);
+    }
   };
 
   return (
@@ -105,42 +89,28 @@ export function PomodoroTasks({ sessionId, tasks, isActiveSession = false, onCre
         <div className="mb-4">
           <div className="flex gap-2 items-end">
             <div className="flex-1">
-              <Input
-                value={newTaskDescription}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTaskDescription(e.target.value)}
+              <TaskCreationForm
+                onSubmit={handleAddTask}
                 label={t('newTask')}
                 placeholder={t('addTask')}
-                onKeyPress={(e: React.KeyboardEvent) => e.key === 'Enter' && handleAddTask()}
               />
             </div>
-            <Button onClick={handleAddTask} size="sm" className="mb-1">
-              <Plus className="h-4 w-4" />
-            </Button>
             <Button 
               onClick={() => setShowTodoPicker(true)} 
               size="sm"
               variant="outline"
               title={t('selectFromTodos')}
               data-testid="link-todo-button"
-              className="mb-1"
+              className="mt-6"
             >
-              <List className="h-4 w-4" />
+              <Link className="h-4 w-4" />
             </Button>
             <TaskTemplates 
               onApplyTemplate={(templateTasks) => {
-                // Add all template tasks
-                templateTasks.forEach(description => {
-                  if (!sessionId) {
-                    if (onCreateSession) {
-                      onCreateSession(description);
-                      return;
-                    }
-                  } else {
-                    addTask.mutate({
-                      sessionId,
-                      description
-                    });
-                  }
+                createTasksFromTemplate(templateTasks, sessionId, addTask, {
+                  onCreateSession,
+                  onSuccess: () => showSuccess(t('tasksAdded')),
+                  onError: (error) => showError(t('failedToAddTasks'))
                 });
               }}
               currentTasks={tasks.map(t => t.description)}

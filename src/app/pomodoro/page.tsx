@@ -6,7 +6,8 @@ import { PomodoroTasks } from '@/components/pomodoro/PomodoroTasks';
 import { PomodoroHistory } from '@/components/pomodoro/PomodoroHistory';
 import { PomodoroConfig } from '@/components/pomodoro/PomodoroConfig';
 import { useActiveSession, useCreateSession, usePomodoroConfig, useUpdateSession } from '@/hooks/usePomodoro';
-import { CreatePomodoroSessionRequest, SessionAction, SessionType } from '@/types/pomodoro';
+import { SessionAction, SessionType } from '@/types/pomodoro';
+import { prepareSessionData, getIncompleteTasks } from '@/utils/pomodoroHelpers';
 import { AuthGuard } from '@/components/auth';
 import { AppLayout } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
@@ -27,34 +28,13 @@ function PomodoroApp() {
   const tasks = activeSession?.tasks || [];
 
   const handleCreateSession = (initialTask?: string) => {
-    const sessionData: CreatePomodoroSessionRequest = {
-      workDuration: config?.workDuration || 25,
-      breakDuration: config?.shortBreakDuration || 5
-    };
-
-    const tasksToInclude = [];
+    if (!config) return;
     
-    // Add initial task if provided
-    if (initialTask) {
-      tasksToInclude.push({
-        description: initialTask
-      });
-    }
-    
-    // Always carry over incomplete tasks from the current session
-    if (tasks.length > 0) {
-      const incompleteTasks = tasks
-        .filter(task => !task.completed)
-        .map(task => ({
-          description: task.description,
-          todoId: task.todoId
-        }));
-      tasksToInclude.push(...incompleteTasks);
-    }
-    
-    if (tasksToInclude.length > 0) {
-      sessionData.tasks = tasksToInclude;
-    }
+    const sessionData = prepareSessionData(
+      config,
+      initialTask,
+      tasks
+    );
     
     createSession.mutate(sessionData);
   };
@@ -71,16 +51,13 @@ function PomodoroApp() {
       // Create break session after a short delay
       setTimeout(() => {
         // Create session with incomplete tasks carried over
-        createSession.mutate({
+        const breakSessionData = {
           workDuration: config.workDuration,
           breakDuration: breakDuration,
-          tasks: tasks
-            .filter(task => !task.completed)
-            .map(task => ({
-              description: task.description,
-              todoId: task.todoId
-            }))
-        }, {
+          tasks: getIncompleteTasks(tasks)
+        };
+        
+        createSession.mutate(breakSessionData, {
           onSuccess: (newSession) => {
             // Switch to break type after creation
             const breakType = isLongBreak ? SessionType.LONG_BREAK : SessionType.SHORT_BREAK;
