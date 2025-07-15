@@ -46,6 +46,7 @@
     "notes": "メモ",
     "goals": "目標",
     "moments": "モーメント",
+    "pomodoro": "ポモドーロ",
     "analytics": "分析",
     "tags": "タグ",
     "starred": "スター付き",
@@ -96,7 +97,9 @@
     "manageGoals": "目標を管理",
     "nearCompletion": "もうすぐ達成",
     "dailyGoals": "デイリー目標",
-    "avgProgress": "平均進捗"
+    "avgProgress": "平均進捗",
+    "pomodoroDescription": "タスク管理付き集中タイマー",
+    "pomodoroStats": "{sessions}セッション、{minutes}分"
   },
   "auth": {
     "login": "ログイン",
@@ -866,6 +869,114 @@
         "title": "お問い合わせ",
         "content": "このプライバシーポリシーについてご質問がある場合は、プロジェクトのGitHubリポジトリからお問い合わせください。"
       }
+    }
+  },
+  "pomodoro": {
+    "title": "ポモドーロタイマー",
+    "description": "ポモドーロテクニックで集中力を高めましょう",
+    "loading": "読み込み中...",
+    "noActiveSession": "アクティブなセッションがありません",
+    "startSessionPrompt": "新しいポモドーロセッションを開始して集中しましょう",
+    "startNewSession": "新しいセッションを開始",
+    "startSession": "セッションを開始",
+    "creating": "作成中...",
+    "start": "開始",
+    "pause": "一時停止",
+    "resume": "再開",
+    "stop": "停止",
+    "skip": "スキップ",
+    "cycle": "サイクル",
+    "tasks": "タスク",
+    "taskPlaceholder": "何に取り組みますか？",
+    "addTask": "タスクを追加...",
+    "newTask": "新しいタスク",
+    "search": "検索",
+    "pending": "保留中",
+    "taskRequired": "タスクの説明を入力してください",
+    "deleteTask": "タスクを削除",
+    "confirmDeleteTask": "このタスクを削除してもよろしいですか: {description}?",
+    "delete": "削除",
+    "selectFromTodos": "TODOから選択",
+    "noTasks": "タスクがまだ追加されていません",
+    "linkedToTodo": "リンク済",
+    "confirmRemoveTask": "このタスクを削除してもよろしいですか？",
+    "selectTodo": "TODOを選択",
+    "searchTodos": "TODOを検索...",
+    "noTodosFound": "TODOが見つかりません",
+    "noAvailableTodos": "利用可能なTODOがありません",
+    "cancel": "キャンセル",
+    "minutes": "分",
+    "sessionType": {
+      "work": "作業",
+      "short_break": "短い休憩",
+      "long_break": "長い休憩"
+    },
+    "todoStatus": {
+      "todo": "未着手",
+      "pending": "保留中",
+      "in_progress": "進行中"
+    },
+    "config": {
+      "title": "ポモドーロ設定",
+      "loading": "設定を読み込み中...",
+      "workDuration": "作業時間",
+      "shortBreakDuration": "短い休憩",
+      "longBreakDuration": "長い休憩",
+      "cyclesBeforeLongBreak": "長い休憩までのサイクル数",
+      "alarmSound": "アラーム音",
+      "volume": "音量",
+      "autoStartBreaks": "休憩を自動開始",
+      "autoStartWork": "作業セッションを自動開始",
+      "minutes": "分",
+      "save": "保存",
+      "saving": "保存中...",
+      "cancel": "キャンセル",
+      "saveSuccess": "設定を保存しました",
+      "saveError": "設定の保存に失敗しました"
+    },
+    "history": {
+      "title": "セッション履歴",
+      "loading": "履歴を読み込み中...",
+      "noHistory": "セッション履歴がまだありません",
+      "minutes": "分",
+      "tasksCompleted": "タスク",
+      "tasksCount": "タスク数",
+      "cyclesCompleted": "完了サイクル",
+      "previous": "前へ",
+      "next": "次へ",
+      "page": "{total}ページ中{current}ページ",
+      "showMore": "もっと表示",
+      "sessionType": {
+        "work": "作業",
+        "short_break": "短い休憩",
+        "long_break": "長い休憩"
+      },
+      "status": {
+        "active": "アクティブ",
+        "paused": "一時停止",
+        "completed": "完了",
+        "cancelled": "キャンセル"
+      }
+    },
+    "templates": {
+      "title": "タスクテンプレート",
+      "manageTemplates": "タスクテンプレートを管理",
+      "createFromCurrent": "現在のタスクから作成",
+      "templateNamePlaceholder": "テンプレート名...",
+      "saveCurrentAsTemplate": "現在のタスクをテンプレートとして保存",
+      "savedTemplates": "保存されたテンプレート",
+      "noTemplates": "まだテンプレートが保存されていません",
+      "templateNameRequired": "テンプレート名を入力してください",
+      "noTasksToSave": "テンプレートとして保存するタスクがありません",
+      "templateCreated": "テンプレートを作成しました",
+      "templateUpdated": "テンプレートを更新しました",
+      "templateDeleted": "テンプレートを削除しました",
+      "templateApplied": "テンプレートを適用しました",
+      "addTask": "タスクを追加",
+      "save": "保存",
+      "cancel": "キャンセル",
+      "close": "閉じる",
+      "useTemplate": "このテンプレートを使用"
     }
   }
 }

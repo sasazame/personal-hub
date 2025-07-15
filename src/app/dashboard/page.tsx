@@ -10,6 +10,7 @@ import { useTodaysEvents } from '@/hooks/useCalendar';
 import { useRecentNotes } from '@/hooks/useNotes';
 import { useGoals } from '@/hooks/useGoals';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { usePomodoroStats } from '@/hooks/usePomodoro';
 import { todoApi } from '@/lib/api';
 import { format } from 'date-fns';
 import { isFeatureEnabled } from '@/config/features';
@@ -22,7 +23,8 @@ import {
   ArrowRight,
   Target,
   TrendingUp,
-  Trophy
+  Trophy,
+  Timer
 } from 'lucide-react';
 
 function DashboardPage() {
@@ -44,6 +46,7 @@ function DashboardPage() {
   const { data: todaysEvents = [] } = useTodaysEvents();
   const { data: recentNotes = [] } = useRecentNotes(3);
   const { activeGoals } = useGoals();
+  const { data: pomodoroStats } = usePomodoroStats();
 
   // Handle 403 errors in development gracefully
   const todos = todosResponse?.content || [];
@@ -80,6 +83,18 @@ function DashboardPage() {
       color: 'bg-indigo-500',
       stats: t('dashboard.activeGoalsCount', { count: totalActiveGoals }),
       count: totalActiveGoals
+    },
+    {
+      title: t('nav.pomodoro'),
+      description: t('dashboard.pomodoroDescription'),
+      icon: Timer,
+      href: '/pomodoro',
+      color: 'bg-red-500',
+      stats: t('dashboard.pomodoroStats', { 
+        sessions: pomodoroStats?.todaySessionsCount || 0,
+        minutes: pomodoroStats?.todayWorkMinutes || 0 
+      }),
+      count: pomodoroStats?.todaySessionsCount || 0
     },
     {
       title: 'Calendar',
