@@ -53,7 +53,7 @@ export function TaskCreationForm({
             setDescription(e.target.value);
             if (error) setError(null);
           }}
-          label={label}
+          label={label || ''}
           placeholder={placeholder || t('taskPlaceholder')}
           onKeyPress={handleKeyPress}
           disabled={disabled}
@@ -63,7 +63,7 @@ export function TaskCreationForm({
           onClick={handleSubmit}
           disabled={disabled || !description.trim()}
           variant="secondary"
-          size="icon"
+          size="sm"
           className="mt-6"
         >
           <Plus className="h-4 w-4" />

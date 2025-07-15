@@ -19,7 +19,7 @@ interface TodoPickerModalProps {
 export function TodoPickerModal({ open, onClose, onSelect }: TodoPickerModalProps) {
   const t = useTranslations('pomodoro');
   const [searchTerm, setSearchTerm] = useState('');
-  const { data: todos, isLoading } = useTodos();
+  const { data: todos, isLoading, error } = useTodos();
 
   // Filter only pending and in-progress todos
   const availableTodos = todos?.filter(
@@ -31,13 +31,13 @@ export function TodoPickerModal({ open, onClose, onSelect }: TodoPickerModalProp
     (todo: Todo) => todo.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSelect = (todoId: string, todoTitle: string) => {
+  const handleSelect = (todoId: number, todoTitle: string) => {
     onSelect(todoId, todoTitle);
     setSearchTerm('');
   };
 
   return (
-    <Modal open={open} onClose={onClose} size="md">
+    <Modal open={open} onClose={onClose} size="md" aria-label={t('selectTodoModal')}>
       <div className="p-6">
         <h2 className="text-lg font-semibold mb-4">{t('selectTodo')}</h2>
 
@@ -50,13 +50,18 @@ export function TodoPickerModal({ open, onClose, onSelect }: TodoPickerModalProp
               label={t('search')}
               placeholder={t('searchTodos')}
               leftIcon={<Search className="h-4 w-4" />}
+              aria-label={t('searchTodos')}
             />
           </div>
 
           {/* Todo list */}
-          <div className="h-[300px] overflow-y-auto">
+          <div className="h-[300px] overflow-y-auto" role="listbox" aria-label={t('availableTodos')}>
             {isLoading ? (
               <div className="text-center py-4">{t('loading')}</div>
+            ) : error ? (
+              <div className="text-center py-8 text-destructive">
+                {t('errorLoadingTodos')}
+              </div>
             ) : filteredTodos.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 {searchTerm ? t('noTodosFound') : t('noAvailableTodos')}
@@ -72,6 +77,8 @@ export function TodoPickerModal({ open, onClose, onSelect }: TodoPickerModalProp
                       "hover:bg-muted"
                     )}
                     onClick={() => handleSelect(todo.id, todo.title)}
+                    role="option"
+                    aria-selected="false"
                   >
                     <div className="flex-1 truncate">
                       <div className="font-medium">{todo.title}</div>

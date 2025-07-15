@@ -1,4 +1,5 @@
-import type { PomodoroTask, PomodoroConfig, CreatePomodoroSessionRequest } from '@/types/pomodoro';
+import type { PomodoroTask, PomodoroConfig, CreatePomodoroSessionRequest, CreatePomodoroTaskRequest } from '@/types/pomodoro';
+import type { UseMutationResult } from '@tanstack/react-query';
 
 /**
  * Helper function to create a Pomodoro task with session validation
@@ -59,7 +60,9 @@ export const prepareSessionData = (
     tasks.push({ description: initialTask });
   }
   
-  if (existingTasks && config.carryOverIncompleteTasks) {
+  // Check if carryOverIncompleteTasks is enabled (default to true if not specified)
+  const shouldCarryOver = (config as any).carryOverIncompleteTasks !== false;
+  if (existingTasks && shouldCarryOver) {
     tasks.push(...getIncompleteTasks(existingTasks));
   }
 
@@ -82,10 +85,12 @@ export const validateTaskDescription = (description: string): string | null => {
 /**
  * Create tasks from template
  */
+type AddTaskMutation = UseMutationResult<PomodoroTask, Error, CreatePomodoroTaskRequest & { sessionId: string }>;
+
 export const createTasksFromTemplate = async (
   templateTasks: string[],
   sessionId: string | undefined,
-  addTaskMutation: any,
+  addTaskMutation: AddTaskMutation,
   options?: {
     onCreateSession?: (description: string) => void;
     onSuccess?: () => void;
